@@ -1,0 +1,673 @@
+/* ================= GLOBAL ================= */
+
+body{
+  background:#05071d;
+  overflow:hidden;
+  color:white;
+}
+
+/* ================= MAIN CONTAINER ================= */
+
+.profile-container{
+  display:flex;
+  width:100%;
+  min-height:100vh;
+  background:#05071d;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+
+  width:250px;
+
+  height:100vh;
+
+  background:#070b24;
+
+  border-right:
+  1px solid rgba(255,255,255,0.05);
+
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+
+  padding:24px 0;
+}
+
+.sidebar-logo{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:10px;
+
+  padding:0 24px;
+
+  font-size:26px;
+
+  font-weight:700;
+
+  margin-bottom:32px;
+}
+
+.logo-icon{
+  color:#00bfff;
+}
+
+.highlight{
+  color:#00bfff;
+}
+
+.panel-text{
+
+  padding:0 24px;
+
+  margin-bottom:20px;
+
+  color:#7d85b5;
+
+  font-size:12px;
+
+  letter-spacing:1px;
+}
+
+/* ================= SIDEBAR MENU ================= */
+
+.sidebar-menu{
+  list-style:none;
+}
+
+.sidebar-menu li{
+
+  height:52px;
+
+  display:flex;
+
+  align-items:center;
+
+  gap:14px;
+
+  padding:0 24px;
+
+  cursor:pointer;
+
+  color:#c7c7d8;
+
+  font-size:14px;
+
+  transition:0.3s;
+}
+
+.sidebar-menu li:hover{
+  background:#0d153a;
+}
+
+.active-menu{
+
+  background:#111c4f;
+
+  border-left:
+  4px solid #00bfff;
+
+  color:#00bfff !important;
+}
+
+/* ================= LOGOUT ================= */
+
+.logout{
+
+  height:54px;
+
+  display:flex;
+
+  align-items:center;
+
+  gap:12px;
+
+  padding:0 24px;
+
+  color:#ff4d4d;
+
+  cursor:pointer;
+
+  font-size:14px;
+}
+
+/* ================= MAIN CONTENT ================= */
+
+.main-content{
+  flex:1;
+  overflow-y:auto;
+}
+
+/* ================= TOPBAR ================= */
+
+.topbar{
+
+  width:100%;
+
+  height:70px;
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  padding:0 24px;
+
+  background:#070b24;
+
+  border-bottom:
+  1px solid rgba(255,255,255,0.05);
+}
+
+/* ================= LEFT ================= */
+
+.topbar-left{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:12px;
+}
+
+/* ================= BACK BUTTON ================= */
+
+/* Standardized via index.css:
+.back-btn{
+
+  width:34px;
+
+  height:34px;
+
+  border:none;
+
+  border-radius:50%;
+
+  background:#10215f;
+
+  color:#00bfff;
+
+  font-size:13px;
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  cursor:pointer;
+
+  transition:0.3s;
+}
+*/
+
+/* Standardized via index.css:
+.back-btn:hover{
+
+  background:#00bfff;
+
+  color:#05071d;
+}
+*/
+
+/* ================= WELCOME ================= */
+
+.topbar h3{
+
+  font-size:16px;
+
+  font-weight:600;
+
+  color:white;
+}
+
+/* ================= RIGHT ================= */
+
+.topbar-right{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:12px;
+}
+
+/* ================= BELL ================= */
+
+.icon-box{
+
+  width:34px;
+
+  height:34px;
+
+  border-radius:50%;
+
+  background:#10215f;
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  cursor:pointer;
+}
+
+/* Standardized via index.css:
+.top-icon{
+
+  font-size:14px;
+
+  color:#00bfff;
+}
+*/
+
+/* ================= PROFILE ICON ================= */
+
+.profile-circle{
+
+  width:36px;
+
+  height:36px;
+
+  border-radius:50%;
+
+  background:#10215f;
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  color:#00bfff;
+
+  font-size:13px;
+
+  font-weight:600;
+}
+
+/* ================= PROFILE CONTENT ================= */
+
+.profile-content{
+  padding:28px 36px 40px;
+  flex:1;
+  min-width:0;
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.profile-content h1{
+
+  font-size:34px;
+
+  margin-bottom:24px;
+  width:100%;
+  max-width:960px;
+}
+
+/* ================= PROFILE CARD ================= */
+
+.profile-card{
+
+  width:100%;
+
+  max-width:960px;
+
+  background:#0b1336;
+
+  border-radius:24px;
+
+  padding:32px;
+
+  border:
+  1px solid rgba(255,255,255,0.05);
+}
+
+/* ================= HEADER ================= */
+
+.profile-header{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:18px;
+
+  margin-bottom:30px;
+
+  padding-bottom:24px;
+
+  border-bottom:
+  1px solid rgba(255,255,255,0.05);
+  min-width:0;
+}
+
+/* ================= BIG PROFILE ================= */
+
+.big-profile-circle{
+
+  width:72px;
+
+  height:72px;
+
+  border-radius:50%;
+
+  background:
+  linear-gradient(
+    135deg,
+    #1da1ff,
+    #3d7eff
+  );
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  color:white;
+
+  font-size:28px;
+
+  font-weight:700;
+}
+
+/* ================= NAME ================= */
+
+.profile-header h2{
+
+  font-size:22px;
+
+  margin-bottom:4px;
+  overflow-wrap:anywhere;
+}
+
+.profile-header p{
+
+  color:#9ca3c8;
+
+  font-size:14px;
+}
+
+/* ================= FORM GRID ================= */
+
+.profile-form-grid{
+
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:20px;
+}
+
+.full-width{
+  grid-column:1 / -1;
+}
+
+.location-row{
+  display:flex;
+  gap:16px;
+  margin-bottom:16px;
+}
+
+.location-row .input-box{
+  flex:1;
+  min-width:0;
+}
+
+.track-btn{
+  min-width:180px;
+  height:52px;
+  border:none;
+  border-radius:14px;
+  background:linear-gradient(to right, #1da1ff, #3d7eff);
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  flex-shrink:0;
+}
+
+.track-btn:hover{
+  transform:translateY(-1px);
+}
+
+.profile-map{
+  width:100%;
+  height:280px;
+  border:none;
+  border-radius:18px;
+  margin-top:4px;
+}
+
+/* ================= FORM GROUP ================= */
+
+.form-group{
+  display:flex;
+  flex-direction:column;
+}
+
+.form-group label{
+
+  margin-bottom:8px;
+
+  font-size:14px;
+
+  font-weight:500;
+
+  color:#dce3ff;
+}
+
+/* ================= INPUT BOX ================= */
+
+.input-box{
+
+  width:100%;
+
+  height:52px;
+
+  background:#111c4f;
+
+  border:
+  1px solid rgba(255,255,255,0.05);
+
+  border-radius:14px;
+
+  display:flex;
+
+  align-items:center;
+
+  padding:0 16px;
+
+  transition:0.3s;
+  min-width:0;
+}
+
+.input-box:focus-within{
+
+  border-color:#00bfff;
+}
+
+/* ================= ICON ================= */
+
+.input-icon{
+
+  color:#00bfff;
+
+  font-size:14px;
+
+  margin-right:12px;
+}
+
+/* ================= INPUT ================= */
+
+.input-box input,
+.gender-select{
+
+  flex:1;
+
+  background:transparent;
+
+  border:none;
+
+  outline:none;
+
+  color:white;
+
+  font-size:14px;
+  min-width:0;
+}
+
+/* ================= SELECT ================= */
+
+.gender-select option{
+
+  background:#111c4f;
+
+  color:white;
+}
+
+/* ================= BUTTON ================= */
+
+.profile-buttons{
+
+  margin-top:28px;
+
+  display:flex;
+
+  justify-content:center;
+}
+
+.save-btn{
+
+  width:200px;
+
+  height:48px;
+
+  border:none;
+
+  border-radius:14px;
+
+  background:
+  linear-gradient(
+    to right,
+    #1da1ff,
+    #3d7eff
+  );
+
+  color:white;
+
+  font-size:15px;
+
+  font-weight:600;
+
+  cursor:pointer;
+
+  transition:0.3s;
+}
+
+.save-btn:hover{
+
+  transform:translateY(-2px);
+}
+
+/* ================= NOTIFICATION ================= */
+
+/* Standardized via index.css:
+.notification-popup{
+
+  position:absolute;
+
+  top:70px;
+
+  right:20px;
+
+  width:300px;
+
+  background:#09154a;
+
+  border:
+  1px solid rgba(255,255,255,0.06);
+
+  border-radius:20px;
+
+  padding:20px;
+
+  z-index:999;
+
+  box-shadow:
+  0 10px 30px rgba(0,0,0,0.35);
+}
+*/
+
+.notification-popup h3{
+
+  font-size:18px;
+
+  margin-bottom:16px;
+}
+
+.notification-item{
+
+  background:#111f5c;
+
+  border-radius:14px;
+
+  padding:14px;
+
+  margin-bottom:12px;
+
+  font-size:14px;
+
+  line-height:1.5;
+}
+
+.notification-item:last-child{
+  margin-bottom:0;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:900px){
+
+  .sidebar{
+    display:none;
+  }
+
+  .profile-form-grid{
+    grid-template-columns:1fr;
+  }
+
+  .full-width{
+    grid-column:1;
+  }
+
+  .location-row{
+    flex-direction:column;
+  }
+
+  .track-btn{
+    width:100%;
+    min-width:0;
+  }
+
+  .profile-card{
+    padding:24px;
+  }
+
+  .profile-content h1{
+    font-size:28px;
+  }
+}

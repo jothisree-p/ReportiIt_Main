@@ -1,0 +1,487 @@
+body{
+  background:#05071d;
+  overflow:hidden;
+}
+
+/* ================= MAIN ================= */
+
+.dashboard-container{
+  width:100vw;
+  height:100vh;
+  display:flex;
+  background:#05071d;
+  color:white;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+  width:280px;
+  height:100vh;
+  background:#070b24;
+  border-right:1px solid rgba(255,255,255,0.05);
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  padding:25px 0;
+}
+
+.sidebar-top{
+  width:100%;
+}
+
+/* ================= LOGO ================= */
+
+.sidebar-logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:0 28px;
+  font-size:32px;
+  font-weight:700;
+  margin-bottom:40px;
+  color:white;
+}
+
+.logo-icon{
+  color:#00bfff;
+  font-size:38px;
+}
+
+.highlight{
+  color:#00bfff;
+}
+
+/* ================= PANEL ================= */
+
+.panel-text{
+  padding:0 28px;
+  margin-bottom:22px;
+  color:#7d85b5;
+  font-size:14px;
+  letter-spacing:1px;
+}
+
+/* ================= MENU ================= */
+
+.sidebar-menu{
+  list-style:none;
+}
+
+.sidebar-menu li{
+  height:58px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:0 28px;
+  cursor:pointer;
+  color:#c7c7d8;
+  transition:0.3s;
+  font-size:16px;
+}
+
+.sidebar-menu li:hover{
+  background:#0d153a;
+}
+
+.active-menu{
+  background:#111c4f;
+  border-left:4px solid #00bfff;
+  color:#00bfff !important;
+}
+
+/* ================= LOGOUT ================= */
+
+.logout{
+  height:60px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:0 28px;
+  color:#ff4d4d;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.logout:hover{
+  background:#11111130;
+}
+
+/* ================= MAIN ================= */
+
+.main-content{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ================= TOPBAR ================= */
+
+.topbar{
+  width:100%;
+  height:82px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 24px 0 8px;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+  background:#070b24;
+}
+
+.topbar-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-left:-6px;
+}
+
+.topbar-left h3{
+  font-size:20px;
+  font-weight:600;
+  margin-left:-2px;
+}
+
+/* ================= BACK BUTTON ================= */
+
+/* Standardized via index.css:
+.back-btn-modern{
+  width:40px;
+  height:40px;
+  border:none;
+  border-radius:50%;
+  background:#10215f;
+  color:#00bfff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:16px;
+  cursor:pointer;
+  transition:0.3s;
+}
+*/
+
+/* Standardized via index.css:
+.back-btn-modern:hover{
+  background:#17318b;
+  transform:translateY(-2px);
+}
+*/
+
+/* ================= TOPBAR RIGHT ================= */
+
+.topbar-right{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  position:relative;
+}
+
+/* ================= NOTIFICATION ================= */
+
+/* Standardized via index.css:
+.notification-btn{
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  background:#10215f;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  position:relative;
+  cursor:pointer;
+  transition:0.3s;
+}
+*/
+
+/* Standardized via index.css:
+.notification-btn:hover{
+  background:#17318b;
+}
+*/
+
+/* Standardized via index.css:
+.notification-icon{
+  color:white;
+  font-size:18px;
+}
+*/
+
+/* Standardized via index.css:
+.notification-dot{
+  position:absolute;
+  top:10px;
+  right:11px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#ff3b3b;
+}
+*/
+
+/* ================= PROFILE ================= */
+
+.profile-circle{
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  background:linear-gradient(
+    to right,
+    #2563eb,
+    #0ea5e9
+  );
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:white;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+/* ================= NOTIFICATION POPUP ================= */
+
+/* Standardized via index.css:
+.notification-popup{
+  position:absolute;
+  top:60px;
+  right:0;
+  width:320px;
+  background:#0b1336;
+  border-radius:18px;
+  padding:20px;
+  border:1px solid rgba(255,255,255,0.05);
+  z-index:999;
+}
+*/
+
+.notification-popup h3{
+  margin-bottom:16px;
+  font-size:20px;
+}
+
+.notification-item{
+  background:#11183f;
+  padding:14px;
+  border-radius:12px;
+  margin-bottom:12px;
+}
+
+.notification-item span{
+  display:block;
+  margin-top:6px;
+  color:#9ca3d2;
+  font-size:12px;
+}
+
+/* ================= CONTENT ================= */
+
+.dashboard-content{
+  flex:1;
+  overflow-y:auto;
+  padding:22px 28px;
+}
+
+.dashboard-content h1{
+  font-size:52px;
+  margin-bottom:24px;
+  line-height:1;
+}
+
+/* ================= STATS ================= */
+
+.stats-cards{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+}
+
+.stat-card{
+  background:#0c1435;
+  border-radius:20px;
+  padding:24px;
+  min-height:170px;
+  border:1px solid rgba(255,255,255,0.05);
+}
+
+.stat-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:35px;
+}
+
+.stat-top p{
+  color:#9ca3d2;
+  font-size:14px;
+}
+
+.stat-card h2{
+  font-size:46px;
+}
+
+/* ================= COLORS ================= */
+
+.blue{
+  color:#3b82f6;
+  font-size:20px;
+}
+
+.yellow{
+  color:#ffcc00;
+  font-size:20px;
+}
+
+.cyan{
+  color:#00d9ff;
+  font-size:20px;
+}
+
+.green{
+  color:#00d084;
+  font-size:20px;
+}
+
+/* ================= GRID ================= */
+
+.dashboard-grid{
+  width:100%;
+  margin-top:22px;
+}
+
+/* ================= CARD ================= */
+
+.dashboard-card{
+  background:#0c1435;
+  border-radius:22px;
+  padding:28px;
+  border:1px solid rgba(255,255,255,0.05);
+}
+
+.large-card{
+  min-height:auto;
+}
+
+/* ================= CARD HEADER ================= */
+
+.card-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:26px;
+}
+
+.card-header h2{
+  font-size:24px;
+}
+
+/* ================= BUTTON ================= */
+
+.view-all-btn{
+  border:none;
+  background:#10215f;
+  color:#00bfff;
+  padding:10px 18px;
+  border-radius:12px;
+  cursor:pointer;
+  transition:0.3s;
+  font-size:14px;
+}
+
+.view-all-btn:hover{
+  background:#00bfff;
+  color:#05071d;
+}
+
+/* ================= COMPLAINTS ================= */
+
+.complaints-list{
+  width:100%;
+}
+
+.complaint-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px 0;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+
+.complaint-item:last-child{
+  border-bottom:none;
+}
+
+.complaint-item h4{
+  margin-bottom:6px;
+  font-size:17px;
+}
+
+.complaint-item p{
+  color:#9ca3d2;
+  font-size:14px;
+}
+
+/* ================= STATUS ================= */
+
+.status-badge{
+  padding:8px 18px;
+  border-radius:30px;
+  font-size:13px;
+  font-weight:600;
+}
+
+.pending{
+  background:#4d3d00;
+  color:#ffcc00;
+}
+
+.in-progress{
+  background:#063b52;
+  color:#00cfff;
+}
+
+.resolved{
+  background:#033d2f;
+  color:#00d084;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1100px){
+
+  .stats-cards{
+    grid-template-columns:1fr 1fr;
+  }
+
+}
+
+@media(max-width:750px){
+
+  .sidebar{
+    display:none;
+  }
+
+  .stats-cards{
+    grid-template-columns:1fr;
+  }
+
+  .dashboard-content h1{
+    font-size:38px;
+  }
+
+  .topbar-left h3{
+    font-size:15px;
+  }
+
+  .card-header{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:14px;
+  }
+
+  .complaint-item{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:12px;
+  }
+
+}

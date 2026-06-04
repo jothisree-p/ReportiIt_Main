@@ -1,0 +1,857 @@
+body{
+
+  background:
+  radial-gradient(
+    circle at top left,
+    #10215f 0%,
+    #05071d 35%,
+    #02030f 100%
+  );
+
+  color:white;
+
+  overflow-x:hidden;
+}
+
+/* ================= MAIN ================= */
+
+.profile-container{
+
+  width:100vw;
+
+  min-height:100vh;
+
+  display:flex;
+
+  color:white;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+
+  width:260px;
+
+  background:
+  rgba(5,10,35,0.96);
+
+  border-right:
+  1px solid rgba(255,255,255,0.08);
+
+  display:flex;
+
+  flex-direction:column;
+
+  justify-content:space-between;
+
+  padding:24px 18px;
+}
+
+.sidebar-top{
+
+  width:100%;
+}
+
+/* ================= LOGO ================= */
+
+.sidebar-logo{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:12px;
+
+  font-size:30px;
+
+  font-weight:700;
+
+  margin-bottom:35px;
+}
+
+.logo-icon{
+
+  color:#00bfff;
+
+  font-size:34px;
+}
+
+.highlight{
+
+  color:#00bfff;
+}
+
+/* ================= PANEL ================= */
+
+.panel-text{
+
+  color:#8f9bb3;
+
+  font-size:13px;
+
+  letter-spacing:1px;
+
+  margin-bottom:22px;
+}
+
+/* ================= MENU ================= */
+
+.sidebar-menu{
+
+  list-style:none;
+}
+
+.sidebar-menu li{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:14px;
+
+  padding:15px;
+
+  border-radius:16px;
+
+  margin-bottom:12px;
+
+  cursor:pointer;
+
+  transition:0.3s;
+
+  color:#c7c7d8;
+
+  font-size:15px;
+}
+
+.sidebar-menu li:hover{
+
+  background:#11183f;
+}
+
+.active-menu{
+
+  background:
+  linear-gradient(
+    to right,
+    #2563eb,
+    #0ea5e9
+  );
+
+  color:white !important;
+}
+
+/* ================= LOGOUT ================= */
+
+.logout{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:10px;
+
+  color:#ff4d67;
+
+  cursor:pointer;
+
+  font-size:17px;
+
+  padding:15px;
+
+  border-radius:16px;
+
+  transition:0.3s;
+}
+
+.logout:hover{
+
+  background:#11183f;
+}
+
+/* ================= MAIN CONTENT ================= */
+
+.main-content{
+
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  overflow-y:auto;
+}
+
+/* ================= TOPBAR ================= */
+
+.topbar{
+
+  height:85px;
+
+  border-bottom:
+  1px solid rgba(255,255,255,0.08);
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  padding:0 35px 0 18px;
+}
+
+/* ================= TOPBAR LEFT ================= */
+
+.topbar-left{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:16px;
+
+  margin-left:-6px;
+}
+
+.topbar-left h3{
+
+  font-size:20px;
+
+  font-weight:500;
+}
+
+/* ================= NEW BACK BUTTON ================= */
+
+/* Standardized via index.css:
+.statistics-back-btn{
+
+  width:42px;
+
+  height:42px;
+
+  border:none;
+
+  border-radius:50%;
+
+  background:#11183f;
+
+  color:white;
+
+  cursor:pointer;
+
+  font-size:16px;
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  transition:0.3s;
+}
+*/
+
+/* Standardized via index.css:
+.statistics-back-btn:hover{
+
+  background:#17245f;
+}
+*/
+
+/* ================= RIGHT ================= */
+
+.topbar-right{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:18px;
+
+  position:relative;
+}
+
+/* ================= PROFILE ================= */
+
+.profile-circle{
+
+  width:44px;
+
+  height:44px;
+
+  border-radius:50%;
+
+  background:
+  linear-gradient(
+    to right,
+    #2563eb,
+    #0ea5e9
+  );
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  font-weight:600;
+
+  cursor:pointer;
+}
+
+/* ================= NOTIFICATION ================= */
+
+.profile-notification-box{
+
+  width:42px;
+
+  height:42px;
+
+  border-radius:50%;
+
+  background:#11183f;
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  position:relative;
+
+  cursor:pointer;
+
+  transition:0.3s;
+}
+
+.profile-notification-box:hover{
+
+  background:#17245f;
+}
+
+/* ================= BELL ================= */
+
+.profile-bell-icon{
+
+  color:#00bfff;
+
+  font-size:15px;
+}
+
+/* ================= DOT ================= */
+
+.profile-notification-dot{
+
+  position:absolute;
+
+  top:9px;
+
+  right:10px;
+
+  width:8px;
+
+  height:8px;
+
+  border-radius:50%;
+
+  background:#ff3b3b;
+
+  border:2px solid #11183f;
+}
+
+/* ================= POPUP ================= */
+
+.profile-notification-popup{
+
+  position:absolute;
+
+  top:90px;
+
+  right:35px;
+
+  width:340px;
+
+  background:#0b1336;
+
+  border-radius:22px;
+
+  padding:20px;
+
+  border:
+  1px solid rgba(255,255,255,0.05);
+
+  box-shadow:
+  0 10px 35px rgba(0,0,0,0.35);
+
+  z-index:999;
+}
+
+/* ================= HEADER ================= */
+
+.profile-notification-header{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  margin-bottom:18px;
+}
+
+.profile-notification-header h3{
+
+  font-size:18px;
+
+  color:white;
+}
+
+.profile-notification-header span{
+
+  font-size:12px;
+
+  color:#00bfff;
+
+  font-weight:600;
+}
+
+/* ================= CARD ================= */
+
+.profile-notification-card{
+
+  display:flex;
+
+  gap:14px;
+
+  padding:14px;
+
+  border-radius:16px;
+
+  background:#11183f;
+
+  margin-bottom:14px;
+
+  transition:0.3s;
+}
+
+.profile-notification-card:hover{
+
+  background:#17245f;
+}
+
+/* ================= ICON BOX ================= */
+
+.profile-notification-left{
+
+  width:42px;
+
+  height:42px;
+
+  border-radius:14px;
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  font-size:18px;
+
+  flex-shrink:0;
+}
+
+/* ================= COLORS ================= */
+
+.blue-bg{
+
+  background:
+  rgba(0,191,255,0.15);
+}
+
+.yellow-bg{
+
+  background:
+  rgba(255,204,0,0.15);
+}
+
+.green-bg{
+
+  background:
+  rgba(0,255,136,0.15);
+}
+
+/* ================= TEXT ================= */
+
+.profile-notification-card h4{
+
+  font-size:14px;
+
+  margin-bottom:5px;
+
+  color:white;
+}
+
+.profile-notification-card p{
+
+  font-size:12px;
+
+  line-height:1.5;
+
+  color:#9ca3d2;
+}
+
+/* ================= CONTENT ================= */
+
+.profile-content{
+
+  padding:28px 36px 40px;
+  flex:1;
+  min-width:0;
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.profile-content h1{
+
+  font-size:38px;
+
+  margin-bottom:30px;
+  width:100%;
+  max-width:980px;
+}
+
+/* ================= CARD ================= */
+
+.profile-card{
+
+  background:
+  linear-gradient(
+    145deg,
+    rgba(10,16,55,0.96),
+    rgba(5,10,35,0.96)
+  );
+
+  border:
+  1px solid rgba(0,191,255,0.12);
+
+  border-radius:28px;
+
+  padding:35px;
+  width:100%;
+  max-width:980px;
+  box-sizing:border-box;
+}
+
+/* ================= HEADER ================= */
+
+.profile-header{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:25px;
+
+  margin-bottom:35px;
+  min-width:0;
+}
+
+.big-profile-circle{
+
+  width:90px;
+
+  height:90px;
+
+  border-radius:50%;
+
+  background:
+  linear-gradient(
+    to right,
+    #2563eb,
+    #0ea5e9
+  );
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  font-size:28px;
+
+  font-weight:700;
+}
+
+.profile-header h2{
+
+  font-size:30px;
+
+  margin-bottom:8px;
+  overflow-wrap:anywhere;
+}
+
+.profile-header p{
+
+  color:#8f9bb3;
+}
+
+/* ================= FORM ================= */
+
+.profile-form-grid{
+
+  display:grid;
+
+  grid-template-columns:
+  repeat(2,1fr);
+
+  gap:24px;
+}
+
+.form-group label{
+
+  display:block;
+
+  margin-bottom:10px;
+
+  color:#9ca3d2;
+
+  font-size:14px;
+}
+
+/* ================= INPUT ================= */
+
+.input-box{
+
+  height:56px;
+
+  background:#11183f;
+
+  border-radius:16px;
+
+  display:flex;
+
+  align-items:center;
+
+  padding:0 18px;
+
+  border:
+  1px solid rgba(255,255,255,0.05);
+  min-width:0;
+}
+
+.input-icon{
+
+  color:#00bfff;
+
+  margin-right:14px;
+}
+
+.input-box input{
+
+  flex:1;
+
+  background:transparent;
+
+  border:none;
+
+  outline:none;
+
+  color:white;
+
+  font-size:14px;
+  min-width:0;
+}
+
+.input-box input:disabled{
+
+  opacity:0.8;
+
+  cursor:not-allowed;
+}
+
+/* ================= LOCATION ================= */
+
+.full-width{
+
+  grid-column:1/3;
+}
+
+.location-row{
+
+  display:flex;
+
+  gap:16px;
+
+  margin-bottom:20px;
+}
+
+.location-row .input-box{
+  flex:1;
+  min-width:0;
+}
+
+/* ================= TRACK BUTTON ================= */
+
+.track-btn{
+
+  min-width:190px;
+
+  height:56px;
+
+  border:none;
+
+  border-radius:16px;
+
+  background:
+  linear-gradient(
+    to right,
+    #2563eb,
+    #0ea5e9
+  );
+
+  color:white;
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  gap:10px;
+
+  font-size:14px;
+
+  font-weight:600;
+
+  cursor:pointer;
+
+  transition:0.3s;
+}
+
+.track-btn:hover{
+
+  transform:translateY(-2px);
+}
+
+/* ================= MAP ================= */
+
+.profile-map{
+
+  width:100%;
+
+  height:300px;
+
+  border:none;
+
+  border-radius:22px;
+
+  margin-top:10px;
+}
+
+/* ================= BUTTON ================= */
+
+.profile-buttons{
+
+  margin-top:35px;
+
+  display:flex;
+
+  justify-content:flex-end;
+}
+
+.save-btn{
+
+  height:52px;
+
+  padding:0 28px;
+
+  border:none;
+
+  border-radius:16px;
+
+  background:
+  linear-gradient(
+    to right,
+    #2563eb,
+    #0ea5e9
+  );
+
+  color:white;
+
+  font-size:15px;
+
+  font-weight:600;
+
+  cursor:pointer;
+
+  transition:0.3s;
+}
+
+.save-btn:hover{
+
+  transform:translateY(-2px);
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1100px){
+
+  .profile-form-grid{
+
+    grid-template-columns:1fr;
+  }
+
+  .full-width{
+
+    grid-column:1/2;
+  }
+}
+
+@media(max-width:900px){
+
+  .location-row{
+
+    flex-direction:column;
+  }
+
+  .track-btn{
+
+    width:100%;
+  }
+
+}
+
+@media(max-width:750px){
+
+  .sidebar{
+
+    display:none;
+  }
+
+  .profile-content{
+
+    padding:20px;
+  }
+
+  .profile-card{
+
+    padding:22px;
+  }
+
+  .profile-header{
+
+    flex-direction:column;
+
+    align-items:flex-start;
+  }
+
+  .profile-content h1{
+
+    font-size:34px;
+  }
+
+  .topbar-left h3{
+
+    font-size:16px;
+  }
+}

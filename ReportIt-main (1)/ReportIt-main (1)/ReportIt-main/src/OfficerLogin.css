@@ -1,0 +1,440 @@
+body{
+  background:#05071d;
+  overflow:hidden;
+}
+
+/* ================= MAIN CONTAINER ================= */
+
+.officer-login-container{
+
+  width:100vw;
+  height:100vh;
+
+  display:flex;
+
+  background:#05071d;
+}
+
+/* ================= LEFT SIDE ================= */
+
+.officer-left{
+
+  flex:1;
+
+  position:relative;
+
+  overflow:hidden;
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+}
+
+/* ================= BACKGROUND IMAGE ================= */
+
+.bg-image{
+
+  position:absolute;
+
+  inset:0;
+
+  width:100%;
+  height:100%;
+
+  object-fit:cover;
+
+  object-position:center;
+
+  filter:
+  brightness(0.45)
+  contrast(1);
+}
+
+/* ================= DARK OVERLAY ================= */
+
+.overlay{
+
+  position:absolute;
+
+  inset:0;
+
+  background:
+  linear-gradient(
+    rgba(5,7,29,0.78),
+    rgba(5,7,29,0.78)
+  );
+}
+
+/* ================= LEFT CONTENT ================= */
+
+.left-content{
+
+  position:relative;
+
+  z-index:2;
+
+  text-align:center;
+
+  color:white;
+}
+
+/* ================= LOGO BOX ================= */
+
+.logo-box{
+
+  width:74px;
+  height:74px;
+
+  border-radius:50%;
+
+  margin:auto;
+  margin-bottom:18px;
+
+  background:
+  rgba(255,255,255,0.14);
+
+  backdrop-filter:blur(10px);
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  box-shadow:
+  0 0 24px rgba(0,0,0,0.22);
+}
+
+/* ================= LOGO ICON ================= */
+
+.logo-icon{
+
+  font-size:36px;
+
+  color:#1ec3ff;
+}
+
+/* ================= TITLE ================= */
+
+.left-content h1{
+
+  font-size:72px;
+
+  font-weight:800;
+
+  line-height:1;
+}
+
+.left-content h1 span{
+
+  color:#1ec3ff;
+}
+
+/* ================= SUBTEXT ================= */
+
+.left-content p{
+
+  margin-top:14px;
+
+  font-size:18px;
+
+  color:white;
+
+  font-weight:400;
+}
+
+/* ================= RIGHT SIDE ================= */
+
+.officer-right{
+
+  width:400px;
+
+  background:#07103a;
+
+  display:flex;
+
+  flex-direction:column;
+
+  justify-content:center;
+
+  padding:45px;
+
+  position:relative;
+}
+
+/* ================= BACK BUTTON ================= */
+
+/* Standardized via index.css:
+.back-btn{
+
+  position:absolute;
+
+  top:28px;
+  left:28px;
+
+  width:42px;
+  height:42px;
+
+  border:none;
+
+  border-radius:50%;
+
+  background:#111c4f;
+
+  color:#00bfff;
+
+  font-size:15px;
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  cursor:pointer;
+
+  transition:0.3s;
+}
+*/
+
+/* Standardized via index.css:
+.back-btn:hover{
+
+  background:#00bfff;
+
+  color:#05071d;
+}
+*/
+
+/* ================= LOGIN CARD ================= */
+
+.login-card{
+
+  width:100%;
+
+  background:#09154a;
+
+  border:
+  1px solid rgba(255,255,255,0.05);
+
+  border-radius:28px;
+
+  padding:42px 34px;
+}
+
+/* ================= HEADING ================= */
+
+.login-card h1{
+
+  color:white;
+
+  font-size:34px;
+
+  font-weight:700;
+
+  line-height:1.3;
+
+  margin-bottom:12px;
+}
+
+/* ================= PARAGRAPH ================= */
+
+.login-card p{
+
+  color:#98a3d7;
+
+  font-size:15px;
+
+  margin-bottom:34px;
+
+  line-height:1.7;
+}
+
+/* ================= LABEL ================= */
+
+.login-card label{
+
+  display:block;
+
+  color:white;
+
+  font-size:15px;
+
+  font-weight:500;
+
+  margin-bottom:10px;
+}
+
+/* ================= INPUT BOX ================= */
+
+.officer-login-container .login-card .input-box{
+
+  width:100%;
+  height:56px;
+  box-sizing:border-box;
+
+  background:#0d153a;
+
+  border:
+  1px solid rgba(255,255,255,0.05);
+
+  border-radius:14px;
+
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+
+  padding:0 14px 0 18px;
+
+  margin-bottom:24px;
+
+  position:relative;
+  overflow:hidden;
+}
+
+/* ================= INPUT ICON ================= */
+
+.officer-login-container .login-card .input-icon{
+
+  color:#00bfff;
+
+  font-size:14px;
+
+  margin-right:12px;
+  flex-shrink:0;
+}
+
+/* ================= INPUT ================= */
+
+.officer-login-container .login-card .input-box input{
+
+  flex:1;
+  min-width:0;
+  width:100%;
+
+  background:transparent;
+
+  border:none;
+
+  outline:none;
+
+  color:white;
+
+  font-size:15px;
+}
+
+.officer-login-container .login-card .input-box input::placeholder{
+
+  color:#7d85b5;
+}
+
+/* ================= PASSWORD TOGGLE ================= */
+
+.officer-login-container .login-card .password-toggle{
+
+  flex:0 0 32px;
+  width:32px;
+  height:32px;
+
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  color:#9ca3c8;
+
+  cursor:pointer;
+
+  font-size:16px;
+  margin-left:6px;
+  border:none;
+  background:transparent;
+  padding:0;
+}
+
+.officer-login-container .login-card .password-toggle:hover{
+  color:#00bfff;
+}
+
+/* ================= FORGOT PASSWORD ================= */
+
+.forgot-password{
+
+  width:100%;
+
+  text-align:right;
+
+  color:#00bfff;
+
+  font-size:14px;
+
+  cursor:pointer;
+
+  margin-top:-8px;
+
+  margin-bottom:28px;
+}
+
+/* ================= LOGIN BUTTON ================= */
+
+.login-btn{
+
+  width:100%;
+  height:56px;
+
+  border:none;
+
+  border-radius:14px;
+
+  background:
+  linear-gradient(
+    to right,
+    #2563eb,
+    #1ec3ff
+  );
+
+  color:#05071d;
+
+  font-size:17px;
+
+  font-weight:600;
+
+  cursor:pointer;
+
+  transition:0.3s;
+}
+
+.login-btn:hover{
+
+  transform:translateY(-2px);
+
+  opacity:0.95;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1100px){
+
+  .left-content h1{
+
+    font-size:70px;
+  }
+
+  .left-content p{
+
+    font-size:20px;
+  }
+}
+
+@media(max-width:900px){
+
+  .officer-left{
+    display:none;
+  }
+
+  .officer-right{
+
+    width:100%;
+  }
+}

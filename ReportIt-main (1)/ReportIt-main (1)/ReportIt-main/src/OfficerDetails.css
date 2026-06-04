@@ -1,0 +1,459 @@
+body{
+  background:#05071d;
+  overflow:hidden;
+}
+
+/* ================= MAIN PAGE ================= */
+
+.details-page{
+  width:100vw;
+  height:100vh;
+
+  display:flex;
+
+  background:#05071d;
+  color:white;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+  width:280px;
+  height:100vh;
+
+  background:#070b24;
+
+  border-right:1px solid rgba(255,255,255,0.05);
+
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+
+  padding:25px 0;
+}
+
+.sidebar-top{
+  width:100%;
+}
+
+.sidebar-logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+
+  padding:0 28px;
+
+  font-size:32px;
+  font-weight:700;
+
+  margin-bottom:40px;
+}
+
+.logo-icon{
+  color:#00bfff;
+}
+
+.highlight{
+  color:#00bfff;
+}
+
+.panel-text{
+  padding:0 28px;
+
+  color:#7d85b5;
+
+  font-size:14px;
+  letter-spacing:1px;
+
+  margin-bottom:22px;
+}
+
+.sidebar-menu{
+  list-style:none;
+}
+
+.sidebar-menu li{
+  height:58px;
+
+  display:flex;
+  align-items:center;
+  gap:14px;
+
+  padding:0 28px;
+
+  cursor:pointer;
+
+  color:#c7c7d8;
+
+  transition:0.3s;
+}
+
+.sidebar-menu li:hover{
+  background:#0d153a;
+}
+
+.active-menu{
+  background:#111c4f;
+
+  border-left:4px solid #00bfff;
+
+  color:#00bfff !important;
+}
+
+/* ================= LOGOUT ================= */
+
+.logout{
+  height:60px;
+
+  display:flex;
+  align-items:center;
+  gap:12px;
+
+  padding:0 28px;
+
+  color:#ff4d4d;
+
+  cursor:pointer;
+
+  transition:0.3s;
+}
+
+.logout:hover{
+  background:#11111130;
+}
+
+/* ================= MAIN CONTENT ================= */
+
+.main-content{
+  flex:1;
+
+  display:flex;
+  flex-direction:column;
+}
+
+/* ================= TOPBAR ================= */
+
+.topbar{
+  width:100%;
+  height:90px;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  padding:0 35px;
+
+  background:#070b24;
+
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+
+.topbar-left{
+  display:flex;
+  align-items:center;
+  gap:15px;
+}
+
+.topbar h3{
+  font-size:26px;
+  font-weight:500;
+}
+
+/* ================= BACK BUTTON ================= */
+
+/* Standardized via index.css:
+.back-btn{
+  width:50px;
+  height:50px;
+
+  border:none;
+  border-radius:50%;
+
+  background:#10215f;
+
+  color:#00bfff;
+
+  font-size:20px;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  cursor:pointer;
+
+  transition:0.3s;
+}
+*/
+
+/* Standardized via index.css:
+.back-btn:hover{
+  background:#00bfff;
+  color:#05071d;
+
+  transform:scale(1.08);
+}
+*/
+
+/* ================= PROFILE CIRCLE ================= */
+
+.profile-circle{
+  width:50px;
+  height:50px;
+
+  border-radius:50%;
+
+  background:#10215f;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  color:#00bfff;
+
+  font-size:18px;
+  font-weight:700;
+}
+
+/* ================= DETAILS CONTENT ================= */
+
+.details-content{
+  flex:1;
+
+  overflow-y:auto;
+
+  padding:28px 34px 42px;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+/* ================= PROFILE CARD ================= */
+
+.profile-card{
+  width:100%;
+  max-width:980px;
+
+  background:#0c1435;
+
+  border:1px solid rgba(255,255,255,0.05);
+
+  border-radius:18px;
+
+  padding:28px 32px;
+
+  text-align:left;
+
+  margin-bottom:24px;
+
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:24px;
+}
+
+.profile-avatar{
+  width:76px;
+  height:76px;
+
+  border-radius:50%;
+
+  background:#10215f;
+
+  margin:0;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  color:#00bfff;
+
+  font-size:28px;
+  font-weight:700;
+}
+
+.profile-card h1{
+  font-size:32px;
+  font-weight:700;
+
+  margin-bottom:6px;
+}
+
+.profile-card p{
+  color:#9ca3d2;
+
+  font-size:15px;
+
+  margin-bottom:0;
+  word-break:break-word;
+}
+
+/* ================= BUTTONS ================= */
+
+.profile-actions{
+  width:auto;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  gap:18px;
+}
+
+.edit-btn,
+.save-btn{
+  width:auto;
+  min-width:148px;
+  height:46px;
+
+  border:none;
+  border-radius:14px;
+
+  background:#19b5f1;
+
+  color:#04122e;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  gap:10px;
+
+  font-size:15px;
+  font-weight:600;
+
+  cursor:pointer;
+
+  transition:0.3s;
+}
+
+.edit-btn:hover,
+.save-btn:hover{
+  background:#36c8ff;
+
+  transform:translateY(-3px);
+}
+
+/* ================= DETAILS GRID ================= */
+
+.details-grid{
+  width:100%;
+  max-width:1100px;
+
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+
+  gap:16px;
+}
+
+/* ================= DETAIL CARD ================= */
+
+.detail-card{
+  background:#0c1435;
+
+  border:1px solid rgba(255,255,255,0.05);
+
+  border-radius:14px;
+
+  padding:18px 20px;
+  min-height:104px;
+}
+
+.detail-card span{
+  display:block;
+
+  color:#8d96c7;
+
+  font-size:13px;
+  font-weight:500;
+  letter-spacing:0;
+
+  margin-bottom:10px;
+}
+
+.detail-card h2{
+  font-size:20px;
+  font-weight:650;
+  line-height:1.35;
+
+  color:white;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+
+/* ================= INPUTS ================= */
+
+.detail-card input,
+.detail-card select{
+  width:100%;
+  height:46px;
+
+  border:none;
+  border-radius:12px;
+
+  background:#16245c;
+
+  color:white;
+
+  font-size:15px;
+
+  padding:0 18px;
+
+  outline:none;
+}
+
+.detail-card input::placeholder{
+  color:#9ca3d2;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1100px){
+
+  .details-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .profile-card{
+    grid-template-columns:auto 1fr;
+  }
+
+  .profile-actions{
+    grid-column:1 / -1;
+    justify-content:flex-start;
+  }
+}
+
+@media(max-width:850px){
+
+  .sidebar{
+    display:none;
+  }
+
+  .profile-card h1{
+    font-size:28px;
+  }
+
+  .profile-card{
+    grid-template-columns:1fr;
+    text-align:center;
+  }
+
+  .profile-avatar{
+    margin:0 auto;
+  }
+
+  .profile-actions{
+    flex-direction:column;
+  }
+
+  .edit-btn,
+  .save-btn{
+    width:100%;
+  }
+
+  .details-grid{
+    grid-template-columns:1fr;
+  }
+
+}

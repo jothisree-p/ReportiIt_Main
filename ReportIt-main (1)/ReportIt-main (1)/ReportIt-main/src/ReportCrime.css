@@ -1,0 +1,415 @@
+body{
+  background:#05071d;
+  overflow:hidden;
+}
+
+/* ================= MAIN ================= */
+
+.report-container{
+  width:100vw;
+  min-height:100vh;
+  display:flex;
+  background:#05071d;
+  color:white;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+  width:260px;
+  min-height:100vh;
+  background:#070b24;
+  border-right:1px solid rgba(255,255,255,0.05);
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  padding-top:30px;
+}
+
+.sidebar-top{
+  width:100%;
+}
+
+.sidebar-logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:0 28px;
+  font-size:28px;
+  font-weight:700;
+}
+
+.logo-icon{
+  color:#00bfff;
+  font-size:34px;
+}
+
+.highlight{
+  color:#00bfff;
+}
+
+.panel-text{
+  padding:25px 28px;
+  color:#7d85b5;
+  font-size:14px;
+  letter-spacing:1px;
+}
+
+.sidebar-menu{
+  list-style:none;
+  margin-top:20px;
+}
+
+.sidebar-menu li{
+  height:56px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:0 28px;
+  cursor:pointer;
+  color:#c7c7d8;
+  transition:0.3s;
+  font-size:17px;
+}
+
+.sidebar-menu li:hover{
+  background:#0d153a;
+}
+
+.active-menu{
+  background:#111c4f;
+  border-left:4px solid #00bfff;
+  color:#00bfff !important;
+}
+
+.logout{
+  height:60px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:0 28px;
+  color:#ff4d4d;
+  cursor:pointer;
+}
+
+.logout:hover{
+  background:#11111130;
+}
+
+/* ================= MAIN CONTENT ================= */
+
+.main-content{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+
+/* ================= TOPBAR ================= */
+
+.report-topbar{
+  width:100%;
+  height:82px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 24px 0 8px;
+  background:#070b24;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+
+.report-topbar-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-left:-4px;
+}
+
+/* Standardized via index.css:
+.report-back-btn{
+  width:42px;
+  height:42px;
+  border:none;
+  border-radius:50%;
+  background:#10215f;
+  color:#00bfff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:16px;
+  cursor:pointer;
+  transition:0.3s;
+}
+*/
+
+/* Standardized via index.css:
+.report-back-btn:hover{
+  background:#17318b;
+  transform:translateY(-2px);
+}
+*/
+
+.report-topbar-left h3{
+  font-size:21px;
+  font-weight:600;
+  color:white;
+}
+
+.report-topbar-right{
+  display:flex;
+  align-items:center;
+  gap:18px;
+}
+
+/* Standardized via index.css:
+.report-icon-box{
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  background:#10215f;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  position:relative;
+  cursor:pointer;
+  transition:0.3s;
+}
+*/
+
+/* Standardized via index.css:
+.report-icon-box:hover{
+  background:#17318b;
+}
+*/
+
+/* Standardized via index.css:
+.report-top-icon{
+  color:white;
+  font-size:18px;
+}
+*/
+
+/* Standardized via index.css:
+.report-notify-count{
+  position:absolute;
+  top:10px;
+  right:11px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#ff3b3b;
+}
+*/
+
+.report-profile-section{
+  padding-left:18px;
+  border-left:1px solid rgba(255,255,255,0.08);
+  cursor:pointer;
+}
+
+.report-profile-circle{
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  background:linear-gradient(
+    to right,
+    #2563eb,
+    #0ea5e9
+  );
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:white;
+  font-size:16px;
+  font-weight:700;
+}
+
+/* ================= NOTIFICATION ================= */
+
+.report-notification-popup{
+  position:absolute;
+  top:90px;
+  right:25px;
+  width:300px;
+  background:#0c1435;
+  border-radius:18px;
+  padding:20px;
+  z-index:999;
+  border:1px solid rgba(255,255,255,0.05);
+}
+
+.report-notification-popup h3{
+  margin-bottom:16px;
+}
+
+.report-notification-item{
+  background:#111c4f;
+  padding:14px;
+  border-radius:12px;
+  margin-bottom:12px;
+  font-size:14px;
+}
+
+/* ================= CONTENT ================= */
+
+.report-content{
+  padding:40px;
+  overflow-y:auto;
+}
+
+.report-content h1{
+  font-size:42px;
+  margin-bottom:35px;
+}
+
+/* ================= STEPS ================= */
+
+.steps{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  margin-bottom:45px;
+}
+
+.step{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:#0d153a;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-weight:600;
+}
+
+.active-step{
+  background:#00bfff;
+  color:black;
+}
+
+.line{
+  width:65px;
+  height:2px;
+  background:#22346d;
+  margin-top:2px;
+}
+
+.steps p{
+  color:#bdbdbd;
+}
+
+/* ================= TEXT ================= */
+
+.choose-text{
+  color:#bdbdbd;
+  margin-bottom:30px;
+  font-size:17px;
+}
+
+/* ================= CARDS ================= */
+
+.crime-cards{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:25px;
+}
+
+.crime-card{
+  height:170px;
+  background:#0b1336;
+  border:1px solid rgba(255,255,255,0.05);
+  border-radius:18px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.crime-card:hover{
+  background:#111c4f;
+  transform:translateY(-5px);
+}
+
+.crime-icon{
+  font-size:42px;
+  color:#00bfff;
+  margin-bottom:18px;
+}
+
+.crime-card h3{
+  font-size:22px;
+}
+
+/* ================= OTHER ================= */
+
+.other-box{
+  margin-top:30px;
+  display:flex;
+  gap:15px;
+}
+
+.other-box input{
+  flex:1;
+  height:55px;
+  border:none;
+  border-radius:12px;
+  padding:0 18px;
+  background:#0b1336;
+  color:white;
+  outline:none;
+}
+
+.other-box input::placeholder{
+  color:#9ca3d2;
+}
+
+.other-box button{
+  width:140px;
+  border:none;
+  border-radius:12px;
+  background:#00bfff;
+  color:black;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.other-box button:hover{
+  opacity:0.9;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1000px){
+
+  .crime-cards{
+    grid-template-columns:1fr;
+  }
+
+}
+
+@media(max-width:750px){
+
+  .sidebar{
+    display:none;
+  }
+
+  .report-content{
+    padding:25px;
+  }
+
+  .report-content h1{
+    font-size:34px;
+  }
+
+  .steps{
+    gap:10px;
+  }
+
+  .line{
+    width:30px;
+  }
+
+}

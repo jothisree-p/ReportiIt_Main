@@ -1,0 +1,308 @@
+body{
+  background:#05071d;
+  overflow:hidden;
+}
+
+/* ================= MAIN ================= */
+
+.statistics-container{
+  width:100vw;
+  height:100vh;
+  display:flex;
+  background:#05071d;
+  color:white;
+}
+
+/* ================= SIDEBAR ================= */
+
+.statistics-sidebar{
+  width:280px;
+  height:100vh;
+  background:#070b24;
+  border-right:1px solid rgba(255,255,255,0.05);
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  padding:25px 0;
+}
+
+.statistics-sidebar-top{
+  width:100%;
+}
+
+/* ================= LOGO ================= */
+
+.statistics-sidebar-logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:0 28px;
+  margin-bottom:40px;
+  color:white;
+}
+
+.statistics-sidebar-logo span{
+  font-size:32px;
+  font-weight:700;
+}
+
+.statistics-logo-icon{
+  color:#00bfff;
+  font-size:38px;
+  flex-shrink:0;
+}
+
+.statistics-highlight{
+  color:#00bfff;
+}
+
+/* ================= PANEL TEXT ================= */
+
+.statistics-panel-text{
+  padding:0 28px;
+  margin-bottom:22px;
+  color:#7d85b5;
+  font-size:14px;
+  letter-spacing:1px;
+}
+
+/* ================= SIDEBAR MENU ================= */
+
+.statistics-sidebar-menu{
+  list-style:none;
+}
+
+.statistics-sidebar-menu li{
+  height:58px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:0 28px;
+  cursor:pointer;
+  color:#c7c7d8;
+  transition:0.3s;
+  font-size:16px;
+  font-weight:500;
+}
+
+.statistics-sidebar-menu li:hover{
+  background:#0d153a;
+}
+
+.statistics-sidebar-menu li svg{
+  font-size:16px;
+}
+
+/* ================= ACTIVE MENU ================= */
+
+.statistics-active-menu{
+  background:#111c4f;
+  border-left:4px solid #00bfff;
+  color:#00bfff !important;
+}
+
+/* ================= LOGOUT ================= */
+
+.statistics-logout{
+  height:60px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:0 28px;
+  color:#ff4d4d;
+  cursor:pointer;
+  font-size:16px;
+  font-weight:500;
+}
+
+.statistics-logout:hover{
+  background:#11111130;
+}
+
+/* ================= MAIN CONTENT ================= */
+
+.statistics-main-content{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ================= TOPBAR ================= */
+
+.statistics-topbar{
+  height:90px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 35px;
+  background:#070b24;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+
+.statistics-topbar-left{
+  display:flex;
+  align-items:center;
+  gap:15px;
+}
+
+.statistics-topbar-left h3{
+  font-size:26px;
+  font-weight:600;
+}
+
+.statistics-topbar-right{
+  display:flex;
+  align-items:center;
+  gap:18px;
+}
+
+/* ================= BACK BUTTON ================= */
+
+/* Standardized via index.css:
+.statistics-back-btn{
+  width:50px;
+  height:50px;
+  border:none;
+  border-radius:50%;
+  background:#10215f;
+  color:#00bfff;
+  font-size:18px;
+  cursor:pointer;
+  transition:0.3s;
+}
+*/
+
+/* Standardized via index.css:
+.statistics-back-btn:hover{
+  background:#00bfff;
+  color:#05071d;
+}
+*/
+
+/* ================= PROFILE ================= */
+
+.statistics-profile-circle{
+  width:50px;
+  height:50px;
+  border-radius:50%;
+  background:#10215f;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:#00bfff;
+  font-weight:700;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.statistics-profile-circle:hover{
+  background:#00bfff;
+  color:#05071d;
+}
+
+/* ================= EXPORT BUTTON ================= */
+
+.statistics-export-btn{
+  height:48px;
+  padding:0 20px;
+  border:none;
+  border-radius:12px;
+  background:#00bfff;
+  color:#05071d;
+  font-size:15px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.statistics-export-btn:hover{
+  transform:translateY(-2px);
+}
+
+/* ================= CONTENT ================= */
+
+.statistics-content{
+  flex:1;
+  padding:35px;
+  overflow-y:auto;
+}
+
+.statistics-content h1{
+  font-size:42px;
+  margin-bottom:30px;
+}
+
+/* ================= STATS GRID ================= */
+
+.statistics-stats-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:20px;
+  margin-bottom:30px;
+}
+
+.statistics-card{
+  background:#0c1435;
+  border-radius:20px;
+  padding:28px;
+  border:1px solid rgba(255,255,255,0.05);
+}
+
+.statistics-card p{
+  color:#9ca3d2;
+  margin-bottom:14px;
+  font-size:16px;
+}
+
+.statistics-card h2{
+  font-size:38px;
+}
+
+/* ================= CHART GRID ================= */
+
+.statistics-chart-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:25px;
+}
+
+.statistics-chart-box{
+  background:#0c1435;
+  border-radius:22px;
+  padding:25px;
+  border:1px solid rgba(255,255,255,0.05);
+}
+
+.statistics-chart-box h3{
+  margin-bottom:20px;
+  font-size:24px;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1100px){
+
+  .statistics-stats-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .statistics-chart-grid{
+    grid-template-columns:1fr;
+  }
+
+}
+
+@media(max-width:750px){
+
+  .statistics-sidebar{
+    display:none;
+  }
+
+  .statistics-stats-grid{
+    grid-template-columns:1fr;
+  }
+
+}

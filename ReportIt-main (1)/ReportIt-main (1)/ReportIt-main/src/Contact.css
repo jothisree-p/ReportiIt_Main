@@ -1,0 +1,546 @@
+body{
+  background:#05071d;
+  overflow-x:hidden;
+}
+
+.contact-container{
+  width:100%;
+  min-height:100vh;
+  background:#05071d;
+  color:white;
+}
+
+/* ================= NAVBAR ================= */
+
+.navbar{
+
+  width:100%;
+
+  height:90px;
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  padding:0 60px;
+
+  background:#060b25;
+
+  position:sticky;
+
+  top:0;
+
+  z-index:1000;
+
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+
+/* ================= LOGO ================= */
+
+.logo{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:12px;
+
+  text-decoration:none;
+}
+
+.logo-icon{
+
+  color:#00bfff;
+
+  font-size:42px;
+}
+
+.logo-text{
+
+  color:white;
+
+  font-size:38px;
+
+  font-weight:800;
+}
+
+.logo-highlight{
+  color:#00bfff;
+}
+
+/* ================= NAV LINKS ================= */
+
+.nav-right{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:40px;
+}
+
+.nav-links{
+
+  display:flex;
+
+  gap:35px;
+
+  list-style:none;
+}
+
+.nav-links a{
+
+  text-decoration:none;
+
+  color:#d6d6d6;
+
+  font-size:17px;
+
+  font-weight:500;
+
+  transition:0.3s;
+}
+
+.nav-links a:hover{
+  color:#00bfff;
+}
+
+/* ================= ADMIN BUTTON ================= */
+
+.admin-login-btn{
+
+  padding:14px 28px;
+
+  border-radius:40px;
+
+  border:2px solid #00bfff;
+
+  background:transparent;
+
+  color:white;
+
+  font-size:16px;
+
+  font-weight:600;
+
+  cursor:pointer;
+
+  transition:0.3s;
+}
+
+.admin-login-btn:hover{
+
+  background:#00bfff;
+
+  color:#05071d;
+
+  transform:translateY(-2px);
+}
+
+/* ================= CONTACT SECTION ================= */
+
+.contact-section{
+
+  width:100%;
+
+  min-height:90vh;
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  gap:70px;
+
+  padding:70px;
+
+  background:
+  linear-gradient(
+    to right,
+    #05081f,
+    #09134a
+  );
+}
+
+/* ================= LEFT ================= */
+
+.contact-left{
+
+  flex:1;
+}
+
+.contact-left h1{
+
+  font-size:72px;
+
+  margin-bottom:20px;
+
+  font-weight:800;
+}
+
+.contact-left h1 span{
+
+  color:#00bfff;
+
+  margin-left:10px;
+}
+
+.contact-left p{
+
+  color:#c7c7c7;
+
+  font-size:18px;
+
+  line-height:1.9;
+
+  margin-bottom:40px;
+
+  max-width:600px;
+}
+
+/* ================= FORM ================= */
+
+.contact-form{
+
+  width:100%;
+}
+
+.input-box{
+
+  width:100%;
+
+  height:64px;
+
+  background:rgba(255,255,255,0.05);
+
+  border:1px solid rgba(255,255,255,0.08);
+
+  border-radius:18px;
+
+  display:flex;
+
+  align-items:center;
+
+  padding:0 22px;
+
+  margin-bottom:24px;
+}
+
+.input-icon{
+
+  color:#00bfff;
+
+  font-size:18px;
+
+  margin-right:16px;
+}
+
+.input-box input{
+
+  flex:1;
+
+  background:transparent;
+
+  border:none;
+
+  outline:none;
+
+  color:white;
+
+  font-size:16px;
+}
+
+.input-box input::placeholder{
+
+  color:#b8b8b8;
+}
+
+/* ================= TEXTAREA ================= */
+
+.contact-form textarea{
+
+  width:100%;
+
+  background:rgba(255,255,255,0.05);
+
+  border:1px solid rgba(255,255,255,0.08);
+
+  border-radius:18px;
+
+  padding:22px;
+
+  color:white;
+
+  outline:none;
+
+  resize:none;
+
+  font-size:16px;
+
+  margin-bottom:28px;
+}
+
+.contact-form textarea::placeholder{
+
+  color:#b8b8b8;
+}
+
+/* ================= BUTTON ================= */
+
+.send-btn{
+
+  padding:16px 34px;
+
+  border:none;
+
+  border-radius:14px;
+
+  background:
+  linear-gradient(
+    to right,
+    #4c6fff,
+    #1da1ff
+  );
+
+  color:white;
+
+  font-size:17px;
+
+  font-weight:600;
+
+  cursor:pointer;
+
+  transition:0.3s;
+}
+
+.send-btn:hover{
+
+  transform:translateY(-3px);
+
+  box-shadow:0 12px 25px rgba(0,191,255,0.3);
+}
+
+/* ================= RIGHT ================= */
+
+.contact-right{
+
+  flex:1;
+}
+
+.contact-image{
+
+  width:100%;
+
+  border-radius:28px;
+
+  margin-bottom:35px;
+
+  box-shadow:0 20px 50px rgba(0,0,0,0.4);
+}
+
+/* ================= CONTACT CARDS ================= */
+
+.contact-cards{
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:22px;
+}
+
+.contact-card{
+
+  background:#0b174d;
+
+  border:1px solid rgba(255,255,255,0.06);
+
+  border-radius:22px;
+
+  padding:22px 24px;
+
+  display:flex;
+
+  align-items:center;
+
+  gap:20px;
+
+  transition:0.3s;
+}
+
+.contact-card:hover{
+
+  transform:translateY(-5px);
+
+  box-shadow:0 12px 30px rgba(0,0,0,0.35);
+}
+
+.contact-card-icon{
+
+  width:65px;
+
+  height:65px;
+
+  border-radius:50%;
+
+  background:#13246d;
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  color:#00bfff;
+
+  padding:18px;
+
+  font-size:26px;
+}
+
+.contact-card h3{
+
+  font-size:26px;
+
+  margin-bottom:6px;
+}
+
+.contact-card p{
+
+  color:#d2d2d2;
+
+  font-size:16px;
+}
+
+/* ================= FOOTER ================= */
+
+.footer{
+
+  background:#04081f;
+
+  padding:80px 70px;
+
+  display:grid;
+
+  grid-template-columns:2fr 1fr 1fr 1fr;
+
+  gap:50px;
+}
+
+.footer-logo{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:12px;
+
+  font-size:38px;
+
+  font-weight:800;
+
+  margin-bottom:25px;
+}
+
+.highlight{
+  color:#00bfff;
+}
+
+.footer-box h4{
+
+  font-size:28px;
+
+  margin-bottom:25px;
+}
+
+.footer-box p,
+.footer-box li{
+
+  color:#bcbcbc;
+
+  margin-bottom:18px;
+
+  line-height:1.8;
+
+  list-style:none;
+
+  font-size:16px;
+}
+
+.footer-box ul{
+  padding:0;
+}
+
+.footer-icon{
+
+  color:#00bfff;
+
+  margin-right:12px;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1200px){
+
+  .footer{
+
+    grid-template-columns:1fr 1fr;
+  }
+
+}
+
+@media(max-width:992px){
+
+  .contact-section{
+
+    flex-direction:column;
+
+    padding:50px 25px;
+  }
+
+  .contact-left h1{
+
+    font-size:56px;
+  }
+
+}
+
+@media(max-width:768px){
+
+  .navbar{
+
+    padding:0 20px;
+  }
+
+  .nav-links{
+    display:none;
+  }
+
+  .contact-section{
+
+    padding:50px 20px;
+  }
+
+  .footer{
+
+    grid-template-columns:1fr;
+
+
+    
+    padding:60px 25px;
+  }
+
+  .logo-text{
+
+    font-size:30px;
+  }
+
+  .contact-left h1{
+
+    font-size:44px;
+  }
+
+}

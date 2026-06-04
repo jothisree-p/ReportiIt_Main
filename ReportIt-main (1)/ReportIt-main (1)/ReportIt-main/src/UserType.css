@@ -1,0 +1,574 @@
+body{
+  background:#05071d;
+  overflow-x:hidden;
+}
+
+.user-container{
+  width:100vw;
+  min-height:100vh;
+
+  background:#05071d;
+  color:white;
+}
+
+/* ================= NAVBAR ================= */
+
+.navbar{
+
+  width:100%;
+
+  height:92px;
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  padding:0 40px;
+
+  background:#070b24;
+
+  border-bottom:
+  1px solid rgba(255,255,255,0.05);
+}
+
+/* ================= LOGO ================= */
+
+.logo{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:12px;
+
+  text-decoration:none;
+
+  min-width:max-content;
+}
+
+.logo-icon{
+
+  color:#00bfff;
+
+  font-size:42px;
+
+  flex-shrink:0;
+}
+
+.logo-text{
+
+  display:flex;
+
+  align-items:center;
+
+  font-size:34px;
+
+  font-weight:800;
+
+  line-height:1;
+
+  color:white;
+
+  letter-spacing:-1px;
+}
+
+.logo-highlight{
+
+  color:#00bfff;
+
+  margin-left:2px;
+}
+
+/* ================= RIGHT NAV ================= */
+
+.nav-right{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:38px;
+}
+
+/* ================= NAV LINKS ================= */
+
+.nav-links{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:36px;
+
+  list-style:none;
+}
+
+.nav-links li{
+
+  display:flex;
+
+  align-items:center;
+}
+
+.nav-links a{
+
+  text-decoration:none;
+
+  color:#d6d6d6;
+
+  font-size:17px;
+
+  font-weight:500;
+
+  transition:0.3s;
+
+  white-space:nowrap;
+}
+
+.nav-links a:hover{
+
+  color:#00bfff;
+}
+
+/* ================= ADMIN BUTTON ================= */
+
+.admin-login-btn{
+
+  height:54px;
+
+  padding:0 28px;
+
+  border:2px solid #00bfff;
+
+  border-radius:40px;
+
+  background:transparent;
+
+  color:white;
+
+  font-size:17px;
+
+  font-weight:600;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  gap:10px;
+
+  cursor:pointer;
+
+  transition:0.3s;
+
+  white-space:nowrap;
+
+  min-width:max-content;
+}
+
+.admin-login-btn:hover{
+
+  background:#00bfff;
+
+  color:#05071d;
+}
+
+/* ================= BACK BUTTON ================= */
+
+/* Standardized via index.css:
+.back-btn{
+  position:absolute;
+
+  top:125px;
+  left:40px;
+
+  width:48px;
+  height:48px;
+
+  border:none;
+  border-radius:50%;
+
+  background:#10215f;
+
+  color:#00bfff;
+
+  font-size:18px;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  cursor:pointer;
+
+  transition:0.3s;
+}
+*/
+
+/* Standardized via index.css:
+.back-btn:hover{
+  background:#00bfff;
+
+  color:#05071d;
+
+  transform:scale(1.08);
+}
+*/
+
+/* ================= USER SECTION ================= */
+
+.user-section{
+  width:100%;
+  min-height:850px;
+
+  padding:60px 70px;
+
+  background:
+  linear-gradient(
+    to right,
+    #05081f,
+    #0a1140
+  );
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+/* ================= TOP LOGO ================= */
+
+.top-logo{
+  display:flex;
+  align-items:center;
+  gap:14px;
+
+  font-size:42px;
+  font-weight:800;
+
+  margin-bottom:22px;
+
+  color:white;
+}
+
+/* Standardized via index.css:
+.top-icon{
+  color:#00bfff;
+
+  font-size:42px !important;
+}
+*/
+
+/* ================= TITLE ================= */
+
+.user-section h1{
+  font-size:52px;
+  font-weight:700;
+
+  margin-bottom:55px;
+
+  text-align:center;
+}
+
+/* ================= USER CARDS ================= */
+
+.user-cards{
+  width:100%;
+
+  display:flex;
+  justify-content:center;
+  align-items:stretch;
+
+  gap:30px;
+}
+
+.card-link{
+  text-decoration:none;
+  color:white;
+}
+
+/* ================= USER CARD ================= */
+
+.user-card{
+  width:340px;
+  min-height:560px;
+
+  background:#0c1435;
+
+  border:
+  1px solid rgba(255,255,255,0.05);
+
+  border-radius:22px;
+
+  padding:35px 30px;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+
+  position:relative;
+
+  overflow:hidden;
+
+  transition:0.35s ease;
+}
+
+/* ================= HOVER EFFECT ================= */
+
+.user-card:hover{
+
+  transform:
+  translateY(-12px)
+  scale(1.02);
+
+  border:
+  1px solid rgba(0,191,255,0.6);
+
+  background:
+  linear-gradient(
+    180deg,
+    #101c52,
+    #0c1435
+  );
+
+  box-shadow:
+  0 0 25px rgba(0,191,255,0.25),
+  0 0 60px rgba(0,191,255,0.08);
+
+  cursor:pointer;
+}
+
+/* ================= USER IMAGE ================= */
+
+.user-image{
+  width:150px;
+  height:150px;
+
+  object-fit:contain;
+
+  margin-bottom:25px;
+
+  transition:0.35s ease;
+}
+
+.user-card:hover .user-image{
+  transform:scale(1.08);
+}
+
+/* ================= ADMIN ICON ================= */
+
+.admin-circle{
+  width:140px;
+  height:140px;
+
+  border-radius:50%;
+
+  background:
+  rgba(35,92,255,0.2);
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  margin-bottom:25px;
+
+  transition:0.35s ease;
+}
+
+.user-card:hover .admin-circle{
+
+  transform:scale(1.08);
+
+  background:
+  rgba(0,191,255,0.18);
+
+}
+
+.admin-shield{
+  font-size:70px;
+
+  color:#00bfff;
+}
+
+/* ================= CARD TITLE ================= */
+
+.user-card h2{
+  font-size:32px;
+
+  margin-bottom:30px;
+
+  min-height:50px;
+
+  display:flex;
+  align-items:center;
+
+  transition:0.35s ease;
+}
+
+.user-card:hover h2{
+  color:#00bfff;
+}
+
+/* ================= POINTS ================= */
+
+.points{
+  width:100%;
+
+  flex:1;
+}
+
+.points p{
+  display:flex;
+  gap:12px;
+
+  margin-bottom:18px;
+
+  color:#bdbdbd;
+
+  line-height:1.8;
+
+  font-size:15px;
+
+  transition:0.35s ease;
+}
+
+.user-card:hover .points p{
+  color:#f2f2f2;
+}
+
+/* ================= CHECK ICON ================= */
+
+.check-icon{
+  color:#00d4ff;
+
+  margin-top:5px;
+
+  min-width:18px;
+}
+
+/* ================= FOOTER ================= */
+
+.footer{
+  width:100%;
+
+  display:grid;
+
+  grid-template-columns:
+  2fr 1fr 1fr 1fr;
+
+  gap:50px;
+
+  padding:60px 70px;
+
+  background:#05081f;
+}
+
+.footer-box{
+  display:flex;
+  flex-direction:column;
+
+  align-items:flex-start;
+
+  text-align:left;
+}
+
+/* ================= FOOTER LOGO ================= */
+
+.footer-logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+
+  margin-bottom:22px;
+
+  font-size:34px;
+  font-weight:800;
+}
+
+.footer-logo .logo-icon{
+  font-size:34px !important;
+}
+
+/* ================= FOOTER TEXT ================= */
+
+.footer-box h4{
+  margin-bottom:22px;
+
+  font-size:19px;
+  font-weight:600;
+}
+
+.footer-box p,
+.footer-box li{
+  color:#bdbdbd;
+
+  margin-bottom:14px;
+
+  line-height:1.8;
+
+  list-style:none;
+
+  font-size:14px;
+
+  cursor:pointer;
+
+  transition:0.3s;
+}
+
+.footer-box li:hover{
+  color:#00bfff;
+}
+
+.footer-icon{
+  color:#00bfff;
+
+  margin-right:10px;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1100px){
+
+  .nav-links{
+    display:none;
+  }
+
+  .user-cards{
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .user-section{
+    padding:50px 25px;
+  }
+
+  .user-section h1{
+    font-size:40px;
+  }
+
+  .footer{
+    grid-template-columns:1fr;
+
+    padding:50px 25px;
+  }
+
+  .logo{
+    font-size:38px;
+  }
+
+  .logo-icon{
+    font-size:38px !important;
+  }
+
+  .top-logo{
+    font-size:48px;
+  }
+
+  /* Standardized via index.css:
+.top-icon{
+    font-size:48px !important;
+  }
+*/
+
+}
