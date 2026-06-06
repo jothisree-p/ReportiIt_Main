@@ -22,15 +22,42 @@ public class LocationService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     public ReverseGeocodeResponse reverseGeocode(BigDecimal lat, BigDecimal lon) {
+        if (lat == null || lon == null) {
+            return ReverseGeocodeResponse.builder()
+                    .latitude(lat)
+                    .longitude(lon)
+                    .displayName("Location unavailable")
+                    .build();
+        }
+
         String url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon=" + lon;
-        @SuppressWarnings("unchecked")
-        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
-        String displayName = response != null ? (String) response.get("display_name") : null;
-        return ReverseGeocodeResponse.builder()
-                .latitude(lat)
-                .longitude(lon)
-                .displayName(displayName)
-                .build();
+        try {
+            org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+            headers.set("User-Agent", "ReportItApp/1.0 (contact: support@reportit.com)");
+            org.springframework.http.HttpEntity<Void> entity = new org.springframework.http.HttpEntity<>(headers);
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> response = restTemplate.exchange(
+                    url,
+                    org.springframework.http.HttpMethod.GET,
+                    entity,
+                    Map.class
+            ).getBody();
+
+            Object displayNameValue = response != null ? response.get("display_name") : null;
+            String displayName = displayNameValue != null ? String.valueOf(displayNameValue) : null;
+            return ReverseGeocodeResponse.builder()
+                    .latitude(lat)
+                    .longitude(lon)
+                    .displayName(displayName != null && !displayName.isBlank() ? displayName : lat + ", " + lon)
+                    .build();
+        } catch (Exception e) {
+            return ReverseGeocodeResponse.builder()
+                    .latitude(lat)
+                    .longitude(lon)
+                    .displayName(lat + ", " + lon)
+                    .build();
+        }
     }
 
     public LocationResponse getComplaintLocation(Long complaintId) {

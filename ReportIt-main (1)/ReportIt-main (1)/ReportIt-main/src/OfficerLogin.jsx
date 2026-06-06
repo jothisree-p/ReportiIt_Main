@@ -12,9 +12,10 @@ import {
 } from "react-icons/fa";
 
 import { useNavigate } from "react-router-dom";
-import { login } from "./api/auth";
+import { login, sendOtp } from "./api/auth";
 import { ApiError } from "./api/http";
 import { setCurrentOfficer, setCurrentOfficerByEmail } from "./officerSession";
+import { showAppPopup } from "./appPopups";
 
 const OfficerLogin = () => {
 
@@ -30,6 +31,15 @@ const OfficerLogin = () => {
       password: "",
 
     });
+
+  const [sendingOtp, setSendingOtp] =
+    useState(false);
+
+  const [showForgotPopup, setShowForgotPopup] =
+    useState(false);
+
+  const [forgotEmail, setForgotEmail] =
+    useState("");
 
   /* ================= HANDLE CHANGE ================= */
 
@@ -86,12 +96,44 @@ const OfficerLogin = () => {
       });
       // Enrich profile in background (do not block login)
       setCurrentOfficerByEmail(formData.email).catch(() => {});
-      alert("Officer Login Successful!");
+      showAppPopup("Officer Login Successful!");
       navigate("/officer-dashboard");
     } catch (err) {
       alert(err instanceof ApiError ? err.message : "Login failed");
     }
 
+  };
+
+  const handleForgotPassword = async () => {
+    if (sendingOtp) return;
+
+    const email = forgotEmail.trim();
+
+    if (!email) {
+      alert("Enter official email to receive OTP");
+      return;
+    }
+
+    if (!email.endsWith("@reportit.com")) {
+      alert("Officer email must end with @reportit.com");
+      return;
+    }
+
+    try {
+      setSendingOtp(true);
+      const result = await sendOtp(email, "FORGOT_PASSWORD");
+      alert(result.message || "OTP sent successfully!");
+      if (!result.cooldown) {
+        setShowForgotPopup(false);
+        navigate("/verify-otp", {
+          state: { email, returnTo: "/officer-login" },
+        });
+      }
+    } catch (err) {
+      alert(err instanceof ApiError ? err.message : "Failed to send OTP");
+    } finally {
+      setSendingOtp(false);
+    }
   };
 
   return (
@@ -230,7 +272,15 @@ Report Crimes & Suspicious Activities
 
             <div className="forgot-password">
 
-              Forgot Password?
+              <span
+                onClick={() => {
+                  setForgotEmail(formData.email);
+                  setShowForgotPopup(true);
+                }}
+                className={sendingOtp ? "is-disabled" : ""}
+              >
+                Forgot Password?
+              </span>
 
             </div>
 
@@ -250,6 +300,45 @@ Report Crimes & Suspicious Activities
         </div>
 
       </div>
+
+      {showForgotPopup && (
+        <div className="popup-overlay">
+          <div className="forgot-popup">
+            <h3>Forgot Password</h3>
+            <p>Enter official email to receive OTP</p>
+
+            <div className="input-box">
+              <FaEnvelope className="input-icon" />
+              <input
+                type="email"
+                placeholder="Enter official email"
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+              />
+            </div>
+
+            <div className="popup-buttons">
+              <button
+                type="button"
+                className="cancel-btn"
+                onClick={() => setShowForgotPopup(false)}
+                disabled={sendingOtp}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="send-btn"
+                onClick={handleForgotPassword}
+                disabled={sendingOtp}
+              >
+                {sendingOtp ? "Sending..." : "Send OTP"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
 

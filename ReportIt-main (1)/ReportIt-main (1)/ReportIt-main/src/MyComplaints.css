@@ -413,7 +413,8 @@ body{
   minmax(140px,1.2fr)
   minmax(105px,0.8fr)
   minmax(130px,0.9fr)
-  minmax(115px,0.8fr);
+  minmax(115px,0.8fr)
+  minmax(110px,0.7fr);
 
   align-items:center;
 
@@ -444,7 +445,8 @@ body{
   minmax(140px,1.2fr)
   minmax(105px,0.8fr)
   minmax(130px,0.9fr)
-  minmax(115px,0.8fr);
+  minmax(115px,0.8fr)
+  minmax(110px,0.7fr);
 
   align-items:center;
 
@@ -470,6 +472,46 @@ body{
   line-height:1.6;
   min-width:0;
   overflow-wrap:anywhere;
+}
+
+.mycomplaints-action-group{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.mycomplaints-edit-btn,
+.mycomplaints-delete-btn{
+  width:fit-content;
+  min-height:38px;
+  padding:0 14px;
+  border:0;
+  border-radius:10px;
+  background:rgba(255,77,77,0.15);
+  color:#ff6b6b;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.mycomplaints-edit-btn{
+  background:rgba(0,191,255,0.14);
+  color:#00bfff;
+}
+
+.mycomplaints-edit-btn:hover{
+  background:#00bfff;
+  color:#05071d;
+}
+
+.mycomplaints-delete-btn:hover{
+  background:#ff4d4d;
+  color:#ffffff;
 }
 
 /* ================= ID ================= */
@@ -644,7 +686,8 @@ body{
   }
 
   .mycomplaints-table-row p,
-  .mycomplaints-table-row span{
+  .mycomplaints-table-row span,
+  .mycomplaints-action-group{
     display:flex;
     flex-direction:column;
     align-items:flex-start;
@@ -652,7 +695,8 @@ body{
   }
 
   .mycomplaints-table-row p::before,
-  .mycomplaints-table-row span::before{
+  .mycomplaints-table-row span::before,
+  .mycomplaints-action-group::before{
     content:attr(data-label);
     color:#8b92bb;
     font-size:12px;
@@ -694,6 +738,93 @@ body{
 .mycomplaints-table-row{
 
   cursor:pointer;
+}
+
+.mycomplaints-edit-overlay{
+  position:fixed;
+  inset:0;
+  z-index:10000;
+  background:rgba(0,0,0,0.62);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+
+.mycomplaints-edit-modal{
+  width:min(680px,100%);
+  max-height:calc(100vh - 48px);
+  overflow-y:auto;
+  background:#0b1336;
+  border:1px solid rgba(255,255,255,0.09);
+  border-radius:18px;
+  padding:28px;
+  box-shadow:0 28px 70px rgba(0,0,0,0.45);
+}
+
+.mycomplaints-edit-modal h2{
+  margin:0 0 22px;
+  font-size:28px;
+}
+
+.mycomplaints-edit-modal label{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-bottom:16px;
+  color:#ffffff;
+  font-weight:700;
+}
+
+.mycomplaints-edit-modal input,
+.mycomplaints-edit-modal textarea{
+  width:100%;
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px;
+  background:#111c4f;
+  color:#ffffff;
+  padding:14px 16px;
+  font-size:15px;
+  outline:none;
+}
+
+.mycomplaints-edit-modal textarea{
+  min-height:130px;
+  resize:vertical;
+  line-height:1.6;
+}
+
+.mycomplaints-edit-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+
+.mycomplaints-edit-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:12px;
+  margin-top:10px;
+}
+
+.mycomplaints-cancel-btn,
+.mycomplaints-save-btn{
+  min-height:44px;
+  padding:0 18px;
+  border:0;
+  border-radius:12px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.mycomplaints-cancel-btn{
+  background:#17205a;
+  color:#cbd5ff;
+}
+
+.mycomplaints-save-btn{
+  background:linear-gradient(135deg,#2563eb,#00bfff);
+  color:#ffffff;
 }
 /* ================= PAGINATION ================= */
 

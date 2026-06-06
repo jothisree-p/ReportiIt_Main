@@ -215,7 +215,7 @@ const Contact = () => {
                 </h3>
 
                 <p>
-                  support@reportit.com
+                  reportit.noreply@gmail.com
                 </p>
 
               </div>
@@ -334,7 +334,7 @@ const Contact = () => {
           <p>
 
             <FaEnvelope className="footer-icon" />
-            support@reportit.com
+            reportit.noreply@gmail.com
 
           </p>
 

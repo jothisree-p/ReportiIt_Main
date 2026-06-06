@@ -1,12 +1,15 @@
 import React,
 {
+  useEffect,
   useState
 }
 from "react";
 import { clearAuth } from "./authStorage";
 import { useRequireAuth } from "./hooks/useRequireAuth";
 import { useComplaints } from "./hooks/useComplaints";
-import { fetchMyComplaints } from "./api/complaints";
+import { deleteComplaintApi, fetchMyComplaints, updateComplaintApi } from "./api/complaints";
+import { fetchMyNotifications } from "./api/notifications";
+import { openNotifications } from "./notificationActions";
 
 import { useNavigate }
 from "react-router-dom";
@@ -30,6 +33,8 @@ import {
   FaSearch,
   FaBell,
   FaArrowLeft,
+  FaEdit,
+  FaTrash,
 
 } from "react-icons/fa";
 
@@ -53,6 +58,19 @@ const MyComplaints = () => {
   setSearchTerm] =
   useState("");
 
+  const [editingComplaint,setEditingComplaint] =
+  useState(null);
+
+  const [editForm,setEditForm] =
+  useState({
+    title:"",
+    category:"",
+    description:"",
+    location:"",
+    date:"",
+    incidentTime:"",
+  });
+
   /* ================= PAGINATION ================= */
 
   const [currentPage,
@@ -63,10 +81,10 @@ const MyComplaints = () => {
 
   /* ================= LOGOUT ================= */
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
 
     const confirmLogout =
-    window.confirm(
+    await window.__reportItShowConfirm(
       "Are you sure you want to logout?"
     );
 
@@ -79,26 +97,76 @@ const MyComplaints = () => {
 
   /* ================= NOTIFICATIONS ================= */
 
-  const notifications = [
+  const [notifications, setNotifications] = useState([]);
 
-    {
-      message:
-      "🚓 Officer assigned to complaint CMP-2024-001"
-    },
+  useEffect(() => {
+    fetchMyNotifications()
+      .then(setNotifications)
+      .catch(() => setNotifications([]));
+  }, []);
 
-    {
-      message:
-      "📌 Complaint under investigation"
-    },
+  const { complaints, loading, error, refresh } = useComplaints(fetchMyComplaints);
 
-    {
-      message:
-      "✅ Complaint resolved successfully"
-    },
+  const handleDeleteComplaint = async (event, complaint) => {
+    event.stopPropagation();
+    const confirmed = await window.__reportItShowConfirm(
+      `Delete complaint ${complaint.id} from My Complaints?`
+    );
 
-  ];
+    if (!confirmed) return;
 
-  const { complaints, loading, error } = useComplaints(fetchMyComplaints);
+    try {
+      await deleteComplaintApi(complaint.backendId);
+      await refresh();
+      alert("Complaint deleted from your view. Admin records are preserved.");
+    } catch (err) {
+      alert(err.message || "Failed to delete complaint");
+    }
+  };
+
+  const openEditComplaint = (event, complaint) => {
+    event.stopPropagation();
+    setEditingComplaint(complaint);
+    setEditForm({
+      title: complaint.title || "",
+      category: complaint.category || "",
+      description: complaint.description || "",
+      location: complaint.location || "",
+      date: complaint.date || "",
+      incidentTime: complaint.incidentTime || "",
+    });
+  };
+
+  const handleEditChange = (event) => {
+    const { name, value } = event.target;
+    setEditForm((current) => ({
+      ...current,
+      [name]: value,
+    }));
+  };
+
+  const saveComplaintEdit = async () => {
+    if (!editingComplaint?.backendId) return;
+    if (!editForm.title.trim() || !editForm.description.trim() || !editForm.location.trim()) {
+      alert("Please fill title, description, and location.");
+      return;
+    }
+
+    try {
+      await updateComplaintApi(editingComplaint.backendId, {
+        ...editForm,
+        title: editForm.title.trim(),
+        description: editForm.description.trim(),
+        location: editForm.location.trim(),
+        lastUpdate: "Citizen updated complaint details",
+      });
+      setEditingComplaint(null);
+      await refresh();
+      alert("Complaint updated successfully.");
+    } catch (err) {
+      alert(err.message || "Failed to update complaint");
+    }
+  };
 
   /* ================= FILTER ================= */
 
@@ -318,16 +386,14 @@ const MyComplaints = () => {
 
             <div
               className="icon-box"
-              onClick={() =>
-                setShowNotifications(
-                  !showNotifications
-                )
-              }
+              onClick={() => openNotifications(showNotifications, setShowNotifications, setNotifications)}
             >
 
               <FaBell className="notification-bell" />
 
-              <span className="notification-dot"></span>
+              {notifications.length > 0 && (
+                <span className="notification-dot has-notifications"></span>
+              )}
 
             </div>
 
@@ -347,8 +413,9 @@ const MyComplaints = () => {
 
                   {
 
-                    notifications.map(
-                      (item,index)=>(
+                    notifications.length > 0 ? (
+                      notifications.map(
+                        (item,index)=>(
 
                         <div
                           className="notification-item"
@@ -359,7 +426,12 @@ const MyComplaints = () => {
 
                         </div>
 
+                        )
                       )
+                    ) : (
+                      <div className="notification-item">
+                        No notifications yet
+                      </div>
                     )
 
                   }
@@ -488,6 +560,7 @@ const MyComplaints = () => {
               <p>Priority</p>
               <p>Status</p>
               <p>Date</p>
+              <p>Actions</p>
 
             </div>
 
@@ -569,7 +642,7 @@ const MyComplaints = () => {
                       }
                     >
 
-                      {item.priority}
+                      {item.priority || "Not set"}
 
                     </p>
 
@@ -615,6 +688,26 @@ const MyComplaints = () => {
                       {item.date}
 
                     </p>
+
+                    <div className="mycomplaints-action-group" data-label="Actions">
+                      <button
+                        className="mycomplaints-edit-btn"
+                        onClick={(event) => openEditComplaint(event, item)}
+                        title="Edit complaint"
+                      >
+                        <FaEdit />
+                        Edit
+                      </button>
+
+                      <button
+                        className="mycomplaints-delete-btn"
+                        onClick={(event) => handleDeleteComplaint(event, item)}
+                        title="Delete complaint"
+                      >
+                        <FaTrash />
+                        Delete
+                      </button>
+                    </div>
 
                   </div>
 
@@ -704,6 +797,55 @@ const MyComplaints = () => {
       </div>
 
       {/* AI CHAT */}
+
+      {editingComplaint && (
+        <div className="mycomplaints-edit-overlay" onClick={() => setEditingComplaint(null)}>
+          <div className="mycomplaints-edit-modal" onClick={(event) => event.stopPropagation()}>
+            <h2>Edit Complaint</h2>
+
+            <label>
+              Title
+              <input name="title" value={editForm.title} onChange={handleEditChange} />
+            </label>
+
+            <label>
+              Category
+              <input name="category" value={editForm.category} onChange={handleEditChange} />
+            </label>
+
+            <label>
+              Description
+              <textarea name="description" value={editForm.description} onChange={handleEditChange} />
+            </label>
+
+            <label>
+              Location
+              <input name="location" value={editForm.location} onChange={handleEditChange} />
+            </label>
+
+            <div className="mycomplaints-edit-grid">
+              <label>
+                Date
+                <input type="date" name="date" value={editForm.date} onChange={handleEditChange} />
+              </label>
+
+              <label>
+                Time
+                <input type="time" name="incidentTime" value={editForm.incidentTime} onChange={handleEditChange} />
+              </label>
+            </div>
+
+            <div className="mycomplaints-edit-actions">
+              <button className="mycomplaints-cancel-btn" onClick={() => setEditingComplaint(null)}>
+                Cancel
+              </button>
+              <button className="mycomplaints-save-btn" onClick={saveComplaintEdit}>
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <AIChat />
 

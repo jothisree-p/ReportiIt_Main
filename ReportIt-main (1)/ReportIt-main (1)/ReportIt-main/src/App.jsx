@@ -31,6 +31,7 @@ import AdminReports from "./AdminReports";
 import Categories from "./Categories";
 import AdminProfile from "./AdminProfile";
 import AdminStatistics from "./AdminStatistics";
+import VerifyOtp from "./VerifyOtp";
 function App() {
   return (
     <Routes>
@@ -141,6 +142,10 @@ element={<TrackStatus />}
 <Route
   path="/admin-statistics"
   element={<AdminStatistics />}
+/>
+<Route
+  path="/verify-otp"
+  element={<VerifyOtp />}
 />
 </Routes>
 

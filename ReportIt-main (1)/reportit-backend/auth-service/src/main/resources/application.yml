@@ -6,6 +6,24 @@ spring:
     name: auth-service
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:local}
+  mail:
+    host: ${REPORTIT_MAIL_HOST:smtp.gmail.com}
+    port: ${REPORTIT_MAIL_PORT:587}
+    username: ${REPORTIT_MAIL_USERNAME:}
+    password: ${REPORTIT_MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+reportit:
+  mail:
+    from: ${REPORTIT_MAIL_FROM:noreply@reportit.com}
 
 jwt:
   secret: ReportItSecretKeyForJWT2026MustBeAtLeast256BitsLong!!
@@ -14,6 +32,15 @@ jwt:
 
 cors:
   allowed-origins: http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,http://localhost:3000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
 
 ---
 spring:

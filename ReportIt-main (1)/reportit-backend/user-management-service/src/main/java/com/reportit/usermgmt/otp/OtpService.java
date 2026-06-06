@@ -1,8 +1,6 @@
 package com.reportit.usermgmt.otp;
 
 import com.reportit.usermgmt.common.ApiException;
-import com.reportit.usermgmt.entity.OtpToken;
-import com.reportit.usermgmt.repository.OtpTokenRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,16 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.security.SecureRandom;
-import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class OtpService {
-
-    private final OtpTokenRepository otpTokenRepository;
-    private final SecureRandom random = new SecureRandom();
 
     @Value("${auth.service-url}")
     private String authServiceUrl;
@@ -34,15 +27,7 @@ public class OtpService {
                     Map.of("email", request.getEmail(), "purpose", request.getPurpose()),
                     Map.class);
         } catch (Exception e) {
-            String otp = String.format("%06d", random.nextInt(1_000_000));
-            otpTokenRepository.save(OtpToken.builder()
-                    .email(request.getEmail().trim().toLowerCase())
-                    .otpCode(otp)
-                    .purpose(request.getPurpose().toUpperCase())
-                    .expiresAt(LocalDateTime.now().plusMinutes(10))
-                    .used(false)
-                    .build());
-            return Map.of("message", "OTP sent (local fallback)", "otp", otp);
+            throw new ApiException("Unable to send OTP through auth-service. Check auth-service and ReportIt SMTP settings.", HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 
@@ -55,19 +40,7 @@ public class OtpService {
                     Map.of("email", request.getEmail(), "otp", request.getOtp(), "purpose", request.getPurpose()),
                     Map.class);
         } catch (Exception e) {
-            OtpToken token = otpTokenRepository
-                    .findTopByEmailIgnoreCaseAndPurposeAndUsedFalseOrderByCreatedAtDesc(
-                            request.getEmail(), request.getPurpose().toUpperCase())
-                    .orElseThrow(() -> new ApiException("OTP not found", HttpStatus.NOT_FOUND));
-            if (token.getExpiresAt().isBefore(LocalDateTime.now())) {
-                throw new ApiException("OTP expired", HttpStatus.BAD_REQUEST);
-            }
-            if (!token.getOtpCode().equals(request.getOtp())) {
-                throw new ApiException("Invalid OTP", HttpStatus.BAD_REQUEST);
-            }
-            token.setUsed(true);
-            otpTokenRepository.save(token);
-            return Map.of("message", "OTP verified (local fallback)");
+            throw new ApiException("Unable to verify OTP through auth-service.", HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 

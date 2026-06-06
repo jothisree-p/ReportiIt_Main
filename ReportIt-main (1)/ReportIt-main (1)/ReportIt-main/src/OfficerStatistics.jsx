@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   FaShieldAlt,
@@ -35,6 +35,9 @@ import {
 } from "./officerSession";
 import { useComplaints } from "./hooks/useComplaints";
 import { fetchAssignedComplaints } from "./api/complaints";
+import { fetchMyNotifications } from "./api/notifications";
+import { openNotifications } from "./notificationActions";
+import { fetchOfficerAnalytics } from "./api/dashboard";
 
 import html2canvas from "html2canvas";
 
@@ -48,60 +51,39 @@ const OfficerStatistics = () => {
   const [showNotifications,
   setShowNotifications] =
   useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [analytics, setAnalytics] = useState(null);
+  const [analyticsError, setAnalyticsError] = useState("");
+  const [analyticsLoading, setAnalyticsLoading] = useState(true);
 
   /* ================= GET CASES ================= */
 
   const { complaints: officerCases, stats: caseStats } = useComplaints(fetchAssignedComplaints);
 
-  /* ================= WEEKLY DATA ================= */
+  useEffect(() => {
+    fetchMyNotifications()
+      .then(setNotifications)
+      .catch(() => setNotifications([]));
 
-  const weeklyData = [
+    fetchOfficerAnalytics()
+      .then((data) => {
+        setAnalytics(data);
+        setAnalyticsError("");
+      })
+      .catch((err) => setAnalyticsError(err.message || "Failed to load analytics"))
+      .finally(() => setAnalyticsLoading(false));
+  }, []);
 
-    { day:"Mon", cases:4 },
+  const weeklyData = (analytics?.weeklyComplaintTrends || []).map((item) => ({
+    day: item.label,
+    cases: item.total,
+  }));
 
-    { day:"Tue", cases:7 },
-
-    { day:"Wed", cases:5 },
-
-    { day:"Thu", cases:9 },
-
-    { day:"Fri", cases:6 },
-
-    { day:"Sat", cases:11 },
-
-    { day:"Sun", cases:8 },
-
-  ];
-
-  /* ================= MONTHLY DATA ================= */
-
-  const monthlyData = [
-
-    { month:"Jan", solved:35 },
-
-    { month:"Feb", solved:48 },
-
-    { month:"Mar", solved:52 },
-
-    { month:"Apr", solved:41 },
-
-    { month:"May", solved:60 },
-
-    { month:"Jun", solved:72 },
-
-    { month:"Jul", solved:64 },
-
-    { month:"Aug", solved:58 },
-
-    { month:"Sep", solved:76 },
-
-    { month:"Oct", solved:82 },
-
-    { month:"Nov", solved:69 },
-
-    { month:"Dec", solved:91 },
-
-  ];
+  const monthlyData = (analytics?.monthlyComplaintTrends || []).map((item) => ({
+    month: item.label,
+    complaints: item.total,
+    resolved: item.resolved,
+  }));
 
   /* ================= EXPORT PDF ================= */
 
@@ -148,10 +130,10 @@ const OfficerStatistics = () => {
 
   /* ================= LOGOUT ================= */
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
 
     const confirmLogout =
-    window.confirm(
+    await window.__reportItShowConfirm(
       "Are you sure you want to logout?"
     );
 
@@ -294,16 +276,14 @@ const OfficerStatistics = () => {
 <div
   className="notification-btn"
 
-  onClick={() =>
-    setShowNotifications(
-      !showNotifications
-    )
-  }
+  onClick={() => openNotifications(showNotifications, setShowNotifications, setNotifications)}
 >
 
   <FaBell className="notification-bell" />
 
-  <span className="notification-dot"></span>
+  {notifications.length > 0 && (
+    <span className="notification-dot has-notifications"></span>
+  )}
 
 </div>
 
@@ -325,100 +305,31 @@ const OfficerStatistics = () => {
 
         </h3>
 
-        <span>
-
-          3 New
-
-        </span>
-
-      </div>
-
-      {/* CARD 1 */}
-
-      <div className="notification-card">
-
-        <div className="notification-left blue-bg">
-
-          🚔
-
-        </div>
-
-        <div>
-
-          <h4>
-
-            New Complaint Assigned
-
-          </h4>
-
-          <p>
-
-            CMP-2024-011 assigned
-            to your department.
-
-          </p>
-
-        </div>
+        {notifications.length > 0 && (
+          <span>
+            {notifications.length} New
+          </span>
+        )}
 
       </div>
 
-      {/* CARD 2 */}
-
-      <div className="notification-card">
-
-        <div className="notification-left yellow-bg">
-
-          📌
-
+      {notifications.length > 0 ? (
+        notifications.map((item,index)=>(
+          <div className="notification-card" key={index}>
+            <div>
+              <h4>{item.title || "Notification"}</h4>
+              <p>{item.message || item}</p>
+            </div>
+          </div>
+        ))
+      ) : (
+        <div className="notification-card">
+          <div>
+            <h4>No notifications yet</h4>
+            <p>New updates will appear here when they are sent.</p>
+          </div>
         </div>
-
-        <div>
-
-          <h4>
-
-            Investigation Pending
-
-          </h4>
-
-          <p>
-
-            CMP-2024-007 requires
-            immediate status update.
-
-          </p>
-
-        </div>
-
-      </div>
-
-      {/* CARD 3 */}
-
-      <div className="notification-card">
-
-        <div className="notification-left green-bg">
-
-          ✅
-
-        </div>
-
-        <div>
-
-          <h4>
-
-            Complaint Resolved
-
-          </h4>
-
-          <p>
-
-            CMP-2024-002 closed
-            successfully.
-
-          </p>
-
-        </div>
-
-      </div>
+      )}
 
     </div>
 
@@ -522,6 +433,18 @@ const OfficerStatistics = () => {
 
           {/* ================= CHARTS ================= */}
 
+          {analyticsLoading && (
+            <p style={{ color: "#9ca3d2", padding: "1rem 0" }}>
+              Loading analytics...
+            </p>
+          )}
+
+          {analyticsError && (
+            <p style={{ color: "#ff7b7b", padding: "1rem 0" }}>
+              {analyticsError}
+            </p>
+          )}
+
           <div className="statistics-chart-grid">
 
             {/* WEEKLY */}
@@ -604,7 +527,14 @@ const OfficerStatistics = () => {
 
                   <Line
                     type="monotone"
-                    dataKey="solved"
+                    dataKey="complaints"
+                    stroke="#00bfff"
+                    strokeWidth={4}
+                  />
+
+                  <Line
+                    type="monotone"
+                    dataKey="resolved"
                     stroke="#00d084"
                     strokeWidth={4}
                   />

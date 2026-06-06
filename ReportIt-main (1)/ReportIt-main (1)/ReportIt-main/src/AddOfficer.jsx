@@ -33,6 +33,7 @@ const AddOfficer = () => {
     initials:"",
     name:"",
     email:"",
+    phone:"",
     password:"",
     badge:"",
     position:"",
@@ -59,34 +60,64 @@ const AddOfficer = () => {
 
   /* ================= SAVE ================= */
 
-  const handleSave = async () => {
+  const buildInitials = (name) =>
+    name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("");
 
-    if(!formData.email.endsWith("@reportit.com")){
-      alert("Officer email must end with @reportit.com");
+  const [saving, setSaving] = useState(false);
+  const [formMessage, setFormMessage] = useState("");
+
+  const handleSave = async (e) => {
+    e?.preventDefault?.();
+
+    const payload = {
+      ...formData,
+      name: formData.name.trim(),
+      email: formData.email.trim().toLowerCase(),
+      phone: formData.phone.trim(),
+      password: formData.password.trim(),
+      badge: formData.badge.trim(),
+      position: formData.position.trim(),
+      zone: formData.zone.trim(),
+      active: formData.active.trim(),
+      initials: formData.initials.trim().toUpperCase() || buildInitials(formData.name),
+    };
+
+    setFormMessage("");
+
+    if(!payload.name || !payload.email || !payload.password || !payload.badge || !payload.position || !payload.zone){
+      setFormMessage("Please fill officer name, email, password, badge ID, position, and zone.");
       return;
     }
 
-    if(!formData.password){
-      alert("Please set a password for officer login");
+    if(!payload.email.endsWith("@reportit.com")){
+      setFormMessage("Officer email must end with @reportit.com");
       return;
     }
 
+    setSaving(true);
     try {
-      await createOfficer(formData);
+      await createOfficer(payload);
       alert("Officer Added Successfully!");
       navigate("/manage-officers");
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Failed to add officer");
+      setFormMessage(err instanceof ApiError ? err.message : "Failed to add officer");
+    } finally {
+      setSaving(false);
     }
 
   };
 
   /* ================= LOGOUT ================= */
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
 
     const confirmLogout =
-    window.confirm(
+    await window.__reportItShowConfirm(
       "Are you sure you want to logout?"
     );
 
@@ -238,13 +269,19 @@ const AddOfficer = () => {
 
         <div className="add-content">
 
-          <div className="add-card">
+          <form className="add-card" onSubmit={handleSave}>
 
             <h1>
 
               Add Officer
 
             </h1>
+
+            {formMessage && (
+              <div className="add-officer-message">
+                {formMessage}
+              </div>
+            )}
 
             {/* INITIALS */}
 
@@ -293,6 +330,23 @@ const AddOfficer = () => {
                 type="email"
                 name="email"
                 value={formData.email}
+                onChange={handleChange}
+              />
+
+            </div>
+
+            {/* PHONE */}
+
+            <div className="form-group">
+
+              <label>
+                Phone Number
+              </label>
+
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
                 onChange={handleChange}
               />
 
@@ -414,16 +468,17 @@ const AddOfficer = () => {
 
             <button
               className="save-btn"
-              onClick={handleSave}
+              type="submit"
+              disabled={saving}
             >
 
               <FaSave />
 
-              Add Officer
+              {saving ? "Adding..." : "Add Officer"}
 
             </button>
 
-          </div>
+          </form>
 
         </div>
 

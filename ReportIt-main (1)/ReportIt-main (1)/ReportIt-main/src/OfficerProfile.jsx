@@ -1,18 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
 import "./OfficerProfile.css";
 
 import AIChat from "./AIChat";
+import { showAppPopup } from "./appPopups";
 import {
   getCurrentOfficer,
-  getOfficerEmailInitial,
+  getOfficerDisplayName,
+  getOfficerInitials,
   getOfficerPosition,
   getOfficerWelcomeText,
+  setCurrentOfficer,
 } from "./officerSession";
 import { fetchAddressFromCoords } from "./utils/location";
 import { useMapEmbed } from "./hooks/useMapEmbed";
+import { fetchMyNotifications } from "./api/notifications";
+import { openNotifications } from "./notificationActions";
+import { updateOfficer } from "./api/officers";
 
 import {
 
@@ -41,6 +47,13 @@ const OfficerProfile = () => {
   const [showNotifications,
   setShowNotifications] =
   useState(false);
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    fetchMyNotifications()
+      .then(setNotifications)
+      .catch(() => setNotifications([]));
+  }, []);
 
   const [isEditing,
   setIsEditing] =
@@ -48,51 +61,50 @@ const OfficerProfile = () => {
 
   /* ================= LOAD PROFILE ================= */
 
-  const savedOfficer =
-
-  JSON.parse(
-    localStorage.getItem(
-      "officerProfile"
-    )
-  );
-
   /* ================= PROFILE ================= */
+
+  const emptyProfile = {
+
+      name:getOfficerDisplayName(currentOfficer),
+
+      email:currentOfficer.email || "",
+
+      phone:currentOfficer.phone || "",
+
+      badgeId:currentOfficer.badge || currentOfficer.badgeId || "",
+
+      rank:currentOfficer.position || currentOfficer.rank || "",
+
+      station:currentOfficer.station || "",
+
+      department:currentOfficer.department || "",
+
+      experience:currentOfficer.experience || "",
+
+      zone:currentOfficer.zone || "",
+
+      shift:currentOfficer.shift || "",
+
+      address:currentOfficer.address || "",
+
+      mapQuery:currentOfficer.mapQuery || currentOfficer.address || "",
+
+      emergency:currentOfficer.emergency || "",
+
+    };
 
   const [profile,
   setProfile] =
-  useState(
+  useState({
 
-    savedOfficer || {
+    ...emptyProfile,
+    name:getOfficerDisplayName(currentOfficer) || emptyProfile.name,
+    email:currentOfficer.email || emptyProfile.email,
+    badgeId:currentOfficer.badge || currentOfficer.badgeId || emptyProfile.badgeId,
+    rank:currentOfficer.position || currentOfficer.rank || emptyProfile.rank,
+    zone:currentOfficer.zone || emptyProfile.zone,
 
-      name:currentOfficer.name || "Rithana",
-
-      email:currentOfficer.email || "rithana@reportit.com",
-
-      phone:"+91 9876543210",
-
-      badgeId:currentOfficer.badge || currentOfficer.badgeId || "IR-2045",
-
-      rank:currentOfficer.position || currentOfficer.rank || "Inspector",
-
-      station:"Central Police Station",
-
-      department:"Crime Investigation Unit",
-
-      experience:"8 Years",
-
-      zone:currentOfficer.zone || "Zone A",
-
-      shift:"Morning Shift",
-
-      address:"Chennai, Tamil Nadu",
-
-      mapQuery:"13.0827,80.2707",
-
-      emergency:"+91 9876500000",
-
-    }
-
-  );
+  });
 
   const mapSrc = useMapEmbed(profile.mapQuery, profile.address);
 
@@ -136,30 +148,56 @@ const OfficerProfile = () => {
 
   /* ================= SAVE ================= */
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    const userId = currentOfficer.userId || currentOfficer.id;
+    if (!userId) {
+      alert("Officer session not found. Please login again.");
+      return;
+    }
 
-    localStorage.setItem(
+    try {
+      const saved = await updateOfficer(userId, {
+        name: profile.name,
+        email: profile.email,
+        phone: profile.phone,
+        badge: profile.badgeId,
+        position: profile.rank,
+        zone: profile.zone,
+        status: currentOfficer.status || "Active",
+        active: currentOfficer.active || currentOfficer.activeCases || "0",
+        station: profile.station,
+        department: profile.department,
+        experience: profile.experience,
+        shift: profile.shift,
+        address: profile.address,
+        mapQuery: profile.mapQuery,
+        emergency: profile.emergency,
+      });
 
-      "officerProfile",
+      setCurrentOfficer({
+        ...currentOfficer,
+        ...saved,
+        badgeId: saved.badge,
+        rank: saved.position,
+      });
 
-      JSON.stringify(profile)
+      showAppPopup(
+        "Profile Updated Successfully!"
+      );
 
-    );
-
-    alert(
-      "Profile Updated Successfully!"
-    );
-
-    setIsEditing(false);
+      setIsEditing(false);
+    } catch (err) {
+      alert(err.message || "Failed to update profile");
+    }
 
   };
 
   /* ================= LOGOUT ================= */
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
 
     const confirmLogout =
-    window.confirm(
+    await window.__reportItShowConfirm(
       "Are you sure you want to logout?"
     );
 
@@ -173,7 +211,7 @@ const OfficerProfile = () => {
 
   return (
 
-    <div className="profile-container">
+    <div className="profile-container officer-profile-container">
 
       {/* ================= SIDEBAR ================= */}
 
@@ -307,16 +345,14 @@ const OfficerProfile = () => {
             <div
               className="profile-notification-box"
 
-              onClick={() =>
-                setShowNotifications(
-                  !showNotifications
-                )
-              }
+              onClick={() => openNotifications(showNotifications, setShowNotifications, setNotifications)}
             >
 
               <FaBell className="profile-bell-icon" />
 
-              <span className="profile-notification-dot"></span>
+              {notifications.length > 0 && (
+                <span className="profile-notification-dot has-notifications"></span>
+              )}
 
             </div>
 
@@ -326,7 +362,7 @@ const OfficerProfile = () => {
 
               <div className="profile-circle">
 
-                {getOfficerEmailInitial(currentOfficer)}
+                {getOfficerInitials(currentOfficer)}
 
               </div>
 
@@ -352,100 +388,31 @@ const OfficerProfile = () => {
 
                 </h3>
 
-                <span>
-
-                  3 New
-
-                </span>
-
-              </div>
-
-              {/* CARD */}
-
-              <div className="profile-notification-card">
-
-                <div className="profile-notification-left blue-bg">
-
-                  🚔
-
-                </div>
-
-                <div>
-
-                  <h4>
-
-                    New Case Assigned
-
-                  </h4>
-
-                  <p>
-
-                    CMP-2024-011 assigned
-                    to your team.
-
-                  </p>
-
-                </div>
+                {notifications.length > 0 && (
+                  <span>
+                    {notifications.length} New
+                  </span>
+                )}
 
               </div>
 
-              {/* CARD */}
-
-              <div className="profile-notification-card">
-
-                <div className="profile-notification-left yellow-bg">
-
-                  📌
-
+              {notifications.length > 0 ? (
+                notifications.map((item,index)=>(
+                  <div className="profile-notification-card" key={index}>
+                    <div>
+                      <h4>{item.title || "Notification"}</h4>
+                      <p>{item.message || item}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="profile-notification-card">
+                  <div>
+                    <h4>No notifications yet</h4>
+                    <p>New updates will appear here when they are sent.</p>
+                  </div>
                 </div>
-
-                <div>
-
-                  <h4>
-
-                    Priority Updated
-
-                  </h4>
-
-                  <p>
-
-                    CMP-2024-007 marked
-                    high priority.
-
-                  </p>
-
-                </div>
-
-              </div>
-
-              {/* CARD */}
-
-              <div className="profile-notification-card">
-
-                <div className="profile-notification-left green-bg">
-
-                  ✅
-
-                </div>
-
-                <div>
-
-                  <h4>
-
-                    Complaint Resolved
-
-                  </h4>
-
-                  <p>
-
-                    CMP-2024-002 resolved
-                    successfully.
-
-                  </p>
-
-                </div>
-
-              </div>
+              )}
 
             </div>
 
@@ -459,7 +426,7 @@ const OfficerProfile = () => {
 
           <h1>
 
-            Inspector Profile
+            {profile.rank || getOfficerPosition(currentOfficer)} Profile
 
           </h1>
 
@@ -471,7 +438,7 @@ const OfficerProfile = () => {
 
               <div className="big-profile-circle">
 
-                {getOfficerEmailInitial(currentOfficer)}
+                {getOfficerInitials(currentOfficer)}
 
               </div>
 

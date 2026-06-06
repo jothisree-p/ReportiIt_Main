@@ -11,6 +11,7 @@ from "react-router-dom";
 import "./ManageOfficers.css";
 
 import AIChat from "./AIChat";
+import AdminNotificationBell from "./AdminNotificationBell";
 
 import {
 
@@ -98,7 +99,7 @@ const ManageOfficers = () => {
   const handleDelete = async (id) => {
 
     const confirmDelete =
-    window.confirm(
+    await window.__reportItShowConfirm(
       "Delete this officer?"
     );
 
@@ -116,10 +117,10 @@ const ManageOfficers = () => {
 
   /* ================= LOGOUT ================= */
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
 
     const confirmLogout =
-    window.confirm(
+    await window.__reportItShowConfirm(
       "Logout?"
     );
 
@@ -279,6 +280,7 @@ const ManageOfficers = () => {
           </div>
 
           <div className="topbar-right">
+            <AdminNotificationBell />
 
             <div
               className="profile-circle"

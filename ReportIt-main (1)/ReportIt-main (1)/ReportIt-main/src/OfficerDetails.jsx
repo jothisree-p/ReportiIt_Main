@@ -97,14 +97,81 @@ const OfficerDetails = () => {
 
   };
 
+  const getInitials = (name = "") =>
+    name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("") || "OF";
+
+  const detailFields = [
+    { label: "Badge ID", name: "badge" },
+    { label: "Email", name: "email", type: "email" },
+    { label: "Phone Number", name: "phone" },
+    { label: "Age", name: "age" },
+    {
+      label: "Gender",
+      name: "gender",
+      type: "select",
+      options: ["Not provided", "Male", "Female", "Other"],
+    },
+    { label: "Position", name: "position" },
+    { label: "Zone", name: "zone" },
+    { label: "Police Station", name: "station" },
+    { label: "Department", name: "department" },
+    { label: "Experience", name: "experience" },
+    { label: "Shift Timing", name: "shift" },
+    { label: "Address", name: "address" },
+    { label: "Emergency Contact", name: "emergency" },
+    { label: "Joined Date", name: "joined" },
+    { label: "Assigned Cases", name: "cases" },
+    {
+      label: "Status",
+      name: "status",
+      type: "select",
+      options: ["Active", "Inactive"],
+    },
+  ];
+
+  const renderValue = (value) => value || "Not provided";
+
   /* ================= SAVE ================= */
 
   const handleSave = async () => {
 
     try {
-      await updateOfficer(officer.id, officer);
+      const payload = {
+        name: officer.name?.trim?.() || "",
+        email: officer.email?.trim?.().toLowerCase?.() || "",
+        phone: officer.phone?.trim?.() || "",
+        badge: officer.badge?.trim?.() || "",
+        position: officer.position?.trim?.() || "",
+        zone: officer.zone?.trim?.() || "",
+        active: officer.active?.trim?.() || "0",
+        status: officer.status || "Active",
+        age: officer.age?.trim?.() || "",
+        gender: officer.gender === "Not provided" ? "" : officer.gender || "",
+        station: officer.station?.trim?.() || "",
+        department: officer.department?.trim?.() || "",
+        experience: officer.experience?.trim?.() || "",
+        shift: officer.shift?.trim?.() || "",
+        address: officer.address?.trim?.() || "",
+        mapQuery: officer.mapQuery?.trim?.() || "",
+        emergency: officer.emergency?.trim?.() || "",
+        joinedDate: officer.joined?.trim?.() || "",
+      };
+
+      if (!payload.password?.trim?.()) {
+        delete payload.password;
+      } else {
+        payload.password = payload.password.trim();
+      }
+
+      await updateOfficer(officer.id, payload);
       alert("Officer Updated Successfully!");
       setIsEditing(false);
+      setOfficer((current) => ({ ...current, password: "" }));
       const refreshed = await fetchOfficers();
       setOfficers(refreshed);
     } catch (err) {
@@ -115,10 +182,10 @@ const OfficerDetails = () => {
 
   /* ================= LOGOUT ================= */
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
 
     const confirmLogout =
-    window.confirm(
+    await window.__reportItShowConfirm(
       "Are you sure you want to logout?"
     );
 
@@ -273,21 +340,25 @@ const OfficerDetails = () => {
 
             <div className="profile-avatar">
 
-              {officer.initials}
+              {getInitials(officer.name)}
 
             </div>
 
-            <h1>
+            <div className="officer-summary">
 
-              {officer.name}
+              <h1>
 
-            </h1>
+                {officer.name}
 
-            <p>
+              </h1>
 
-              {officer.email}
+              <p>
 
-            </p>
+                {officer.email}
+
+              </p>
+
+            </div>
 
             {/* ================= BUTTONS ================= */}
 
@@ -304,7 +375,7 @@ const OfficerDetails = () => {
 
                 <FaEdit />
 
-                Edit
+                Edit Changes
 
               </button>
 
@@ -329,500 +400,49 @@ const OfficerDetails = () => {
 
           <div className="details-grid">
 
-            {/* BADGE ID */}
+            {detailFields.map((field) => (
+              <div className="detail-card" key={field.name}>
+                <span>{field.label}</span>
 
-            <div className="detail-card">
-
-              <span>
-
-                Badge ID
-
-              </span>
-
-              {
-
-                isEditing ? (
-
-                  <input
-                    type="text"
-                    name="badge"
-                    value={officer.badge}
-                    onChange={handleChange}
-                  />
-
+                {isEditing ? (
+                  field.type === "select" ? (
+                    <select
+                      name={field.name}
+                      value={officer[field.name] || field.options?.[0] || ""}
+                      onChange={handleChange}
+                    >
+                      {field.options.map((option) => (
+                        <option value={option} key={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type={field.type || "text"}
+                      name={field.name}
+                      value={officer[field.name] || ""}
+                      onChange={handleChange}
+                    />
+                  )
                 ) : (
-
-                  <h2>
-
-                    {officer.badge}
-
-                  </h2>
-
-                )
-
-              }
-
-            </div>
-
-            {/* EMAIL */}
-
-            <div className="detail-card">
-
-              <span>
-
-                Email
-
-              </span>
-
-              {
-
-                isEditing ? (
-
-                  <input
-                    type="email"
-                    name="email"
-                    value={officer.email}
-                    onChange={handleChange}
-                  />
-
-                ) : (
-
-                  <h2>
-
-                    {officer.email}
-
-                  </h2>
-
-                )
-
-              }
-
-            </div>
-
-            {/* AGE */}
-
-            <div className="detail-card">
-
-              <span>
-
-                Login Password
-
-              </span>
-
-              {
-
-                isEditing ? (
-
-                  <input
-                    type="text"
-                    name="password"
-                    value={officer.password || ""}
-                    onChange={handleChange}
-                  />
-
-                ) : (
-
-                  <h2>
-
-                    {officer.password || "Not Set"}
-
-                  </h2>
-
-                )
-
-              }
-
-            </div>
-
-            <div className="detail-card">
-
-              <span>
-
-                Age
-
-              </span>
-
-              {
-
-                isEditing ? (
-
-                  <input
-                    type="text"
-                    name="age"
-                    value={officer.age || ""}
-                    onChange={handleChange}
-                  />
-
-                ) : (
-
-                  <h2>
-
-                    {officer.age || "34"}
-
-                  </h2>
-
-                )
-
-              }
-
-            </div>
-
-            {/* GENDER */}
-
-            <div className="detail-card">
-
-              <span>
-
-                Gender
-
-              </span>
-
-              {
-
-                isEditing ? (
-
-                  <select
-                    name="gender"
-                    value={officer.gender || ""}
-                    onChange={handleChange}
-                  >
-
-                    <option>
-                      Male
-                    </option>
-
-                    <option>
-                      Female
-                    </option>
-
-                  </select>
-
-                ) : (
-
-                  <h2>
-
-                    {officer.gender || "Male"}
-
-                  </h2>
-
-                )
-
-              }
-
-            </div>
-
-            {/* POSITION */}
-
-            <div className="detail-card">
-
-              <span>
-
-                Position
-
-              </span>
-
-              {
-
-                isEditing ? (
-
-                  <input
-                    type="text"
-                    name="position"
-                    value={officer.position || ""}
-                    onChange={handleChange}
-                  />
-
-                ) : (
-
-                  <h2>
-
-                    {officer.position || "Inspector"}
-
-                  </h2>
-
-                )
-
-              }
-
-            </div>
-
-            {/* ZONE */}
-
-            <div className="detail-card">
-
-              <span>
-
-                Zone
-
-              </span>
-
-              {
-
-                isEditing ? (
-
-                  <input
-                    type="text"
-                    name="zone"
-                    value={officer.zone}
-                    onChange={handleChange}
-                  />
-
-                ) : (
-
-                  <h2>
-
-                    {officer.zone}
-
-                  </h2>
-
-                )
-
-              }
-
-            </div>
-
-            {/* PHONE */}
-
-            <div className="detail-card">
-
-              <span>
-
-                Phone Number
-
-              </span>
-
-              {
-
-                isEditing ? (
-
-                  <input
-                    type="text"
-                    name="phone"
-                    value={officer.phone || ""}
-                    onChange={handleChange}
-                  />
-
-                ) : (
-
-                  <h2>
-
-                    {
-
-                      officer.phone ||
-
-                      "+91 98765 55555"
-
-                    }
-
-                  </h2>
-
-                )
-
-              }
-
-            </div>
-
-            {/* EXPERIENCE */}
-
-            <div className="detail-card">
-
-              <span>
-
-                Experience
-
-              </span>
-
-              {
-
-                isEditing ? (
-
-                  <input
-                    type="text"
-                    name="experience"
-                    value={officer.experience || ""}
-                    onChange={handleChange}
-                  />
-
-                ) : (
-
-                  <h2>
-
-                    {
-
-                      officer.experience ||
-
-                      "8 Years"
-
-                    }
-
-                  </h2>
-
-                )
-
-              }
-
-            </div>
-
-            {/* ACTIVE / RESOLVED */}
-
-            <div className="detail-card">
-
-              <span>
-
-                Active / Resolved
-
-              </span>
-
-              {
-
-                isEditing ? (
-
-                  <input
-                    type="text"
-                    name="active"
-                    value={officer.active}
-                    onChange={handleChange}
-                  />
-
-                ) : (
-
-                  <h2>
-
-                    {officer.active}
-
-                  </h2>
-
-                )
-
-              }
-
-            </div>
-
-            {/* STATUS */}
-
-            <div className="detail-card">
-
-              <span>
-
-                Status
-
-              </span>
-
-              {
-
-                isEditing ? (
-
-                  <select
-                    name="status"
-                    value={officer.status}
-                    onChange={handleChange}
-                  >
-
-                    <option>
-                      Active
-                    </option>
-
-                    <option>
-                      Inactive
-                    </option>
-
-                  </select>
-
-                ) : (
-
-                  <h2>
-
-                    {officer.status}
-
-                  </h2>
-
-                )
-
-              }
-
-            </div>
-
-            {/* JOINED DATE */}
-
-            <div className="detail-card">
-
-              <span>
-
-                Joined Date
-
-              </span>
-
-              {
-
-                isEditing ? (
-
-                  <input
-                    type="text"
-                    name="joined"
-                    value={officer.joined || ""}
-                    onChange={handleChange}
-                  />
-
-                ) : (
-
-                  <h2>
-
-                    {
-
-                      officer.joined ||
-
-                      "12 Jan 2021"
-
-                    }
-
-                  </h2>
-
-                )
-
-              }
-
-            </div>
-
-            {/* ASSIGNED CASES */}
-
-            <div className="detail-card">
-
-              <span>
-
-                Assigned Cases
-
-              </span>
-
-              {
-
-                isEditing ? (
-
-                  <input
-                    type="text"
-                    name="cases"
-                    value={officer.cases || ""}
-                    onChange={handleChange}
-                  />
-
-                ) : (
-
-                  <h2>
-
-                    {
-
-                      officer.cases ||
-
-                      "14 Cases"
-
-                    }
-
-                  </h2>
-
-                )
-
-              }
-
-            </div>
+                  <h2>{renderValue(officer[field.name])}</h2>
+                )}
+              </div>
+            ))}
+
+            {isEditing && (
+              <div className="detail-card">
+                <span>Reset Login Password</span>
+                <input
+                  type="text"
+                  name="password"
+                  value={officer.password || ""}
+                  placeholder="Enter new password only if changing"
+                  onChange={handleChange}
+                />
+              </div>
+            )}
 
           </div>
 

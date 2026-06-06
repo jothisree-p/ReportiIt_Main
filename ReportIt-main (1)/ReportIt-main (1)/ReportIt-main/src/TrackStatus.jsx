@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { trackComplaint } from "./api/complaints";
+import { fetchMyNotifications } from "./api/notifications";
+import { openNotifications } from "./notificationActions";
 
 import { useNavigate } from "react-router-dom";
 
@@ -35,13 +37,20 @@ const TrackStatus = () => {
   const [showNotifications,
   setShowNotifications] =
   useState(false);
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    fetchMyNotifications()
+      .then(setNotifications)
+      .catch(() => setNotifications([]));
+  }, []);
 
   /* ================= LOGOUT ================= */
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
 
     const confirmLogout =
-    window.confirm(
+    await window.__reportItShowConfirm(
       "Are you sure you want to logout?"
     );
 
@@ -68,135 +77,6 @@ const TrackStatus = () => {
   const [filteredComplaints,
   setFilteredComplaints] =
   useState([]);
-
-  /* ================= DUMMY DATA ================= */
-
-  const complaints = [
-
-    {
-
-      id:"CMP-2024-001",
-
-      title:"Bike Theft at Market Area",
-
-      category:"Theft",
-
-      priority:"High",
-
-      status:"In Progress",
-
-      date:"2024-03-15",
-
-      location:"Central Market, Zone A",
-
-      description:
-      "My bike was stolen from the parking area near Central Market around 3 PM.",
-
-      officer:"Inspector Patel",
-
-      timeline:[
-
-        {
-          status:"Submitted",
-          date:"2024-03-15",
-          note:"Complaint registered",
-        },
-
-        {
-          status:"Assigned",
-          date:"2024-03-15",
-          note:"Assigned to Inspector Patel",
-        },
-
-        {
-          status:"In Progress",
-          date:"2024-03-16",
-          note:"Investigation started, CCTV footage being reviewed",
-        },
-
-      ],
-
-    },
-
-    {
-
-      id:"CMP-2024-006",
-
-      title:"Broken Street Light - Park Road",
-
-      category:"Street Light Issue",
-
-      priority:"Medium",
-
-      status:"Resolved",
-
-      date:"2024-03-19",
-
-      location:"Park Road",
-
-      description:
-      "Street light not working for 4 days.",
-
-      officer:"Municipal Team",
-
-      timeline:[
-
-        {
-          status:"Submitted",
-          date:"2024-03-19",
-          note:"Complaint registered",
-        },
-
-        {
-          status:"Resolved",
-          date:"2024-03-20",
-          note:"Street light repaired",
-        },
-
-      ],
-
-    },
-
-    {
-
-      id:"CMP-2024-009",
-
-      title:"Road Accident Near Signal",
-
-      category:"Road Accident",
-
-      priority:"High",
-
-      status:"Pending",
-
-      date:"2024-03-21",
-
-      location:"Anna Salai Signal",
-
-      description:
-      "Two vehicles collided near signal causing traffic congestion.",
-
-      officer:"Traffic Inspector",
-
-      timeline:[
-
-        {
-          status:"Submitted",
-          date:"2024-03-21",
-          note:"Complaint submitted",
-        },
-
-        {
-          status:"Pending",
-          date:"2024-03-21",
-          note:"Waiting for officer assignment",
-        },
-
-      ],
-
-    },
-
-  ];
 
   /* ================= SEARCH FUNCTION ================= */
 
@@ -229,21 +109,9 @@ const TrackStatus = () => {
       };
       setFilteredComplaints([complaint]);
       setSearched(true);
-    } catch {
-      const result =
-        complaints.filter(
-          (item) =>
-            item.id.toLowerCase() === searchId.toLowerCase()
-        );
-
-      if(result.length === 0){
-        alert("Complaint ID not found");
-        setFilteredComplaints([]);
-        setSearched(true);
-        return;
-      }
-
-      setFilteredComplaints(result);
+    } catch (err) {
+      alert(err.message || "Complaint ID not found");
+      setFilteredComplaints([]);
       setSearched(true);
     }
 
@@ -391,14 +259,14 @@ const TrackStatus = () => {
 
             <div
               className="icon-box"
-              onClick={() =>
-                setShowNotifications(
-                  !showNotifications
-                )
-              }
+              onClick={() => openNotifications(showNotifications, setShowNotifications, setNotifications)}
             >
 
               <FaBell className="notification-bell" />
+
+              {notifications.length > 0 && (
+                <span className="notification-dot has-notifications"></span>
+              )}
 
             </div>
 
@@ -437,26 +305,17 @@ const TrackStatus = () => {
 
               </h3>
 
-              <div className="notification-item">
-
-                🚔 Officer assigned to
-                complaint CMP-2024-001
-
-              </div>
-
-              <div className="notification-item">
-
-                📌 Complaint under
-                investigation
-
-              </div>
-
-              <div className="notification-item">
-
-                ✅ Complaint resolved
-                successfully
-
-              </div>
+              {notifications.length > 0 ? (
+                notifications.map((item,index)=>(
+                  <div className="notification-item" key={index}>
+                    {item.message || item}
+                  </div>
+                ))
+              ) : (
+                <div className="notification-item">
+                  No notifications yet
+                </div>
+              )}
 
             </div>
 

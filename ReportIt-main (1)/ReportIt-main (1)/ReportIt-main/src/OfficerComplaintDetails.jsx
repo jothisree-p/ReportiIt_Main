@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -12,10 +12,11 @@ import {
   getOfficerInitials,
   getOfficerWelcomeText,
 } from "./officerSession";
-import { updateComplaint } from "./complaintsData";
 import { createNotification } from "./api/notifications";
-import { updateComplaintApi } from "./api/complaints";
+import { updateComplaintApi, fetchComplaintHistory } from "./api/complaints";
 import { clearAuth } from "./authStorage";
+import { fetchMyNotifications } from "./api/notifications";
+import { openNotifications } from "./notificationActions";
 
 import {
 
@@ -36,18 +37,27 @@ const OfficerComplaintDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const officer = getCurrentOfficer();
-  const selectedComplaint = location.state || {
-    id:"CMP-2024-001",
-    title:"Bike Theft at Market Area",
-    category:"Theft",
-    citizen:"Rahul Sharma",
-    priority:"Pending",
-    status:"In Progress",
-  };
+  const selectedComplaint = location.state || {};
 
   const [showNotifications,
   setShowNotifications] =
   useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [timeline, setTimeline] = useState([]);
+
+  const loadTimeline = () => {
+    if (!selectedComplaint.backendId) return;
+    fetchComplaintHistory(selectedComplaint.backendId)
+      .then(setTimeline)
+      .catch(() => setTimeline([]));
+  };
+
+  useEffect(() => {
+    fetchMyNotifications()
+      .then(setNotifications)
+      .catch(() => setNotifications([]));
+    loadTimeline();
+  }, [selectedComplaint.backendId]);
 
   const [note,
   setNote] =
@@ -55,25 +65,17 @@ const OfficerComplaintDetails = () => {
 
   const [status,
   setStatus] =
-  useState(selectedComplaint.status || "In Progress");
+  useState(selectedComplaint.status || "Pending");
 
   /* ================= PRIORITY ================= */
 
   const [priority,
   setPriority] =
-  useState(selectedComplaint.priority || "Pending");
+  useState(selectedComplaint.priority || "");
 
   const [notes,
   setNotes] =
-  useState(
-    selectedComplaint.investigationNotes || [
-
-      "CCTV footage collected from nearby shops",
-
-      "Witness statement recorded",
-
-    ]
-  );
+  useState(selectedComplaint.investigationNotes || []);
 
   /* ================= ADD NOTE ================= */
 
@@ -96,6 +98,7 @@ const OfficerComplaintDetails = () => {
           note,
           lastUpdate: `Officer added a new note: ${note}`,
         });
+        loadTimeline();
       }
     } catch (err) {
       alert(err.message || "Failed to save note");
@@ -108,27 +111,25 @@ const OfficerComplaintDetails = () => {
   /* ================= SAVE UPDATES ================= */
 
   const saveCaseUpdates = async () => {
+    const priorityText = priority ? ` with ${priority} priority` : "";
 
     try {
-      if (selectedComplaint.backendId) {
-        await updateComplaintApi(selectedComplaint.backendId, {
-          status,
-          priority,
-          lastUpdate: `Status changed to ${status} with ${priority} priority`,
-        });
-      } else {
-        await updateComplaint(selectedComplaint.id, {
-          status,
-          priority,
-          investigationNotes: notes,
-          lastUpdate: `Status changed to ${status} with ${priority} priority`,
-        });
+      if (!selectedComplaint.backendId) {
+        alert("Open a real assigned case before updating.");
+        return;
       }
 
+      await updateComplaintApi(selectedComplaint.backendId, {
+        status,
+        priority,
+        lastUpdate: `Status changed to ${status}${priorityText}`,
+      });
+
       await addCitizenNotification(
-        `Your complaint ${selectedComplaint.id} was updated to ${status} with ${priority} priority.`
+        `Your complaint ${selectedComplaint.id} was updated to ${status}${priorityText}.`
       );
 
+      loadTimeline();
       alert("Case updated successfully and citizen notified!");
     } catch (err) {
       alert(err.message || "Failed to update case");
@@ -142,10 +143,14 @@ const OfficerComplaintDetails = () => {
 
     const notificationMessage =
 
-    `Your complaint ${selectedComplaint.id}
+    priority
+      ? `Your complaint ${selectedComplaint.id}
      has been updated to
      "${status}" status
-     with "${priority}" priority.`;
+     with "${priority}" priority.`
+      : `Your complaint ${selectedComplaint.id}
+     has been updated to
+     "${status}" status.`;
 
     try {
       await addCitizenNotification(notificationMessage);
@@ -167,10 +172,10 @@ const OfficerComplaintDetails = () => {
 
   /* ================= LOGOUT ================= */
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
 
     const confirmLogout =
-    window.confirm(
+    await window.__reportItShowConfirm(
       "Are you sure you want to logout?"
     );
 
@@ -306,14 +311,14 @@ const OfficerComplaintDetails = () => {
 
             <div
               className="icon-box"
-              onClick={() =>
-                setShowNotifications(
-                  !showNotifications
-                )
-              }
+              onClick={() => openNotifications(showNotifications, setShowNotifications, setNotifications)}
             >
 
               <FaBell className="notification-bell" />
+
+              {notifications.length > 0 && (
+                <span className="notification-dot has-notifications"></span>
+              )}
 
             </div>
 
@@ -329,17 +334,17 @@ const OfficerComplaintDetails = () => {
 
                   </h3>
 
-                  <div className="notification-item">
-
-                    🚔 New complaint assigned
-
-                  </div>
-
-                  <div className="notification-item">
-
-                    📌 Investigation update pending
-
-                  </div>
+                  {notifications.length > 0 ? (
+                    notifications.map((item,index)=>(
+                      <div className="notification-item" key={index}>
+                        {item.message || item}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="notification-item">
+                      No notifications yet
+                    </div>
+                  )}
 
                 </div>
 
@@ -430,7 +435,7 @@ const OfficerComplaintDetails = () => {
                   }`}
                 >
 
-                  {priority}
+                  {priority || "Not set"}
 
                 </p>
 
@@ -452,7 +457,7 @@ const OfficerComplaintDetails = () => {
 
                 <FaMapMarkerAlt />
 
-              {selectedComplaint.location || "Central Market, Zone A"}
+              {selectedComplaint.location || "No location provided"}
 
               </div>
 
@@ -593,97 +598,46 @@ const OfficerComplaintDetails = () => {
               {/* TIMELINE */}
 
               <div className="timeline-card">
-
-                <h2>
-
-                  Timeline
-
-                </h2>
-
-                <div className="timeline-item">
-
-                  <div className="dot"></div>
-
-                  <div>
-
-                    <h4>
-
-                      Submitted
-
-                    </h4>
-
-                    <p>
-
-                      2024-03-15
-
-                    </p>
-
-                    <span>
-
-                      Complaint registered
-
-                    </span>
-
-                  </div>
-
-                </div>
-
-                <div className="timeline-item">
-
-                  <div className="dot"></div>
-
-                  <div>
-
-                    <h4>
-
-                      Assigned
-
-                    </h4>
-
-                    <p>
-
-                      2024-03-15
-
-                    </p>
-
-                    <span>
-
-                      Assigned to {getOfficerDisplayName(officer)}
-
-                    </span>
-
-                  </div>
-
-                </div>
-
-                <div className="timeline-item">
-
-                  <div className="dot"></div>
-
-                  <div>
-
-                    <h4>
-
-                      {status}
-
-                    </h4>
-
-                    <p>
-
-                      {new Date().toLocaleDateString()}
-
-                    </p>
-
-                    <span>
-
-                      Investigation in progress
-
-                    </span>
-
-                  </div>
-
-                </div>
-
+                <h2>Timeline</h2>
+                {timeline.length > 0 ? (
+                  [...timeline].reverse().map((step, index) => (
+                    <div className="timeline-item" key={step.id || index}>
+                      <div className="dot"></div>
+                      <div>
+                        <h4>{step.newStatus}</h4>
+                        <p style={{ color: "#9ca3d2", fontSize: "0.85rem", marginBottom: "0.25rem" }}>
+                          {step.createdAt?.slice?.(0, 10) || ""} {step.createdAt?.slice?.(11, 16) || ""}
+                        </p>
+                        {step.remark && <span style={{ display: "block", color: "#e2e8f0" }}>{step.remark}</span>}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <>
+                    <div className="timeline-item">
+                      <div className="dot"></div>
+                      <div>
+                        <h4>Submitted</h4>
+                        <p>Complaint registered</p>
+                      </div>
+                    </div>
+                    <div className="timeline-item">
+                      <div className="dot"></div>
+                      <div>
+                        <h4>Assigned</h4>
+                        <p>Assigned to {getOfficerDisplayName(officer)}</p>
+                      </div>
+                    </div>
+                    <div className="timeline-item">
+                      <div className="dot"></div>
+                      <div>
+                        <h4>{status}</h4>
+                        <p>{new Date().toLocaleDateString()}</p>
+                        <span>Investigation in progress</span>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* NOTES */}

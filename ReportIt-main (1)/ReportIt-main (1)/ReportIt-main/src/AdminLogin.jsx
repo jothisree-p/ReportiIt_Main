@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import "./AdminLogin.css";
 
 import { useNavigate } from "react-router-dom";
-import { login } from "./api/auth";
+import { login, sendOtp } from "./api/auth";
 import { ApiError } from "./api/http";
 
 import {
@@ -40,6 +40,9 @@ const AdminLogin = () => {
   const [forgotEmail,
   setForgotEmail] =
   useState("");
+
+  const [sendingOtp, setSendingOtp] =
+  useState(false);
 
   /* ================= INPUT CHANGE ================= */
 
@@ -90,7 +93,8 @@ const AdminLogin = () => {
 
   /* ================= OTP ================= */
 
-  const handleSendOTP = () => {
+  const handleSendOTP = async () => {
+    if (sendingOtp) return;
 
     if(
       forgotEmail.trim() === ""
@@ -102,11 +106,20 @@ const AdminLogin = () => {
 
     }
 
-    alert(
-      "OTP sent successfully!"
-    );
-
-    navigate("/verify-otp");
+    try {
+      setSendingOtp(true);
+      const result = await sendOtp(forgotEmail, "FORGOT_PASSWORD");
+      alert(result.message || "OTP sent successfully!");
+      if (!result.cooldown) {
+        navigate("/verify-otp", {
+          state: { email: forgotEmail, returnTo: "/admin-login" },
+        });
+      }
+    } catch (err) {
+      alert(err instanceof ApiError ? err.message : "Failed to send OTP");
+    } finally {
+      setSendingOtp(false);
+    }
 
   };
 
@@ -322,9 +335,10 @@ Report Crimes & Suspicious Activities
                 <button
                   className="send-btn"
                   onClick={handleSendOTP}
+                  disabled={sendingOtp}
                 >
 
-                  Send OTP
+                  {sendingOtp ? "Sending..." : "Send OTP"}
 
                 </button>
 

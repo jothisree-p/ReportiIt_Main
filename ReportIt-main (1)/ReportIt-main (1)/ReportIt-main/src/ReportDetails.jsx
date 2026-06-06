@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   useLocation,
@@ -14,8 +14,13 @@ import { isAuthenticated } from "./authStorage";
 import { useRequireAuth } from "./hooks/useRequireAuth";
 import {
   getCurrentCitizen,
+  getCitizenInitials,
   getCitizenName,
 } from "./citizenSession";
+import { fetchMyNotifications } from "./api/notifications";
+import { openNotifications } from "./notificationActions";
+import { uploadComplaintFile } from "./api/files";
+import { fetchAddressFromCoords } from "./utils/location";
 
 import {
 
@@ -39,11 +44,23 @@ const ReportDetails = () => {
   const citizen = getCurrentCitizen();
   const crimeType = location.state?.crimeType || "General";
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    document.querySelector(".report-details-main")?.scrollTo(0, 0);
+  }, []);
+
   /* ================= NOTIFICATION ================= */
 
   const [showNotifications,
   setShowNotifications] =
   useState(false);
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    fetchMyNotifications()
+      .then(setNotifications)
+      .catch(() => setNotifications([]));
+  }, []);
 
   /* ================= FORM DATA ================= */
 
@@ -113,18 +130,8 @@ const ReportDetails = () => {
 
           try{
 
-            const response =
-            await fetch(
-
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-
-            );
-
-            const data =
-            await response.json();
-
             const placeName =
-            data.display_name;
+            await fetchAddressFromCoords(latitude, longitude);
 
             setFormData({
 
@@ -193,8 +200,10 @@ const ReportDetails = () => {
         date: formData.date || null,
         incidentTime: formData.incidentTime || null,
         category: crimeType,
-        priority: "Medium",
       });
+      if (formData.evidence && created.backendId) {
+        await uploadComplaintFile(created.backendId, formData.evidence);
+      }
       alert(`Complaint submitted successfully! Reference: ${created.id}`);
       navigate("/my-complaints");
     } catch (err) {
@@ -205,7 +214,7 @@ const ReportDetails = () => {
 
   return (
 
-    <div className="details-container">
+    <div className="details-container report-details-container">
 
       {/* ================= SIDEBAR ================= */}
 
@@ -307,7 +316,7 @@ const ReportDetails = () => {
 
       {/* ================= MAIN ================= */}
 
-      <div className="main-content">
+      <div className="main-content report-details-main">
 
         {/* ================= TOPBAR ================= */}
 
@@ -344,14 +353,14 @@ const ReportDetails = () => {
 
             <div
               className="icon-box"
-              onClick={() =>
-                setShowNotifications(
-                  !showNotifications
-                )
-              }
+              onClick={() => openNotifications(showNotifications, setShowNotifications, setNotifications)}
             >
 
               <FaBell className="notification-bell" />
+
+              {notifications.length > 0 && (
+                <span className="notification-dot has-notifications"></span>
+              )}
 
             </div>
 
@@ -369,27 +378,17 @@ const ReportDetails = () => {
 
                   </h3>
 
-                  <div className="notification-item">
-
-                    🚔 Officer assigned to
-                    your complaint
-                    CMP-2024-001
-
-                  </div>
-
-                  <div className="notification-item">
-
-                    📌 Your complaint is
-                    under investigation
-
-                  </div>
-
-                  <div className="notification-item">
-
-                    ✅ Complaint submitted
-                    successfully
-
-                  </div>
+                  {notifications.length > 0 ? (
+                    notifications.map((item,index)=>(
+                      <div className="notification-item" key={index}>
+                        {item.message || item}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="notification-item">
+                      No notifications yet
+                    </div>
+                  )}
 
                 </div>
 
@@ -410,7 +409,7 @@ const ReportDetails = () => {
 
               <div className="profile-circle">
 
-                JS
+                {getCitizenInitials(citizen)}
 
               </div>
 
@@ -540,9 +539,8 @@ const ReportDetails = () => {
             <div className="time-container">
 
               <input
-                type="text"
+                type="time"
                 name="incidentTime"
-                placeholder="HH:MM"
                 className="time-input"
                 value={formData.incidentTime}
                 onChange={handleChange}

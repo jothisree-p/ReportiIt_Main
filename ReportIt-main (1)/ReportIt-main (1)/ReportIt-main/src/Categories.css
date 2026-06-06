@@ -156,6 +156,12 @@ body{
   gap:15px;
 }
 
+.topbar-right{
+  display:flex;
+  align-items:center;
+  gap:18px;
+}
+
 /* Standardized via index.css:
 .back-btn{
   width:50px;

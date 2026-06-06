@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import "./AdminProfile.css";
 
@@ -22,10 +22,31 @@ FaFileAlt,
 } from "react-icons/fa";
 
 import { useNavigate } from "react-router-dom";
+import { getAuth } from "./authStorage";
+import { fetchMyProfile, updateMyProfile } from "./api/profiles";
+
+const isStoredAvatar = (value) =>
+  typeof value === "string" &&
+  value.trim() &&
+  !value.startsWith("blob:") &&
+  (value.startsWith("data:image/") ||
+    value.startsWith("http://") ||
+    value.startsWith("https://") ||
+    value.startsWith("/"));
+
+const getInitials = (name = "Admin") =>
+  name
+    .trim()
+    .split(/\s+/)
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase() || "AD";
 
 const AdminProfile = () => {
 
   const navigate = useNavigate();
+  const auth = getAuth();
 
   /* ================= STATES ================= */
 
@@ -46,13 +67,7 @@ const AdminProfile = () => {
   });
 
   const [profileImage,setProfileImage] =
-  useState(
-
-    localStorage.getItem(
-      "adminProfileImage"
-    ) || "/admin.png"
-
-  );
+  useState("");
 
   const [tempImage,setTempImage] =
   useState(null);
@@ -60,17 +75,37 @@ const AdminProfile = () => {
   const [adminData,setAdminData] =
   useState({
 
-    name:"Admin",
-    email:"admin@reportit.com",
-    phone:"+91 98765 43210",
-    location:"Coimbatore, India",
-    department:"Crime Management",
-    adminId:"ADM-2024-001",
+    name:auth?.fullName || "Admin",
+    email:auth?.email || "",
+    phone:auth?.phone || "",
+    location:"",
+    department:"",
+    adminId:"",
 
   });
 
   const [editData,setEditData] =
   useState(adminData);
+
+  useEffect(() => {
+    fetchMyProfile()
+      .then((data) => {
+        const next = {
+          name:data.fullName || auth?.fullName || "Admin",
+          email:data.email || auth?.email || "",
+          phone:data.phone || "",
+          location:data.address || "",
+          department:data.department || "",
+          adminId:data.displayId || "",
+        };
+        setAdminData(next);
+        setEditData(next);
+        if (isStoredAvatar(data.avatarUrl)) {
+          setProfileImage(data.avatarUrl);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   /* ================= IMAGE ================= */
 
@@ -79,12 +114,11 @@ const AdminProfile = () => {
     const file = e.target.files[0];
 
     if(file){
-
-      const imageUrl =
-      URL.createObjectURL(file);
-
-      setTempImage(imageUrl);
-
+      const reader = new FileReader();
+      reader.onload = () => {
+        setTempImage(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
 
   };
@@ -117,15 +151,34 @@ const AdminProfile = () => {
 
   };
 
-  const handleEditSave = () => {
+  const handleEditSave = async () => {
 
-    setAdminData(editData);
+    try {
+      const saved = await updateMyProfile({
+        phone: editData.phone,
+        address: editData.location,
+        department: editData.department,
+        displayId: editData.adminId,
+        avatarUrl: isStoredAvatar(profileImage) ? profileImage : "",
+      });
 
-    setShowEdit(false);
+      setAdminData({
+        name:saved.fullName || editData.name,
+        email:saved.email || editData.email,
+        phone:saved.phone || editData.phone,
+        location:saved.address || editData.location,
+        department:saved.department || editData.department,
+        adminId:saved.displayId || editData.adminId,
+      });
 
-    alert(
-      "Profile updated successfully!"
-    );
+      setShowEdit(false);
+
+      alert(
+        "Profile updated successfully!"
+      );
+    } catch (err) {
+      alert(err.message || "Failed to update profile");
+    }
 
   };
 
@@ -157,10 +210,10 @@ const AdminProfile = () => {
 
   /* ================= LOGOUT ================= */
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
 
     const confirmLogout =
-    window.confirm(
+    await window.__reportItShowConfirm(
       "Are you sure you want to logout?"
     );
 
@@ -332,11 +385,17 @@ const AdminProfile = () => {
 
             <div className="admin-image-box">
 
-              <img
-                src={tempImage || profileImage}
-                alt="admin"
-                className="admin-image"
-              />
+              {tempImage || isStoredAvatar(profileImage) ? (
+                <img
+                  src={tempImage || profileImage}
+                  alt="admin"
+                  className="admin-image"
+                />
+              ) : (
+                <div className="admin-image admin-initials">
+                  {getInitials(adminData.name)}
+                </div>
+              )}
 
               <label className="camera-btn">
 
@@ -363,12 +422,15 @@ const AdminProfile = () => {
 
                     setProfileImage(tempImage);
 
-                    localStorage.setItem(
-                      "adminProfileImage",
-                      tempImage
-                    );
-
                     setTempImage(null);
+
+                    updateMyProfile({
+                      phone: adminData.phone,
+                      address: adminData.location,
+                      department: adminData.department,
+                      displayId: adminData.adminId,
+                      avatarUrl: tempImage,
+                    }).catch(() => {});
 
                     alert(
                       "Profile image updated successfully!"

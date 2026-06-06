@@ -35,11 +35,10 @@ public class AuthController {
 
     @PostMapping("/otp/send")
     public ResponseEntity<Map<String, String>> sendOtp(@Valid @RequestBody OtpSendRequest request) {
-        String otp = otpService.sendOtp(request.getEmail(), request.getPurpose());
+        otpService.sendOtp(request.getEmail(), request.getPurpose());
         return ResponseEntity.ok(Map.of(
-                "message", "OTP sent successfully",
-                "otp", otp,
-                "note", "OTP returned for testing only; remove in production"));
+                "message", "OTP sent successfully to your registered email",
+                "note", "The OTP expires in 1 minute."));
     }
 
     @PostMapping("/otp/verify")

@@ -11,6 +11,7 @@ from "react-router-dom";
 import "./ManageUsers.css";
 
 import AIChat from "./AIChat";
+import AdminNotificationBell from "./AdminNotificationBell";
 
 import {
 
@@ -31,6 +32,7 @@ import {
 import { fetchCitizens, updateUserStatus } from "./api/users";
 import { useComplaints } from "./hooks/useComplaints";
 import { fetchAllComplaints } from "./api/complaints";
+import { fetchComplaintFiles } from "./api/files";
 import { clearAuth } from "./authStorage";
 
 const ManageUsers = () => {
@@ -42,6 +44,7 @@ const ManageUsers = () => {
 
   const [selectedUser,setSelectedUser] =
   useState(null);
+  const [selectedUserFiles, setSelectedUserFiles] = useState({});
 
   /* ================= PAGINATION ================= */
 
@@ -54,6 +57,32 @@ const ManageUsers = () => {
 
   const [users, setUsers] = useState([]);
   const { complaints } = useComplaints(fetchAllComplaints);
+
+  const selectedUserComplaints = selectedUser
+    ? complaints.filter(
+        (complaint) =>
+          complaint.citizenId === selectedUser.id ||
+          complaint.citizen === selectedUser.name ||
+          complaint.citizen === selectedUser.fullName
+      )
+    : [];
+
+  useEffect(() => {
+    if (!selectedUser) {
+      setSelectedUserFiles({});
+      return;
+    }
+
+    Promise.all(
+      selectedUserComplaints
+        .filter((complaint) => complaint.backendId)
+        .map((complaint) =>
+          fetchComplaintFiles(complaint.backendId)
+            .then((files) => [complaint.backendId, files])
+            .catch(() => [complaint.backendId, []])
+        )
+    ).then((entries) => setSelectedUserFiles(Object.fromEntries(entries)));
+  }, [selectedUser, complaints]);
 
   useEffect(() => {
     fetchCitizens()
@@ -135,10 +164,10 @@ const ManageUsers = () => {
 
   /* ================= LOGOUT ================= */
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
 
     const confirmLogout =
-    window.confirm(
+    await window.__reportItShowConfirm(
       "Are you sure you want to logout?"
     );
 
@@ -297,6 +326,7 @@ const ManageUsers = () => {
           </div>
 
           <div className="topbar-right">
+            <AdminNotificationBell />
 
             <div
               className="profile-circle"
@@ -619,7 +649,7 @@ const ManageUsers = () => {
 
                     <div>
                       <span>Password</span>
-                      <strong>{selectedUser.password || "Not Set"}</strong>
+                      <strong>Protected</strong>
                     </div>
 
                     <div>
@@ -637,6 +667,34 @@ const ManageUsers = () => {
                       <strong>{selectedUser.complaints}</strong>
                     </div>
 
+                  </div>
+
+                  <div className="user-complaint-section">
+                    <h3>Complaints & Evidence</h3>
+                    {selectedUserComplaints.length > 0 ? (
+                      selectedUserComplaints.map((complaint) => (
+                        <div className="user-complaint-card" key={complaint.id}>
+                          <div>
+                            <strong>{complaint.id}</strong>
+                            <span>{complaint.title}</span>
+                            <small>{complaint.status} - {complaint.priority || "Priority pending"}</small>
+                          </div>
+                          <div className="user-file-list">
+                            {(selectedUserFiles[complaint.backendId] || []).length > 0 ? (
+                              selectedUserFiles[complaint.backendId].map((file) => (
+                                <a href={file.downloadUrl} target="_blank" rel="noreferrer" key={file.id}>
+                                  {file.fileName}
+                                </a>
+                              ))
+                            ) : (
+                              <span>No evidence uploaded</span>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="user-empty-note">No complaints filed by this user.</p>
+                    )}
                   </div>
 
                 </div>

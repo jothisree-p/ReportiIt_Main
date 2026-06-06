@@ -35,8 +35,12 @@ public class FileUploadController {
     public ResponseEntity<Resource> download(@PathVariable Long id) throws IOException {
         FileResponse meta = fileUploadService.findById(id);
         Resource resource = fileUploadService.loadAsResource(id);
+        MediaType mediaType = meta.getContentType() != null && !meta.getContentType().isBlank()
+                ? MediaType.parseMediaType(meta.getContentType())
+                : MediaType.APPLICATION_OCTET_STREAM;
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + meta.getFileName() + "\"")
+                .contentType(mediaType)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + meta.getFileName() + "\"")
                 .body(resource);
     }
 

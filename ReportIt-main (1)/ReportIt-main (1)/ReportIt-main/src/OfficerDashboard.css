@@ -524,7 +524,6 @@ body{
 
   padding:30px;
 
-  cursor:pointer;
 }
 
 .recent-case-card h3{
@@ -544,6 +543,14 @@ body{
 
   border-top:
   1px solid rgba(255,255,255,0.05);
+
+  cursor:pointer;
+
+  transition:0.25s;
+}
+
+.complaint-item:hover{
+  background:rgba(255,255,255,0.025);
 }
 
 .left-complaint{
@@ -593,6 +600,13 @@ body{
 .rejected-text{
   color:#ff4d88;
   font-weight:600;
+}
+
+.dashboard-empty-cases{
+  border-top:1px solid rgba(255,255,255,0.05);
+  padding:28px 0 4px;
+  color:#8b92bb;
+  font-size:15px;
 }
 
 /* ================= RESPONSIVE ================= */

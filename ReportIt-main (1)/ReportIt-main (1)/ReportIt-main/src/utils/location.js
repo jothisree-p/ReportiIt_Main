@@ -1,13 +1,11 @@
+import { reverseGeocode } from "../api/locations";
+
 const CHENNAI = { lat: 13.0827, lon: 80.2707 };
 
 export const fetchAddressFromCoords = async (latitude, longitude) => {
   try {
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
-      { headers: { Accept: "application/json" } }
-    );
-    const data = await response.json();
-    return data.display_name || `${latitude}, ${longitude}`;
+    const data = await reverseGeocode(latitude, longitude);
+    return data.displayName || `${latitude}, ${longitude}`;
   } catch {
     return `${latitude}, ${longitude}`;
   }

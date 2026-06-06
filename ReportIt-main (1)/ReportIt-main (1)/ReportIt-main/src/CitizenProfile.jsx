@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
@@ -29,6 +29,10 @@ import {
 } from "react-icons/fa";
 import { fetchAddressFromCoords } from "./utils/location";
 import { useMapEmbed } from "./hooks/useMapEmbed";
+import { fetchMyNotifications } from "./api/notifications";
+import { openNotifications } from "./notificationActions";
+import { fetchMyProfile, updateMyProfile } from "./api/profiles";
+import { setCurrentCitizen } from "./citizenSession";
 
 const CitizenProfile = () => {
 
@@ -37,13 +41,20 @@ const CitizenProfile = () => {
   const [showNotifications,
 setShowNotifications] =
 useState(false);
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    fetchMyNotifications()
+      .then(setNotifications)
+      .catch(() => setNotifications([]));
+  }, []);
 
   /* ================= LOGOUT ================= */
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
 
     const confirmLogout =
-    window.confirm(
+    await window.__reportItShowConfirm(
       "Are you sure you want to logout?"
     );
 
@@ -63,6 +74,8 @@ useState(false);
 
   const [isEditing,setIsEditing] =
   useState(false);
+  const [loadingProfile,setLoadingProfile] =
+  useState(true);
 
   /* ================= PROFILE DATA ================= */
 
@@ -83,11 +96,42 @@ useState(false);
 
     gender:"",
 
+    address1:"",
+
+    address2:"",
+
     address:"Chennai, India",
 
     mapQuery:"13.0827,80.2707",
 
   });
+
+  useEffect(() => {
+    fetchMyProfile()
+      .then((data) => {
+        const nextProfile = {
+          name:data.fullName || getCitizenName(citizen),
+          email:data.email || citizen.email || "",
+          phone:data.phone || citizen.phone || "",
+          age:data.age || "",
+          gender:data.gender || "",
+          address1:data.addressLine1 || "",
+          address2:data.addressLine2 || "",
+          address:data.address || "Chennai, India",
+          mapQuery:data.mapQuery || "13.0827,80.2707",
+        };
+        setProfile(nextProfile);
+        setCurrentCitizen({
+          ...citizen,
+          fullName: nextProfile.name,
+          email: nextProfile.email,
+          phone: nextProfile.phone,
+          userId: data.userId || citizen.userId,
+        });
+      })
+      .catch(() => {})
+      .finally(() => setLoadingProfile(false));
+  }, []);
 
   const mapSrc = useMapEmbed(profile.mapQuery, profile.address);
 
@@ -129,19 +173,42 @@ useState(false);
 
   /* ================= SAVE ================= */
 
-  const handleSave = () => {
+  const handleSave = async () => {
 
-    alert(
-      "Profile Updated Successfully!"
-    );
+    try {
+      const saved = await updateMyProfile({
+        phone: profile.phone,
+        age: profile.age,
+        gender: profile.gender,
+        addressLine1: profile.address1,
+        addressLine2: profile.address2,
+        address: profile.address,
+        mapQuery: profile.mapQuery,
+      });
 
-    setIsEditing(false);
+      setCurrentCitizen({
+        ...citizen,
+        fullName: saved.fullName || profile.name,
+        email: saved.email || profile.email,
+        phone: saved.phone || profile.phone,
+        userId: saved.userId || citizen.userId,
+      });
+
+      alert(
+        "Profile Updated Successfully!"
+      );
+
+      setIsEditing(false);
+    } catch (err) {
+      alert(err.message || "Failed to update profile");
+    }
+
 
   };
 
   return (
 
-    <div className="profile-container">
+    <div className="profile-container citizen-profile-container">
 
       {/* ================= SIDEBAR ================= */}
 
@@ -277,14 +344,14 @@ useState(false);
 
             <div
   className="icon-box"
-  onClick={() =>
-    setShowNotifications(
-      !showNotifications
-    )
-  }
+  onClick={() => openNotifications(showNotifications, setShowNotifications, setNotifications)}
 >
 
   <FaBell className="notification-bell" />
+
+  {notifications.length > 0 && (
+    <span className="notification-dot has-notifications"></span>
+  )}
 
 </div>
             {/* PROFILE */}
@@ -315,26 +382,17 @@ useState(false);
         Notifications
       </h3>
 
-      <div className="notification-item">
-
-        🚔 Officer assigned to your
-        complaint CMP-2024-001
-
-      </div>
-
-      <div className="notification-item">
-
-        📌 Your complaint is under
-        investigation
-
-      </div>
-
-      <div className="notification-item">
-
-        ✅ Complaint CMP-2024-006
-        resolved successfully
-
-      </div>
+      {notifications.length > 0 ? (
+        notifications.map((item,index)=>(
+          <div className="notification-item" key={index}>
+            {item.message || item}
+          </div>
+        ))
+      ) : (
+        <div className="notification-item">
+          No notifications yet
+        </div>
+      )}
 
     </div>
 
@@ -349,6 +407,10 @@ useState(false);
           <h1>
             My Profile
           </h1>
+
+          {loadingProfile && (
+            <p className="profile-loading">Loading profile...</p>
+          )}
 
           <div className="profile-card">
 
@@ -511,6 +573,52 @@ useState(false);
                     </option>
 
                   </select>
+
+                </div>
+
+              </div>
+
+              <div className="form-group">
+
+                <label>
+                  Address 1
+                </label>
+
+                <div className="input-box">
+
+                  <FaMapMarkerAlt className="input-icon" />
+
+                  <input
+                    type="text"
+                    name="address1"
+                    value={profile.address1}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    placeholder="House no, street"
+                  />
+
+                </div>
+
+              </div>
+
+              <div className="form-group">
+
+                <label>
+                  Address 2
+                </label>
+
+                <div className="input-box">
+
+                  <FaMapMarkerAlt className="input-icon" />
+
+                  <input
+                    type="text"
+                    name="address2"
+                    value={profile.address2}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    placeholder="Area, city"
+                  />
 
                 </div>
 

@@ -7,10 +7,11 @@ body{
 
 .report-container{
   width:100vw;
-  min-height:100vh;
+  height:100vh;
   display:flex;
   background:#05071d;
   color:white;
+  overflow:hidden;
 }
 
 /* ================= SIDEBAR ================= */
@@ -103,6 +104,8 @@ body{
   display:flex;
   flex-direction:column;
   position:relative;
+  min-width:0;
+  overflow-y:auto;
 }
 
 /* ================= TOPBAR ================= */
@@ -253,13 +256,17 @@ body{
 /* ================= CONTENT ================= */
 
 .report-content{
-  padding:40px;
-  overflow-y:auto;
+  width:100%;
+  max-width:1120px;
+  margin:0 auto;
+  padding:28px 36px 44px;
+  overflow:visible;
 }
 
 .report-content h1{
   font-size:42px;
-  margin-bottom:35px;
+  line-height:1.15;
+  margin-bottom:24px;
 }
 
 /* ================= STEPS ================= */
@@ -268,7 +275,7 @@ body{
   display:flex;
   align-items:center;
   gap:18px;
-  margin-bottom:45px;
+  margin-bottom:28px;
 }
 
 .step{
@@ -302,7 +309,7 @@ body{
 
 .choose-text{
   color:#bdbdbd;
-  margin-bottom:30px;
+  margin-bottom:22px;
   font-size:17px;
 }
 
@@ -310,12 +317,12 @@ body{
 
 .crime-cards{
   display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:25px;
+  grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+  gap:18px;
 }
 
 .crime-card{
-  height:170px;
+  height:142px;
   background:#0b1336;
   border:1px solid rgba(255,255,255,0.05);
   border-radius:18px;
@@ -333,19 +340,19 @@ body{
 }
 
 .crime-icon{
-  font-size:42px;
+  font-size:34px;
   color:#00bfff;
-  margin-bottom:18px;
+  margin-bottom:14px;
 }
 
 .crime-card h3{
-  font-size:22px;
+  font-size:18px;
 }
 
 /* ================= OTHER ================= */
 
 .other-box{
-  margin-top:30px;
+  margin-top:22px;
   display:flex;
   gap:15px;
 }

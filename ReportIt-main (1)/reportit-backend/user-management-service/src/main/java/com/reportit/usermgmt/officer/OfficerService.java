@@ -55,6 +55,16 @@ public class OfficerService {
                 .zone(request.getZone())
                 .initials(request.getInitials())
                 .activeCases(request.getActiveCases())
+                .age(request.getAge())
+                .gender(request.getGender())
+                .station(request.getStation())
+                .department(request.getDepartment())
+                .experience(request.getExperience())
+                .shift(request.getShift())
+                .address(request.getAddress())
+                .mapQuery(request.getMapQuery())
+                .emergency(request.getEmergency())
+                .joinedDate(request.getJoinedDate())
                 .build();
         return toResponse(officerRepository.save(officer));
     }
@@ -82,15 +92,33 @@ public class OfficerService {
         if (request.getZone() != null) officer.setZone(request.getZone());
         if (request.getInitials() != null) officer.setInitials(request.getInitials());
         if (request.getActiveCases() != null) officer.setActiveCases(request.getActiveCases());
+        if (request.getAge() != null) officer.setAge(request.getAge());
+        if (request.getGender() != null) officer.setGender(request.getGender());
+        if (request.getStation() != null) officer.setStation(request.getStation());
+        if (request.getDepartment() != null) officer.setDepartment(request.getDepartment());
+        if (request.getExperience() != null) officer.setExperience(request.getExperience());
+        if (request.getShift() != null) officer.setShift(request.getShift());
+        if (request.getAddress() != null) officer.setAddress(request.getAddress());
+        if (request.getMapQuery() != null) officer.setMapQuery(request.getMapQuery());
+        if (request.getEmergency() != null) officer.setEmergency(request.getEmergency());
+        if (request.getJoinedDate() != null) officer.setJoinedDate(request.getJoinedDate());
         userRepository.save(user);
         return toResponse(officerRepository.save(officer));
     }
 
     @Transactional
     public void delete(Long userId) {
+        deactivate(userId);
+    }
+
+    @Transactional
+    public OfficerResponse deactivate(Long userId) {
         Officer officer = getOfficer(userId);
-        officerRepository.delete(officer);
-        userRepository.delete(officer.getUser());
+        User user = officer.getUser();
+        user.setStatus("Inactive");
+        officer.setActiveCases("Inactive");
+        userRepository.save(user);
+        return toResponse(officerRepository.save(officer));
     }
 
     private Officer getOfficer(Long userId) {
@@ -111,6 +139,16 @@ public class OfficerService {
                 .zone(officer.getZone())
                 .initials(officer.getInitials())
                 .activeCases(officer.getActiveCases())
+                .age(officer.getAge())
+                .gender(officer.getGender())
+                .station(officer.getStation())
+                .department(officer.getDepartment())
+                .experience(officer.getExperience())
+                .shift(officer.getShift())
+                .address(officer.getAddress())
+                .mapQuery(officer.getMapQuery())
+                .emergency(officer.getEmergency())
+                .joinedDate(officer.getJoinedDate())
                 .build();
     }
 
@@ -126,6 +164,16 @@ public class OfficerService {
         private String initials;
         private String activeCases;
         private String status;
+        private String age;
+        private String gender;
+        private String station;
+        private String department;
+        private String experience;
+        private String shift;
+        private String address;
+        private String mapQuery;
+        private String emergency;
+        private String joinedDate;
     }
 
     @Data
@@ -141,5 +189,15 @@ public class OfficerService {
         private String zone;
         private String initials;
         private String activeCases;
+        private String age;
+        private String gender;
+        private String station;
+        private String department;
+        private String experience;
+        private String shift;
+        private String address;
+        private String mapQuery;
+        private String emergency;
+        private String joinedDate;
     }
 }

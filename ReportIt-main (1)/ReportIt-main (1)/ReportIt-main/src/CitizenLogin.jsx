@@ -42,6 +42,9 @@ const CitizenLogin = () => {
   setForgotEmail] =
   useState("");
 
+  const [sendingOtp, setSendingOtp] =
+  useState(false);
+
   /* ================= INPUT CHANGE ================= */
 
   const handleChange = (e) => {
@@ -84,6 +87,7 @@ const CitizenLogin = () => {
       setCurrentCitizen({
         fullName: auth.fullName,
         email: auth.email,
+        phone: auth.phone || "",
         userId: auth.userId,
       });
       alert("Login Successful!");
@@ -97,6 +101,7 @@ const CitizenLogin = () => {
   /* ================= OTP ================= */
 
   const handleSendOTP = async () => {
+    if (sendingOtp) return;
 
     if(
       forgotEmail.trim() === ""
@@ -109,11 +114,18 @@ const CitizenLogin = () => {
     }
 
     try {
+      setSendingOtp(true);
       const result = await sendOtp(forgotEmail, "FORGOT_PASSWORD");
-      alert(result.note ? `${result.message} (OTP: ${result.otp})` : result.message);
-      navigate("/verify-otp");
+      alert(result.message || "OTP sent successfully!");
+      if (!result.cooldown) {
+        navigate("/verify-otp", {
+          state: { email: forgotEmail, returnTo: "/citizen-login" },
+        });
+      }
     } catch (err) {
       alert(err instanceof ApiError ? err.message : "Failed to send OTP");
+    } finally {
+      setSendingOtp(false);
     }
 
   };
@@ -346,9 +358,10 @@ const CitizenLogin = () => {
                 <button
                   className="send-btn"
                   onClick={handleSendOTP}
+                  disabled={sendingOtp}
                 >
 
-                  Send OTP
+                  {sendingOtp ? "Sending..." : "Send OTP"}
 
                 </button>
 

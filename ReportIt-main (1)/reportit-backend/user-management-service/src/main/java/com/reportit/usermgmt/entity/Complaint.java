@@ -44,7 +44,7 @@ public class Complaint {
     private String incidentTime;
 
     @Builder.Default
-    private String priority = "Medium";
+    private String priority = "Pending";
 
     @Builder.Default
     private String status = "Pending";
@@ -62,6 +62,13 @@ public class Complaint {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Builder.Default
+    @Column(name = "citizen_deleted", nullable = false)
+    private Boolean citizenDeleted = false;
+
+    @Column(name = "citizen_deleted_at")
+    private LocalDateTime citizenDeletedAt;
 
     @PrePersist
     void onCreate() {

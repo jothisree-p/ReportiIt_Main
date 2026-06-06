@@ -2,6 +2,12 @@ import { AUTH_URL } from "./config";
 import { apiRequest } from "./http";
 import { saveAuth } from "../authStorage";
 
+const otpCooldownMs = 60_000;
+const otpRequests = new Map();
+
+const getOtpKey = (email, purpose) =>
+  `${String(email || "").trim().toLowerCase()}::${String(purpose || "").toUpperCase()}`;
+
 export const registerCitizen = async (payload) => {
   const response = await apiRequest("/api/auth/register", {
     baseUrl: AUTH_URL,
@@ -24,13 +30,40 @@ export const login = async (email, password, role) => {
   return response;
 };
 
-export const sendOtp = (email, purpose) =>
-  apiRequest("/api/auth/otp/send", {
+export const sendOtp = async (email, purpose) => {
+  const key = getOtpKey(email, purpose);
+  const existing = otpRequests.get(key);
+  const now = Date.now();
+
+  if (existing?.pending) {
+    return existing.pending;
+  }
+
+  if (existing?.sentAt && now - existing.sentAt < otpCooldownMs) {
+    return {
+      message: "OTP already sent. Please check your email before requesting again.",
+      cooldown: true,
+    };
+  }
+
+  const pending = apiRequest("/api/auth/otp/send", {
     baseUrl: AUTH_URL,
     auth: false,
     method: "POST",
     body: { email, purpose },
-  });
+  })
+    .then((response) => {
+      otpRequests.set(key, { sentAt: Date.now() });
+      return response;
+    })
+    .catch((error) => {
+      otpRequests.set(key, { sentAt: Date.now() });
+      throw error;
+    });
+
+  otpRequests.set(key, { pending });
+  return pending;
+};
 
 export const verifyOtp = (email, otp, purpose) =>
   apiRequest("/api/auth/otp/verify", {
@@ -38,4 +71,12 @@ export const verifyOtp = (email, otp, purpose) =>
     auth: false,
     method: "POST",
     body: { email, otp, purpose },
+  });
+
+export const resetPassword = (email, otp, newPassword) =>
+  apiRequest("/api/auth/forgot-password", {
+    baseUrl: AUTH_URL,
+    auth: false,
+    method: "POST",
+    body: { email, otp, newPassword },
   });

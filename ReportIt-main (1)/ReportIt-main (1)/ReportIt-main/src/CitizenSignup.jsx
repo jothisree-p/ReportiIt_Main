@@ -18,6 +18,9 @@ import { registerCitizen } from "./api/auth";
 import { ApiError } from "./api/http";
 import { setCurrentCitizen } from "./citizenSession";
 
+const passwordRule =
+  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{7,}$/;
+
 const CitizenSignup = () => {
 
   const navigate = useNavigate();
@@ -94,6 +97,13 @@ const CitizenSignup = () => {
 
       return;
 
+    }
+
+    if (!passwordRule.test(password)) {
+      alert(
+        "Password must be more than 6 characters and include letters, numbers, and a symbol."
+      );
+      return;
     }
 
     try {

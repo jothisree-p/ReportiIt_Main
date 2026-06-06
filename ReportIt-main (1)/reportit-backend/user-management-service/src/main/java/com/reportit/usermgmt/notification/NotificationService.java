@@ -27,13 +27,30 @@ public class NotificationService {
     public NotificationResponse create(NotificationRequest request) {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
+        return toResponse(createForUser(user, request.getTitle(), request.getMessage()));
+    }
+
+    @Transactional
+    public void notifyAdmins(String title, String message) {
+        userRepository.findByRole_Name("ADMIN")
+                .forEach(admin -> createForUser(admin, title, message));
+    }
+
+    @Transactional
+    public void notifyUser(User user, String title, String message) {
+        if (user != null) {
+            createForUser(user, title, message);
+        }
+    }
+
+    private Notification createForUser(User user, String title, String message) {
         Notification notification = Notification.builder()
                 .user(user)
-                .title(request.getTitle())
-                .message(request.getMessage())
+                .title(title)
+                .message(message)
                 .isRead(false)
                 .build();
-        return toResponse(notificationRepository.save(notification));
+        return notificationRepository.save(notification);
     }
 
     public List<NotificationResponse> findMine() {

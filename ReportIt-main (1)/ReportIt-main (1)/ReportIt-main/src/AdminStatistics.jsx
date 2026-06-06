@@ -1,5 +1,7 @@
 import React,
 {
+  useEffect,
+  useState,
   useRef
 }
 from "react";
@@ -39,72 +41,52 @@ import html2canvas from "html2canvas";
 import "./AdminStatistics.css";
 
 import AIChat from "./AIChat";
-import { useComplaints } from "./hooks/useComplaints";
-import { fetchAllComplaints } from "./api/complaints";
+import AdminNotificationBell from "./AdminNotificationBell";
+import { fetchAdminAnalytics } from "./api/dashboard";
 
 const AdminStatistics = () => {
 
   const navigate = useNavigate();
 
   const pdfRef = useRef();
-  const { complaints, stats: complaintStats } = useComplaints(fetchAllComplaints);
+  const [analytics, setAnalytics] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  /* ================= WEEKLY DATA ================= */
+  useEffect(() => {
+    fetchAdminAnalytics()
+      .then((data) => {
+        setAnalytics(data);
+        setError("");
+      })
+      .catch((err) => setError(err.message || "Failed to load analytics"))
+      .finally(() => setLoading(false));
+  }, []);
 
-  const weeklyData = [
+  const complaintStats = analytics?.stats || {
+    totalComplaints: 0,
+    resolved: 0,
+    pending: 0,
+    resolutionRate: 0,
+  };
 
-    { day:"Mon", cases:4 },
+  const weeklyData = (analytics?.weeklyComplaintTrends || []).map((item) => ({
+    day: item.label,
+    cases: item.total,
+  }));
 
-    { day:"Tue", cases:7 },
-
-    { day:"Wed", cases:5 },
-
-    { day:"Thu", cases:9 },
-
-    { day:"Fri", cases:6 },
-
-    { day:"Sat", cases:11 },
-
-    { day:"Sun", cases:8 },
-
-  ];
-
-  /* ================= MONTHLY DATA ================= */
-
-  const monthlyData = [
-
-    { month:"Jan", solved:35 },
-
-    { month:"Feb", solved:48 },
-
-    { month:"Mar", solved:52 },
-
-    { month:"Apr", solved:41 },
-
-    { month:"May", solved:60 },
-
-    { month:"Jun", solved:72 },
-
-    { month:"Jul", solved:64 },
-
-    { month:"Aug", solved:58 },
-
-    { month:"Sep", solved:76 },
-
-    { month:"Oct", solved:82 },
-
-    { month:"Nov", solved:69 },
-
-    { month:"Dec", solved:91 },
-
-  ];
+  const monthlyData = (analytics?.monthlyComplaintTrends || []).map((item) => ({
+    month: item.label,
+    complaints: item.total,
+    resolved: item.resolved,
+  }));
 
   /* ================= LOGOUT ================= */
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
 
     const confirmLogout =
-    window.confirm(
+    await window.__reportItShowConfirm(
       "Are you sure you want to logout?"
     );
 
@@ -324,6 +306,8 @@ const AdminStatistics = () => {
 
           <div className="statistics-topbar-right">
 
+            <AdminNotificationBell />
+
             {/* EXPORT PDF */}
 
             <button
@@ -375,7 +359,7 @@ const AdminStatistics = () => {
 
               <p>Total Complaints</p>
 
-              <h2>{complaintStats.total}</h2>
+              <h2>{complaintStats.totalComplaints}</h2>
 
             </div>
 
@@ -406,6 +390,18 @@ const AdminStatistics = () => {
           </div>
 
           {/* ================= CHARTS ================= */}
+
+          {loading && (
+            <p style={{ color: "#9ca3d2", padding: "1rem 0" }}>
+              Loading analytics...
+            </p>
+          )}
+
+          {error && (
+            <p style={{ color: "#ff7b7b", padding: "1rem 0" }}>
+              {error}
+            </p>
+          )}
 
           <div className="statistics-chart-grid">
 
@@ -489,7 +485,14 @@ const AdminStatistics = () => {
 
                   <Line
                     type="monotone"
-                    dataKey="solved"
+                    dataKey="complaints"
+                    stroke="#00bfff"
+                    strokeWidth={4}
+                  />
+
+                  <Line
+                    type="monotone"
+                    dataKey="resolved"
                     stroke="#00d084"
                     strokeWidth={4}
                   />

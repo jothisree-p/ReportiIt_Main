@@ -2,7 +2,6 @@ import { fetchOfficers } from "./api/officers";
 import { getAuth, getOfficerSession, saveOfficerSession } from "./authStorage";
 
 const DEFAULT_OFFICER = {
-  initials: "OF",
   name: "Officer",
   position: "Inspector",
   email: "",
@@ -29,7 +28,6 @@ export const getOfficerEmailInitial = (officer = getCurrentOfficer()) => {
 };
 
 export const getOfficerInitials = (officer = getCurrentOfficer()) => {
-  if (officer?.initials) return officer.initials;
   return getOfficerEmailInitial(officer);
 };
 
@@ -61,23 +59,29 @@ export const getOfficerWelcomeText = (officer = getCurrentOfficer()) =>
 
 export const getCurrentOfficer = () => {
   const storedOfficer = getOfficerSession();
-  if (storedOfficer) return storedOfficer;
-
   const auth = getAuth();
+
   if (auth?.role === "OFFICER") {
     return {
-      id: auth.userId,
-      userId: auth.userId,
-      name: auth.fullName,
-      email: auth.email,
-      position: "Officer",
+      ...(storedOfficer || {}),
+      id: auth.userId || storedOfficer?.id,
+      userId: auth.userId || storedOfficer?.userId,
+      name: auth.fullName || storedOfficer?.name,
+      email: auth.email || storedOfficer?.email,
+      position:
+        storedOfficer?.position ||
+        storedOfficer?.rank ||
+        getOfficerPosition({ name: auth.fullName }),
     };
   }
+
+  if (storedOfficer) return storedOfficer;
 
   return DEFAULT_OFFICER;
 };
 
 export const setCurrentOfficerByEmail = async (email) => {
+  const currentOfficer = getCurrentOfficer();
   const officers = await fetchOfficers();
   const normalizedEmail = email.trim().toLowerCase();
 
@@ -89,8 +93,13 @@ export const setCurrentOfficerByEmail = async (email) => {
 
   saveOfficerSession({
     ...matchedOfficer,
-    name: getOfficerDisplayName(matchedOfficer),
-    rank: getOfficerPosition(matchedOfficer),
+    name: currentOfficer?.name || getOfficerDisplayName(matchedOfficer),
+    email: currentOfficer?.email || matchedOfficer.email,
+    rank: currentOfficer?.rank || getOfficerPosition(matchedOfficer),
+    position:
+      currentOfficer?.position && currentOfficer.position !== "Officer"
+        ? currentOfficer.position
+        : matchedOfficer.position,
   });
 
   return matchedOfficer;

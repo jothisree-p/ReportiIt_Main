@@ -5,8 +5,8 @@ import com.reportit.usermgmt.common.AuthHelper;
 import com.reportit.usermgmt.common.UserProvisioningService;
 import com.reportit.usermgmt.entity.Complaint;
 import com.reportit.usermgmt.entity.ComplaintNote;
-import com.reportit.usermgmt.entity.Notification;
 import com.reportit.usermgmt.entity.User;
+import com.reportit.usermgmt.notification.NotificationService;
 import com.reportit.usermgmt.repository.*;
 import com.reportit.usermgmt.status.StatusService;
 import lombok.Builder;
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,9 +29,9 @@ public class ComplaintService {
     private final ComplaintRepository complaintRepository;
     private final UserRepository userRepository;
     private final ComplaintNoteRepository noteRepository;
-    private final NotificationRepository notificationRepository;
     private final StatusService statusService;
     private final UserProvisioningService userProvisioningService;
+    private final NotificationService notificationService;
 
     @Transactional
     public ComplaintResponse create(ComplaintRequest request) {
@@ -46,7 +47,7 @@ public class ComplaintService {
                 .longitude(request.getLongitude())
                 .incidentDate(request.getIncidentDate())
                 .incidentTime(request.getIncidentTime())
-                .priority(request.getPriority() != null ? request.getPriority() : "Medium")
+                .priority("Pending")
                 .status("Pending")
                 .citizen(citizen)
                 .build();
@@ -54,6 +55,8 @@ public class ComplaintService {
         complaint = complaintRepository.save(complaint);
         statusService.recordStatusChange(complaint, null, "Pending", citizen, "Complaint filed");
         notify(citizen, "Complaint Submitted", "Your complaint " + complaint.getComplaintCode() + " was submitted.");
+        notificationService.notifyAdmins("New Complaint Reported",
+                citizen.getFullName() + " reported " + complaint.getComplaintCode() + ": " + complaint.getTitle());
         return toResponse(complaint);
     }
 
@@ -67,7 +70,10 @@ public class ComplaintService {
 
     public List<ComplaintResponse> findMyComplaints() {
         User citizen = userProvisioningService.ensureCurrentUser();
-        return complaintRepository.findByCitizen_Id(citizen.getId()).stream().map(this::toResponse).collect(Collectors.toList());
+        return complaintRepository.findByCitizen_Id(citizen.getId()).stream()
+                .filter(complaint -> !Boolean.TRUE.equals(complaint.getCitizenDeleted()))
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     public List<ComplaintResponse> findAssignedToMe() {
@@ -86,16 +92,27 @@ public class ComplaintService {
         if (request.getLocationText() != null) complaint.setLocationText(request.getLocationText());
         if (request.getLatitude() != null) complaint.setLatitude(request.getLatitude());
         if (request.getLongitude() != null) complaint.setLongitude(request.getLongitude());
+        if (request.getIncidentDate() != null) complaint.setIncidentDate(request.getIncidentDate());
+        if (request.getIncidentTime() != null) complaint.setIncidentTime(request.getIncidentTime());
         if (request.getPriority() != null) complaint.setPriority(request.getPriority());
         if (request.getStatus() != null) complaint.setStatus(request.getStatus());
 
         complaint = complaintRepository.save(complaint);
+        User changer = userRepository.findById(AuthHelper.currentUser().getUserId()).orElse(null);
+
+        if (changer != null && "CITIZEN".equalsIgnoreCase(AuthHelper.currentUser().getRole())) {
+            notificationService.notifyAdmins("Complaint Edited by Citizen",
+                    complaint.getComplaintCode() + " was updated by " + changer.getFullName() + ".");
+        }
 
         if (request.getStatus() != null && !request.getStatus().equals(oldStatus)) {
-            User changer = userRepository.findById(AuthHelper.currentUser().getUserId()).orElse(null);
             statusService.recordStatusChange(complaint, oldStatus, request.getStatus(), changer, request.getRemark());
             notify(complaint.getCitizen(), "Status Updated",
                     "Complaint " + complaint.getComplaintCode() + " is now " + request.getStatus());
+            if ("Resolved".equalsIgnoreCase(request.getStatus())) {
+                notificationService.notifyAdmins("Case Solved",
+                        "Officer marked " + complaint.getComplaintCode() + " as resolved.");
+            }
         }
 
         if (request.getNote() != null && !request.getNote().isBlank()) {
@@ -119,7 +136,7 @@ public class ComplaintService {
             throw new ApiException("User is not an officer", HttpStatus.BAD_REQUEST);
         }
         complaint.setAssignedOfficer(officer);
-        complaint.setStatus("In Progress");
+        complaint.setStatus("Assigned");
         complaint = complaintRepository.save(complaint);
         notify(officer, "Case Assigned", "Complaint " + complaint.getComplaintCode() + " assigned to you.");
         notify(complaint.getCitizen(), "Officer Assigned", "An officer was assigned to " + complaint.getComplaintCode());
@@ -128,10 +145,16 @@ public class ComplaintService {
 
     @Transactional
     public void delete(Long id) {
-        if (!complaintRepository.existsById(id)) {
-            throw new ApiException("Complaint not found", HttpStatus.NOT_FOUND);
+        Complaint complaint = getComplaint(id);
+        Long currentUserId = AuthHelper.currentUser().getUserId();
+        if (complaint.getCitizen() != null && !complaint.getCitizen().getId().equals(currentUserId)) {
+            throw new ApiException("Only the complaint owner can delete it from My Complaints", HttpStatus.FORBIDDEN);
         }
-        complaintRepository.deleteById(id);
+        complaint.setCitizenDeleted(true);
+        complaint.setCitizenDeletedAt(LocalDateTime.now());
+        complaintRepository.save(complaint);
+        notificationService.notifyAdmins("Complaint Deleted by Citizen",
+                complaint.getComplaintCode() + " was removed from the citizen view but kept in admin records.");
     }
 
     private Complaint getComplaint(Long id) {
@@ -145,15 +168,14 @@ public class ComplaintService {
     }
 
     private void notify(User user, String title, String message) {
-        notificationRepository.save(Notification.builder()
-                .user(user)
-                .title(title)
-                .message(message)
-                .isRead(false)
-                .build());
+        notificationService.notifyUser(user, title, message);
     }
 
     private ComplaintResponse toResponse(Complaint c) {
+        List<String> notes = noteRepository.findByComplaint_IdOrderByCreatedAtDesc(c.getId())
+                .stream().map(com.reportit.usermgmt.entity.ComplaintNote::getNoteText)
+                .collect(Collectors.toList());
+
         return ComplaintResponse.builder()
                 .id(c.getId())
                 .complaintCode(c.getComplaintCode())
@@ -172,6 +194,9 @@ public class ComplaintService {
                 .assignedOfficerId(c.getAssignedOfficer() != null ? c.getAssignedOfficer().getId() : null)
                 .assignedOfficerName(c.getAssignedOfficer() != null ? c.getAssignedOfficer().getFullName() : null)
                 .createdAt(c.getCreatedAt())
+                .citizenDeleted(Boolean.TRUE.equals(c.getCitizenDeleted()))
+                .citizenDeletedAt(c.getCitizenDeletedAt())
+                .investigationNotes(notes)
                 .build();
     }
 
@@ -196,6 +221,8 @@ public class ComplaintService {
         private String locationText;
         private java.math.BigDecimal latitude;
         private java.math.BigDecimal longitude;
+        private LocalDate incidentDate;
+        private String incidentTime;
         private String priority;
         private String status;
         private String remark;
@@ -222,5 +249,8 @@ public class ComplaintService {
         private Long assignedOfficerId;
         private String assignedOfficerName;
         private java.time.LocalDateTime createdAt;
+        private Boolean citizenDeleted;
+        private java.time.LocalDateTime citizenDeletedAt;
+        private List<String> investigationNotes;
     }
 }

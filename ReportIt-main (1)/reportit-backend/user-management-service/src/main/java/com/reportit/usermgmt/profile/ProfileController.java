@@ -30,6 +30,11 @@ public class ProfileController {
         return ResponseEntity.ok(profileService.getMe());
     }
 
+    @PutMapping("/me")
+    public ResponseEntity<ProfileResponse> updateMe(@RequestBody ProfileRequest request) {
+        return ResponseEntity.ok(profileService.updateMe(request));
+    }
+
     @GetMapping("/{userId}")
     public ResponseEntity<ProfileResponse> getById(@PathVariable Long userId) {
         return ResponseEntity.ok(profileService.getByUserId(userId));

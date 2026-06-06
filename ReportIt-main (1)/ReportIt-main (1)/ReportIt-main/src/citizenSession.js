@@ -24,8 +24,20 @@ export const getCurrentCitizen = () => {
 };
 
 export const setCurrentCitizen = (citizen) => {
-  saveCitizenSession(citizen);
-  return citizen;
+  const existing = getCitizenSession();
+  const sameCitizen =
+    existing?.email &&
+    citizen?.email &&
+    existing.email.trim().toLowerCase() === citizen.email.trim().toLowerCase();
+
+  const nextCitizen = {
+    ...(sameCitizen ? existing : {}),
+    ...citizen,
+    phone: citizen.phone || (sameCitizen ? existing.phone : "") || "",
+  };
+
+  saveCitizenSession(nextCitizen);
+  return nextCitizen;
 };
 
 export const getCitizenName = (citizen = getCurrentCitizen()) =>

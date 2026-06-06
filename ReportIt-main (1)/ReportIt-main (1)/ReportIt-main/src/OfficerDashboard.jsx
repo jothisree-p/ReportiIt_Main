@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { clearAuth } from "./authStorage";
 
 import { Link, useNavigate } from "react-router-dom";
@@ -13,6 +13,8 @@ import {
 } from "./officerSession";
 import { useComplaints } from "./hooks/useComplaints";
 import { fetchAssignedComplaints } from "./api/complaints";
+import { fetchMyNotifications } from "./api/notifications";
+import { openNotifications } from "./notificationActions";
 
 import {
 
@@ -37,16 +39,23 @@ const OfficerDashboard = () => {
   const [showNotifications,
   setShowNotifications] =
   useState(false);
+  const [notifications, setNotifications] = useState([]);
 
   const { complaints: cases, stats: caseStats } = useComplaints(fetchAssignedComplaints);
   const recentCases = cases.slice(0,3);
 
+  useEffect(() => {
+    fetchMyNotifications()
+      .then(setNotifications)
+      .catch(() => setNotifications([]));
+  }, []);
+
   /* ================= LOGOUT ================= */
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
 
     const confirmLogout =
-    window.confirm(
+    await window.__reportItShowConfirm(
       "Are you sure you want to logout?"
     );
 
@@ -192,16 +201,14 @@ const OfficerDashboard = () => {
             <div
               className="notification-btn"
 
-              onClick={() =>
-                setShowNotifications(
-                  !showNotifications
-                )
-              }
+              onClick={() => openNotifications(showNotifications, setShowNotifications, setNotifications)}
             >
 
               <FaBell className="notification-bell" />
 
-              <span className="notification-dot"></span>
+              {notifications.length > 0 && (
+                <span className="notification-dot has-notifications"></span>
+              )}
 
             </div>
 
@@ -223,100 +230,31 @@ const OfficerDashboard = () => {
 
                     </h3>
 
-                    <span>
-
-                      3 New
-
-                    </span>
-
-                  </div>
-
-                  {/* CARD 1 */}
-
-                  <div className="notification-card">
-
-                    <div className="notification-left blue-bg">
-
-                      🚔
-
-                    </div>
-
-                    <div>
-
-                      <h4>
-
-                        New Case Assigned
-
-                      </h4>
-
-                      <p>
-
-                        CMP-2024-011 assigned
-                        to your team.
-
-                      </p>
-
-                    </div>
+                    {notifications.length > 0 && (
+                      <span>
+                        {notifications.length} New
+                      </span>
+                    )}
 
                   </div>
 
-                  {/* CARD 2 */}
-
-                  <div className="notification-card">
-
-                    <div className="notification-left yellow-bg">
-
-                      📌
-
+                  {notifications.length > 0 ? (
+                    notifications.map((item,index)=>(
+                      <div className="notification-card" key={index}>
+                        <div>
+                          <h4>{item.title || "Notification"}</h4>
+                          <p>{item.message || item}</p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="notification-card">
+                      <div>
+                        <h4>No notifications yet</h4>
+                        <p>New updates will appear here when they are sent.</p>
+                      </div>
                     </div>
-
-                    <div>
-
-                      <h4>
-
-                        Investigation Update
-
-                      </h4>
-
-                      <p>
-
-                        CMP-2024-007 requires
-                        status update.
-
-                      </p>
-
-                    </div>
-
-                  </div>
-
-                  {/* CARD 3 */}
-
-                  <div className="notification-card">
-
-                    <div className="notification-left green-bg">
-
-                      ✅
-
-                    </div>
-
-                    <div>
-
-                      <h4>
-
-                        Case Resolved
-
-                      </h4>
-
-                      <p>
-
-                        CMP-2024-002 closed
-                        successfully.
-
-                      </p>
-
-                    </div>
-
-                  </div>
+                  )}
 
                 </div>
 
@@ -459,15 +397,7 @@ const OfficerDashboard = () => {
 
           {/* ================= RECENT CASES ================= */}
 
-          <div
-            className="recent-case-card"
-
-            onClick={() =>
-              navigate(
-                "/officer-complaint-details"
-              )
-            }
-          >
+          <div className="recent-case-card">
 
             <h3>
 
@@ -475,119 +405,76 @@ const OfficerDashboard = () => {
 
             </h3>
 
-            {/* ITEM */}
+            {recentCases.length > 0 ? (
 
-            <div className="complaint-item">
+              recentCases.map((item,index)=>(
 
-              <div className="left-complaint">
+                <div
+                  className="complaint-item"
+                  key={item.id || index}
+                  onClick={() =>
+                    navigate(
+                      "/officer-complaint-details",
+                      {
+                        state:item
+                      }
+                    )
+                  }
+                >
 
-                <div className="complaint-icon">
+                  <div className="left-complaint">
 
-                  <FaFolderOpen />
+                    <div className="complaint-icon">
+
+                      <FaFolderOpen />
+
+                    </div>
+
+                    <div>
+
+                      <h4>
+
+                        {item.title}
+
+                      </h4>
+
+                      <p>
+
+                        {item.id} · {item.citizen}
+
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                  <span
+                    className={
+                      item.status === "Resolved"
+                      ? "resolved-text"
+                      : item.status === "Rejected"
+                      ? "rejected-text"
+                      : "progress-text"
+                    }
+                  >
+
+                    {item.status}
+
+                  </span>
 
                 </div>
 
-                <div>
+              ))
 
-                  <h4>
+            ) : (
 
-                    Bike Theft at Market Area
+              <div className="dashboard-empty-cases">
 
-                  </h4>
-
-                  <p>
-
-                    CMP-2024-001 · Rahul Sharma
-
-                  </p>
-
-                </div>
+                No assigned cases yet.
 
               </div>
 
-              <span className="progress-text">
-
-                In Progress
-
-              </span>
-
-            </div>
-
-            {/* ITEM */}
-
-            <div className="complaint-item">
-
-              <div className="left-complaint">
-
-                <div className="complaint-icon">
-
-                  <FaFolderOpen />
-
-                </div>
-
-                <div>
-
-                  <h4>
-
-                    Road Accident Near Highway
-
-                  </h4>
-
-                  <p>
-
-                    CMP-2024-004 · Sneha Reddy
-
-                  </p>
-
-                </div>
-
-              </div>
-
-              <span className="resolved-text">
-
-                Resolved
-
-              </span>
-
-            </div>
-
-            {/* ITEM */}
-
-            <div className="complaint-item">
-
-              <div className="left-complaint">
-
-                <div className="complaint-icon">
-
-                  <FaFolderOpen />
-
-                </div>
-
-                <div>
-
-                  <h4>
-
-                    Vandalism at Community Center
-
-                  </h4>
-
-                  <p>
-
-                    CMP-2024-007 · Priya Singh
-
-                  </p>
-
-                </div>
-
-              </div>
-
-              <span className="rejected-text">
-
-                Rejected
-
-              </span>
-
-            </div>
+            )}
 
           </div>
 

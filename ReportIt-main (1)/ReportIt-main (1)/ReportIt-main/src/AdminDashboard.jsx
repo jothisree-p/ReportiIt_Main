@@ -3,11 +3,12 @@ import { clearAuth } from "./authStorage";
 import { useComplaints } from "./hooks/useComplaints";
 import { fetchAllComplaints } from "./api/complaints";
 import { fetchOfficers } from "./api/officers";
+import { fetchCitizens } from "./api/users";
 import { useRequireAuth } from "./hooks/useRequireAuth";
 import { useNavigate } from "react-router-dom";
 import "./AdminDashboard.css";
 import AIChat from "./AIChat";
-import AdminProfile from "./AdminProfile";
+import AdminNotificationBell from "./AdminNotificationBell";
 import {
   FaShieldAlt,
   FaUsers,
@@ -23,20 +24,34 @@ const AdminDashboard = () => {
 
   const navigate = useNavigate();
   useRequireAuth("ADMIN");
-  const [showProfile, setShowProfile] = useState(false);
   const { complaints, stats: complaintStats } = useComplaints(fetchAllComplaints);
   const recentReports = complaints.slice(0, 4);
   const [officers, setOfficers] = useState([]);
+  const [registeredUsers, setRegisteredUsers] = useState([]);
 
   useEffect(() => {
     fetchOfficers().then(setOfficers).catch(() => setOfficers([]));
+    fetchCitizens().then(setRegisteredUsers).catch(() => setRegisteredUsers([]));
   }, []);
 
   const activeOfficers =
     officers.filter((officer) => officer.status === "Active").length;
 
-  const handleLogout = () => {
-    if(window.confirm("Are you sure you want to logout?")){
+  const getInitials = (name = "") =>
+    name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("") || "OF";
+
+  const officerSummary = (officer) =>
+    [officer.zone, officer.active ? `${officer.active} active` : ""]
+      .filter(Boolean)
+      .join(" · ");
+
+  const handleLogout = async () => {
+    if(await window.__reportItShowConfirm("Are you sure you want to logout?")){
       clearAuth();
       alert("Logged Out Successfully!");
       navigate("/");
@@ -113,9 +128,10 @@ const AdminDashboard = () => {
           </div>
 
           <div className="topbar-right">
+            <AdminNotificationBell />
             <div
               className="profile-circle"
-              onClick={() => setShowProfile(true)}
+              onClick={() => navigate("/admin-profile")}
             >
               AD
             </div>
@@ -154,7 +170,7 @@ const AdminDashboard = () => {
                 <p>REGISTERED USERS</p>
                 <FaUsers className="green" />
               </div>
-              <h2>540</h2>
+              <h2>{registeredUsers.length}</h2>
             </div>
 
             <div className="stat-card">
@@ -221,18 +237,19 @@ const AdminDashboard = () => {
                 </span>
               </div>
 
-              {[
-                { init:"IP", name:"Inspector Patel",  zone:"Zone A · 12 active", status:"Active" },
-                { init:"OV", name:"Officer Verma",    zone:"Zone B · 8 active",  status:"Active" },
-                { init:"OD", name:"Officer Desai",    zone:"Zone C · 5 active",  status:"Active" },
-                { init:"IK", name:"Inspector Khan",   zone:"Zone D",             status:"Inactive" },
-              ].map((o,i) => (
-                <div className="officer-item" key={i}>
+              {officers.length === 0 && (
+                <p style={{ padding: "1rem", color: "#64748b" }}>
+                  No officers added yet.
+                </p>
+              )}
+
+              {officers.slice(0, 4).map((o) => (
+                <div className="officer-item" key={o.userId || o.id || o.email}>
                   <div className="officer-left">
-                    <div className="officer-avatar">{o.init}</div>
+                    <div className="officer-avatar">{o.initials || getInitials(o.name)}</div>
                     <div className="officer-info">
-                      <h4>{o.name}</h4>
-                      <p>{o.zone}</p>
+                      <h4>{[o.position, o.name].filter(Boolean).join(" ")}</h4>
+                      <p>{officerSummary(o) || "No zone assigned"}</p>
                     </div>
                   </div>
                   <span className={o.status === "Active" ? "active-text" : "inactive-text"}>
@@ -248,10 +265,6 @@ const AdminDashboard = () => {
         </div>
 
       </div>
-
-      {showProfile && (
-        <AdminProfile closeProfile={() => setShowProfile(false)} />
-      )}
 
       <AIChat />
 

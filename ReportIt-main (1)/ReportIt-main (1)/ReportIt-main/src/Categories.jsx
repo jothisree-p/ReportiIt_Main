@@ -5,6 +5,13 @@ import { useNavigate } from "react-router-dom";
 import "./Categories.css";
 
 import AIChat from "./AIChat";
+import AdminNotificationBell from "./AdminNotificationBell";
+import {
+  createCategory,
+  deleteCategory,
+  fetchCategories,
+  updateCategory,
+} from "./api/categories";
 
 import {
 
@@ -35,44 +42,19 @@ const Categories = () => {
   const [editId,setEditId] =
   useState(null);
 
-  const [categories,setCategories] =
-  useState(
+  const [categories,setCategories] = useState([]);
+  const [loading,setLoading] = useState(true);
 
-    JSON.parse(
-      localStorage.getItem("categories")
-    ) ||
-
-    [
-
-      "Theft",
-      "Street Light Issue",
-      "Property Damage",
-      "Road Accident",
-      "Cyber Crime",
-      "Harassment",
-      "Other Issue",
-
-    ]
-
-  );
-
-  /* ================= SAVE ================= */
-
-  useEffect(()=>{
-
-    localStorage.setItem(
-
-      "categories",
-
-      JSON.stringify(categories)
-
-    );
-
-  },[categories]);
+  useEffect(() => {
+    fetchCategories()
+      .then(setCategories)
+      .catch((err) => alert(err.message || "Failed to load categories"))
+      .finally(() => setLoading(false));
+  }, []);
 
   /* ================= ADD CATEGORY ================= */
 
-  const handleAddCategory = () => {
+  const handleAddCategory = async () => {
 
     if(categoryInput.trim() === ""){
 
@@ -82,74 +64,53 @@ const Categories = () => {
 
     }
 
-    if(editId !== null){
-
-      const updatedCategories =
-      categories.map((item,index)=>
-
-        index === editId
-        ? categoryInput
-        : item
-
-      );
-
-      setCategories(updatedCategories);
-
-      setEditId(null);
-
-      alert("Category Updated!");
-
+    try {
+      if(editId !== null){
+        const updated = await updateCategory(editId, categoryInput);
+        setCategories((items) =>
+          items.map((item) => item.id === editId ? updated : item)
+        );
+        setEditId(null);
+        alert("Category Updated!");
+      } else {
+        const created = await createCategory(categoryInput);
+        setCategories((items) => [...items, created]);
+        alert("Category Added!");
+      }
+      setCategoryInput("");
+    } catch (err) {
+      alert(err.message || "Failed to save category");
     }
-
-    else{
-
-      setCategories([
-
-        ...categories,
-
-        categoryInput,
-
-      ]);
-
-      alert("Category Added!");
-
-    }
-
-    setCategoryInput("");
 
   };
 
   /* ================= EDIT ================= */
 
-  const handleEdit = (index) => {
+  const handleEdit = (category) => {
 
-    setCategoryInput(categories[index]);
+    setCategoryInput(category.name);
 
-    setEditId(index);
+    setEditId(category.id);
 
   };
 
   /* ================= DELETE ================= */
 
-  const handleDelete = (index) => {
+  const handleDelete = async (category) => {
 
     const confirmDelete =
-    window.confirm(
+    await window.__reportItShowConfirm(
       "Delete this category?"
     );
 
     if(confirmDelete){
-
-      const updated =
-      categories.filter(
-
-        (_,i)=>i !== index
-
-      );
-
-      setCategories(updated);
-
-      alert("Category Deleted!");
+      try {
+        await deleteCategory(category.id);
+        setCategories((items) => items.filter((item) => item.id !== category.id));
+        alert("Category Deleted!");
+      } catch (err) {
+        alert(err.message || "Failed to delete category");
+      }
 
     }
 
@@ -157,10 +118,10 @@ const Categories = () => {
 
   /* ================= LOGOUT ================= */
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
 
     const confirmLogout =
-    window.confirm(
+    await window.__reportItShowConfirm(
       "Are you sure you want to logout?"
     );
 
@@ -315,13 +276,17 @@ const Categories = () => {
 
           </div>
 
-          <div
-  className="profile-circle"
-  onClick={() => navigate("/admin-profile")}
-  style={{ cursor:"pointer" }}
->
-  AD
-</div>
+          <div className="topbar-right">
+            <AdminNotificationBell />
+
+            <div
+              className="profile-circle"
+              onClick={() => navigate("/admin-profile")}
+              style={{ cursor:"pointer" }}
+            >
+              AD
+            </div>
+          </div>
 
         </div>
 
@@ -377,16 +342,26 @@ const Categories = () => {
 
             {
 
-              categories.map((item,index)=>(
+              loading ? (
+                <div className="table-row">
+                  <h4>Loading categories...</h4>
+                  <div></div>
+                </div>
+              ) : categories.length === 0 ? (
+                <div className="table-row">
+                  <h4>No categories added yet.</h4>
+                  <div></div>
+                </div>
+              ) : categories.map((item)=>(
 
                 <div
                   className="table-row"
-                  key={index}
+                  key={item.id}
                 >
 
                   <h4>
 
-                    {item}
+                    {item.name}
 
                   </h4>
 
@@ -395,14 +370,14 @@ const Categories = () => {
                     <FaEdit
                       className="edit-icon"
                       onClick={() =>
-                        handleEdit(index)
+                        handleEdit(item)
                       }
                     />
 
                     <FaTrash
                       className="delete-icon"
                       onClick={() =>
-                        handleDelete(index)
+                        handleDelete(item)
                       }
                     />
 

@@ -1,202 +1,122 @@
 import React, { useState } from "react";
 
 import "./AIChat.css";
+import { sendAiMessage } from "./api/ai";
 
 import {
-
   FaRobot,
   FaPaperPlane,
   FaTimes,
-
 } from "react-icons/fa";
 
 const AIChat = () => {
-
-  const [open,setOpen] =
-  useState(false);
-
-  const [message,setMessage] =
-  useState("");
-
-  const [chat,setChat] =
-  useState([
-
+  const [open,setOpen] = useState(false);
+  const [message,setMessage] = useState("");
+  const [loading,setLoading] = useState(false);
+  const [chat,setChat] = useState([
     {
       sender:"ai",
-      text:"Hello 👋 I am ReportIt AI Assistant. How can I help you?",
+      text:"Hello, I am ReportIt AI Assistant. Ask me about complaints, status, users, officers, or categories.",
     },
-
   ]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
+    const trimmedMessage = message.trim();
 
-    if(message.trim() === "")
+    if(trimmedMessage === "" || loading) {
       return;
+    }
 
     const userMessage = {
-
       sender:"user",
-
-      text:message,
-
+      text:trimmedMessage,
     };
 
-    let aiReply =
-    "Please explain your issue clearly.";
-
-    /* SIMPLE AI REPLIES */
-
-    if(
-      message.toLowerCase().includes("theft")
-    ){
-
-      aiReply =
-      "You can report theft under Report Crime → Theft category.";
-
-    }
-
-    else if(
-      message.toLowerCase().includes("track")
-    ){
-
-      aiReply =
-      "Go to Track Status page and search using Complaint ID.";
-
-    }
-
-    else if(
-      message.toLowerCase().includes("emergency")
-    ){
-
-      aiReply =
-      "Please contact emergency services immediately or nearest police station.";
-
-    }
-
-    else if(
-      message.toLowerCase().includes("complaint")
-    ){
-
-      aiReply =
-      "You can view complaints in My Complaints section.";
-
-    }
-
-    const aiMessage = {
-
-      sender:"ai",
-
-      text:aiReply,
-
-    };
-
-    setChat([
-      ...chat,
+    setChat((currentChat) => [
+      ...currentChat,
       userMessage,
-      aiMessage,
     ]);
-
     setMessage("");
+    setLoading(true);
+
+    try {
+      const reply = await sendAiMessage(trimmedMessage);
+      setChat((currentChat) => [
+        ...currentChat,
+        {
+          sender:"ai",
+          text:reply,
+        },
+      ]);
+    } catch (err) {
+      setChat((currentChat) => [
+        ...currentChat,
+        {
+          sender:"ai",
+          text:err.message || "Unable to fetch AI reply from the database right now.",
+        },
+      ]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-
     <>
-
-      {/* FLOAT BUTTON */}
-
       <button
         className="ai-float-btn"
-        onClick={() =>
-          setOpen(!open)
-        }
+        onClick={() => setOpen(!open)}
       >
-
-        {
-          open
-          ? <FaTimes />
-          : <FaRobot />
-        }
-
+        {open ? <FaTimes /> : <FaRobot />}
       </button>
 
-      {/* CHAT BOX */}
-
-      {
-
-        open && (
-
-          <div className="chat-container">
-
-            <div className="chat-header">
-
-              <h3>
-                AI Assistant
-              </h3>
-
-            </div>
-
-            {/* CHAT BODY */}
-
-            <div className="chat-body">
-
-              {
-
-                chat.map(
-                  (msg,index) => (
-
-                    <div
-                      key={index}
-
-                      className={
-                        msg.sender === "user"
-                        ? "user-msg"
-                        : "ai-msg"
-                      }
-                    >
-
-                      {msg.text}
-
-                    </div>
-
-                  )
-                )
-
-              }
-
-            </div>
-
-            {/* INPUT */}
-
-            <div className="chat-input-section">
-
-              <input
-                type="text"
-                placeholder="Type message..."
-                value={message}
-                onChange={(e) =>
-                  setMessage(e.target.value)
-                }
-              />
-
-              <button
-                onClick={handleSend}
-              >
-
-                <FaPaperPlane />
-
-              </button>
-
-            </div>
-
+      {open && (
+        <div className="chat-container">
+          <div className="chat-header">
+            <h3>AI Assistant</h3>
           </div>
 
-        )
+          <div className="chat-body">
+            {chat.map((msg,index) => (
+              <div
+                key={index}
+                className={msg.sender === "user" ? "user-msg" : "ai-msg"}
+              >
+                {msg.text}
+              </div>
+            ))}
 
-      }
+            {loading && (
+              <div className="ai-msg">
+                Fetching database reply...
+              </div>
+            )}
+          </div>
 
+          <div className="chat-input-section">
+            <input
+              type="text"
+              placeholder={loading ? "Fetching database reply..." : "Type message..."}
+              value={message}
+              disabled={loading}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSend();
+                }
+              }}
+            />
+
+            <button
+              onClick={handleSend}
+              disabled={loading}
+            >
+              <FaPaperPlane />
+            </button>
+          </div>
+        </div>
+      )}
     </>
-
   );
 };
 

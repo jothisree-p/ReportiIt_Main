@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
@@ -10,6 +10,9 @@ import {
   getCurrentCitizen,
   getCitizenInitials,
 } from "./citizenSession";
+import { fetchMyNotifications } from "./api/notifications";
+import { openNotifications } from "./notificationActions";
+import { fetchCategories } from "./api/categories";
 
 import {
 
@@ -40,13 +43,20 @@ const ReportCrime = () => {
   const [showNotifications,
   setShowNotifications] =
   useState(false);
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    fetchMyNotifications()
+      .then(setNotifications)
+      .catch(() => setNotifications([]));
+  }, []);
 
   /* ================= LOGOUT ================= */
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
 
     const confirmLogout =
-    window.confirm(
+    await window.__reportItShowConfirm(
       "Are you sure you want to logout?"
     );
 
@@ -67,47 +77,30 @@ const ReportCrime = () => {
 
   const [customCrime,setCustomCrime] =
   useState("");
+  const [crimeTypes,setCrimeTypes] =
+  useState([]);
+  const [loadingCategories,setLoadingCategories] =
+  useState(true);
 
   /* ================= CRIME TYPES ================= */
 
-  const crimeTypes = [
+  const getCategoryIcon = (name = "") => {
+    const value = name.toLowerCase();
+    if (value.includes("street") || value.includes("light")) return <FaBolt />;
+    if (value.includes("property") || value.includes("home")) return <FaHome />;
+    if (value.includes("road") || value.includes("accident")) return <FaCarCrash />;
+    if (value.includes("cyber")) return <FaLaptop />;
+    if (value.includes("harassment")) return <FaUserShield />;
+    if (value.includes("other")) return <FaPlusCircle />;
+    return <FaFileAlt />;
+  };
 
-    {
-      name:"Theft",
-      icon:<FaFileAlt />,
-    },
-
-    {
-      name:"Street Light Issue",
-      icon:<FaBolt />,
-    },
-
-    {
-      name:"Property Damage",
-      icon:<FaHome />,
-    },
-
-    {
-      name:"Road Accident",
-      icon:<FaCarCrash />,
-    },
-
-    {
-      name:"Cyber Crime",
-      icon:<FaLaptop />,
-    },
-
-    {
-      name:"Harassment",
-      icon:<FaUserShield />,
-    },
-
-    {
-      name:"Other Issue",
-      icon:<FaPlusCircle />,
-    },
-
-  ];
+  useEffect(() => {
+    fetchCategories()
+      .then(setCrimeTypes)
+      .catch((err) => alert(err.message || "Failed to load categories"))
+      .finally(() => setLoadingCategories(false));
+  }, []);
 
   return (
 
@@ -245,16 +238,14 @@ const ReportCrime = () => {
 
             <div
               className="notification-btn"
-              onClick={() =>
-                setShowNotifications(
-                  !showNotifications
-                )
-              }
+              onClick={() => openNotifications(showNotifications, setShowNotifications, setNotifications)}
             >
 
               <FaBell className="notification-bell" />
 
-              <span className="notification-dot"></span>
+              {notifications.length > 0 && (
+                <span className="notification-dot has-notifications"></span>
+              )}
 
             </div>
 
@@ -293,23 +284,17 @@ const ReportCrime = () => {
 
               </h3>
 
-              <div className="report-notification-item">
-
-                🚨 Crime report submitted successfully
-
-              </div>
-
-              <div className="report-notification-item">
-
-                👮 Officer assigned to your complaint
-
-              </div>
-
-              <div className="report-notification-item">
-
-                📌 Investigation in progress
-
-              </div>
+              {notifications.length > 0 ? (
+                notifications.map((item,index)=>(
+                  <div className="report-notification-item" key={index}>
+                    {item.message || item}
+                  </div>
+                ))
+              ) : (
+                <div className="report-notification-item">
+                  No notifications yet
+                </div>
+              )}
 
             </div>
 
@@ -385,16 +370,26 @@ const ReportCrime = () => {
 
             {
 
-              crimeTypes.map((crime,index)=>(
+              loadingCategories ? (
+                <div className="crime-card">
+                  <div className="crime-icon"><FaClock /></div>
+                  <h3>Loading...</h3>
+                </div>
+              ) : crimeTypes.length === 0 ? (
+                <div className="crime-card">
+                  <div className="crime-icon"><FaFileAlt /></div>
+                  <h3>No categories available</h3>
+                </div>
+              ) : crimeTypes.map((crime)=>(
 
                 <div
-                  key={index}
+                  key={crime.id}
                   className="crime-card"
 
                   onClick={() => {
 
                     if(
-                      crime.name === "Other Issue"
+                      crime.name?.toLowerCase() === "other issue"
                     ){
 
                       setShowOtherInput(true);
@@ -420,7 +415,7 @@ const ReportCrime = () => {
 
                   <div className="crime-icon">
 
-                    {crime.icon}
+                    {getCategoryIcon(crime.name)}
 
                   </div>
 

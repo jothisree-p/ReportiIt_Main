@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./AdminReports.css";
 import AIChat from "./AIChat";
+import AdminNotificationBell from "./AdminNotificationBell";
 import {
   FaShieldAlt,
   FaClipboardList,
@@ -77,8 +78,8 @@ const AdminReports = () => {
     }
   };
 
-  const handleLogout = () => {
-    if (window.confirm("Are you sure you want to logout?")) {
+  const handleLogout = async () => {
+    if (await window.__reportItShowConfirm("Are you sure you want to logout?")) {
       clearAuth();
       navigate("/");
     }
@@ -130,12 +131,30 @@ const AdminReports = () => {
       </div>
 
       <div className="reports-main">
-        <button className="back-btn" type="button" onClick={() => navigate(-1)}>
-          <FaArrowLeft />
-        </button>
+        <div className="topbar reports-topbar">
+          <div className="topbar-left">
+            <button className="back-btn" type="button" onClick={() => navigate(-1)}>
+              <FaArrowLeft />
+            </button>
+
+            <h3>Complaint Reports</h3>
+          </div>
+
+          <div className="topbar-right">
+            <AdminNotificationBell />
+
+            <div
+              className="profile-circle"
+              onClick={() => navigate("/admin-profile")}
+              style={{ cursor:"pointer" }}
+            >
+              AD
+            </div>
+          </div>
+        </div>
 
         <div className="reports-header">
-          <h2>Complaint Reports</h2>
+          <h1>Complaint Reports</h1>
           <div className="reports-header-meta">
             <span>
               {complaints.length} total report{complaints.length !== 1 ? "s" : ""}

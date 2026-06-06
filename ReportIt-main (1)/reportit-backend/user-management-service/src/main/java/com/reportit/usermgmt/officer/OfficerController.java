@@ -39,4 +39,9 @@ public class OfficerController {
         officerService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<OfficerResponse> deactivate(@PathVariable Long id) {
+        return ResponseEntity.ok(officerService.deactivate(id));
+    }
 }

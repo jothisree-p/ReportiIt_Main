@@ -1,5 +1,6 @@
 import React,
 {
+  useEffect,
   useState
 }
 from "react";
@@ -18,6 +19,8 @@ import {
 import { useComplaints } from "./hooks/useComplaints";
 import { fetchAssignedComplaints } from "./api/complaints";
 import { clearAuth } from "./authStorage";
+import { fetchMyNotifications } from "./api/notifications";
+import { openNotifications } from "./notificationActions";
 
 import {
 
@@ -40,6 +43,7 @@ const AssignedCases = () => {
   const [showNotifications,
   setShowNotifications] =
   useState(false);
+  const [notifications, setNotifications] = useState([]);
 
   const [searchTerm,
   setSearchTerm] =
@@ -60,6 +64,12 @@ const AssignedCases = () => {
   /* ================= DATA ================= */
 
   const { complaints: cases } = useComplaints(fetchAssignedComplaints);
+
+  useEffect(() => {
+    fetchMyNotifications()
+      .then(setNotifications)
+      .catch(() => setNotifications([]));
+  }, []);
 
   /* ================= FILTER ================= */
 
@@ -97,6 +107,10 @@ const AssignedCases = () => {
 
       ||
 
+      activeFilter === "Assigned"
+
+      ||
+
       item.status === activeFilter;
 
     return (
@@ -129,19 +143,25 @@ const AssignedCases = () => {
 
   const totalPages =
 
-  Math.ceil(
+  Math.max(
+
+    1,
+
+    Math.ceil(
 
     filteredCases.length /
     casesPerPage
+
+    )
 
   );
 
   /* ================= LOGOUT ================= */
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
 
     const confirmLogout =
-    window.confirm(
+    await window.__reportItShowConfirm(
       "Are you sure you want to logout?"
     );
 
@@ -291,16 +311,14 @@ const AssignedCases = () => {
             <div
               className="notification-btn"
 
-              onClick={() =>
-                setShowNotifications(
-                  !showNotifications
-                )
-              }
+              onClick={() => openNotifications(showNotifications, setShowNotifications, setNotifications)}
             >
 
               <FaBell className="notification-bell" />
 
-              <span className="notification-dot"></span>
+              {notifications.length > 0 && (
+                <span className="notification-dot has-notifications"></span>
+              )}
 
             </div>
 
@@ -310,7 +328,7 @@ const AssignedCases = () => {
 
               showNotifications && (
 
-                <div className="notification-dropdown">
+                <div className="notification-dropdown assigned-notification-dropdown">
 
                   <div className="notification-header">
 
@@ -320,100 +338,31 @@ const AssignedCases = () => {
 
                     </h3>
 
-                    <span>
-
-                      3 New
-
-                    </span>
-
-                  </div>
-
-                  {/* CARD */}
-
-                  <div className="notification-card">
-
-                    <div className="notification-left blue-bg">
-
-                      🚔
-
-                    </div>
-
-                    <div>
-
-                      <h4>
-
-                        New Complaint Assigned
-
-                      </h4>
-
-                      <p>
-
-                        CMP-2024-011 assigned
-                        to your team.
-
-                      </p>
-
-                    </div>
+                    {notifications.length > 0 && (
+                      <span>
+                        {notifications.length} New
+                      </span>
+                    )}
 
                   </div>
 
-                  {/* CARD */}
-
-                  <div className="notification-card">
-
-                    <div className="notification-left yellow-bg">
-
-                      📌
-
+                  {notifications.length > 0 ? (
+                    notifications.map((item,index)=>(
+                      <div className="notification-card" key={index}>
+                        <div>
+                          <h4>{item.title || "Notification"}</h4>
+                          <p>{item.message || item}</p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="notification-card">
+                      <div>
+                        <h4>No notifications yet</h4>
+                        <p>New updates will appear here when they are sent.</p>
+                      </div>
                     </div>
-
-                    <div>
-
-                      <h4>
-
-                        Investigation Update
-
-                      </h4>
-
-                      <p>
-
-                        CMP-2024-007 requires
-                        status update.
-
-                      </p>
-
-                    </div>
-
-                  </div>
-
-                  {/* CARD */}
-
-                  <div className="notification-card">
-
-                    <div className="notification-left green-bg">
-
-                      ✅
-
-                    </div>
-
-                    <div>
-
-                      <h4>
-
-                        Case Resolved
-
-                      </h4>
-
-                      <p>
-
-                        CMP-2024-002 closed
-                        successfully.
-
-                      </p>
-
-                    </div>
-
-                  </div>
+                  )}
 
                 </div>
 
@@ -424,7 +373,7 @@ const AssignedCases = () => {
             {/* PROFILE */}
 
             <div
-              className="profile-circle"
+              className="profile-circle assigned-profile-circle"
 
               onClick={() =>
                 navigate("/officer-profile")
@@ -542,7 +491,7 @@ const AssignedCases = () => {
 
             {
 
-              currentCases.map(
+              currentCases.length > 0 ? currentCases.map(
                 (item,index)=>(
 
                 <div
@@ -579,7 +528,7 @@ const AssignedCases = () => {
 
                   <p>
 
-                    {item.priority}
+                    {item.priority || "Not set"}
 
                   </p>
 
@@ -605,7 +554,15 @@ const AssignedCases = () => {
 
                 </div>
 
-              ))
+              )) : (
+
+                <div className="assigned-empty-row">
+
+                  No cases found for this filter.
+
+                </div>
+
+              )
 
             }
 

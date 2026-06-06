@@ -14,6 +14,7 @@ import AIChat from "./AIChat";
 import { useComplaints } from "./hooks/useComplaints";
 import { fetchMyComplaints } from "./api/complaints";
 import { fetchMyNotifications } from "./api/notifications";
+import { openNotifications } from "./notificationActions";
 import { clearAuth } from "./authStorage";
 import { useRequireAuth } from "./hooks/useRequireAuth";
 import {
@@ -61,10 +62,10 @@ const CitizenDashboard = () => {
 
   /* ================= LOGOUT ================= */
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
 
     const confirmLogout =
-    window.confirm(
+    await window.__reportItShowConfirm(
       "Are you sure you want to logout?"
     );
 
@@ -217,18 +218,14 @@ const CitizenDashboard = () => {
 
             <div
               className="notification-btn"
-              onClick={() =>
-                setShowNotifications(
-                  !showNotifications
-                )
-              }
+              onClick={() => openNotifications(showNotifications, setShowNotifications, setNotifications)}
             >
 
               <FaBell className="notification-bell" />
 
-              <span className="notification-dot">
-
-              </span>
+              {notifications.length > 0 && (
+                <span className="notification-dot has-notifications"></span>
+              )}
 
             </div>
 

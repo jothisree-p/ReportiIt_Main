@@ -462,6 +462,13 @@ label{
   color:#020617;
 }
 
+.send-btn:disabled,
+.verify-submit:disabled{
+  cursor:not-allowed;
+  opacity:0.68;
+  transform:none;
+}
+
 /* ================= RESPONSIVE ================= */
 
 @media(max-width:950px){

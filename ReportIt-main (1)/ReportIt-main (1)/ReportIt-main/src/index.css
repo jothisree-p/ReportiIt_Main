@@ -373,6 +373,16 @@ select {
   border-color: var(--reportit-panel) !important;
 }
 
+.notification-dot,
+.profile-notification-dot {
+  display: none !important;
+}
+
+.notification-dot.has-notifications,
+.profile-notification-dot.has-notifications {
+  display: block !important;
+}
+
 .notification-dropdown,
 .notification-popup,
 .profile-notification-popup,
@@ -398,6 +408,131 @@ select {
   border-radius: 14px !important;
 }
 
+.notification-item strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.notification-item p {
+  margin: 0;
+  color: #b9c4f2;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+#reportit-popup-root {
+  position: fixed;
+  top: 22px;
+  right: 22px;
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.reportit-app-popup {
+  width: min(380px, calc(100vw - 44px));
+  min-height: 64px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #0b1336;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.42);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: white;
+  animation: reportitPopupIn 0.24s ease-out;
+  pointer-events: auto;
+}
+
+.reportit-app-popup.is-leaving {
+  animation: reportitPopupOut 0.22s ease-in forwards;
+}
+
+.reportit-app-popup-icon {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: linear-gradient(135deg, #10215f, #00bfff) !important;
+  box-shadow: 0 0 14px rgba(0, 191, 255, 0.28);
+}
+
+.reportit-mini-logo {
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.reportit-mini-logo span {
+  color: #07112f;
+  margin-left: 1px;
+}
+
+.reportit-app-popup-message {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 600;
+}
+
+.reportit-app-confirm {
+  width: min(460px, calc(100vw - 44px));
+  align-items: center;
+}
+
+.reportit-app-confirm-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.reportit-app-confirm-btn {
+  min-width: 68px;
+  height: 34px;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.reportit-app-confirm-cancel {
+  background: #17205a;
+  color: #cdd7ff;
+}
+
+.reportit-app-confirm-ok {
+  background: linear-gradient(135deg, #2563eb, #00bfff);
+  color: #ffffff;
+}
+
+@keyframes reportitPopupIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes reportitPopupOut {
+  to {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+}
+
 .notify-btn {
   width: 100% !important;
   height: 54px !important;
@@ -414,6 +549,77 @@ select {
   font-weight: 700 !important;
   cursor: pointer !important;
   transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+}
+
+.dashboard-container .sidebar-logo span,
+.categories-container .sidebar-logo span,
+.statistics-container .sidebar-logo span {
+  font-size: 32px !important;
+  line-height: 1 !important;
+}
+
+.dashboard-container .sidebar-menu li,
+.categories-container .sidebar-menu li,
+.statistics-container .sidebar-menu li,
+.dashboard-container .logout,
+.categories-container .logout,
+.statistics-container .statistics-logout {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+}
+
+.dashboard-container .topbar-left h3,
+.categories-container .topbar-left h3,
+.statistics-container .statistics-topbar-left h3 {
+  font-size: 28px !important;
+  line-height: 1.25 !important;
+  font-weight: 700 !important;
+}
+
+.dashboard-container .dashboard-content h1,
+.dashboard-container .content-header h1,
+.dashboard-container .manage-content h1,
+.categories-container .categories-content h1,
+.statistics-container .statistics-content h1 {
+  font-size: 46px !important;
+  line-height: 1.15 !important;
+  font-weight: 800 !important;
+  letter-spacing: 0 !important;
+}
+
+.dashboard-container .officers-table-header,
+.dashboard-container .officers-table-row,
+.dashboard-container .users-table-header,
+.dashboard-container .users-table-row,
+.categories-container .table-header,
+.categories-container .table-row,
+.dashboard-container .reports-table-header,
+.dashboard-container .reports-table-row {
+  font-size: 16px !important;
+}
+
+.dashboard-container .officer-info h4,
+.dashboard-container .user-info h4,
+.categories-container .table-row h4,
+.dashboard-container .reports-table-row h4 {
+  font-size: 17px !important;
+  line-height: 1.3 !important;
+}
+
+@media (max-width: 768px) {
+  .dashboard-container .dashboard-content h1,
+  .dashboard-container .content-header h1,
+  .dashboard-container .manage-content h1,
+  .categories-container .categories-content h1,
+  .statistics-container .statistics-content h1 {
+    font-size: 34px !important;
+  }
+
+  .dashboard-container .topbar-left h3,
+  .categories-container .topbar-left h3,
+  .statistics-container .statistics-topbar-left h3 {
+    font-size: 22px !important;
+  }
 }
 
 .notify-btn:hover {
@@ -610,11 +816,280 @@ select {
 .citizen-topbar-left h3 {
   min-width: 0 !important;
   margin: 0 !important;
-  font-size: clamp(18px, 2.4vw, 28px) !important;
+  font-size: 26px !important;
   line-height: 1.25 !important;
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 0 !important;
+}
+
+.reports-header h1,
+.categories-content h1,
+.statistics-content h1 {
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 42px !important;
+  line-height: 1.15 !important;
+  font-weight: 800 !important;
+  letter-spacing: 0 !important;
+}
+
+.reports-header-meta,
+.reports-message,
+.categories-content,
+.statistics-content {
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 15px !important;
+  letter-spacing: 0 !important;
+}
+
+/* ================= PROJECT-WIDE UI CONSISTENCY ================= */
+
+:root {
+  --reportit-sidebar-width: 280px;
+  --reportit-topbar-height: 90px;
+  --reportit-content-max: 1280px;
+  --reportit-radius: 16px;
+  --reportit-input-height: 56px;
+  --reportit-button-height: 52px;
+  --reportit-font-body: 15px;
+  --reportit-font-label: 14px;
+  --reportit-font-title: 42px;
+  --reportit-font-subtitle: 24px;
+}
+
+html {
+  font-size: 16px !important;
+}
+
+body {
+  font-size: var(--reportit-font-body) !important;
+}
+
+h1 {
+  letter-spacing: 0 !important;
+}
+
+.dashboard-content h1,
+.manage-content h1,
+.categories-content h1,
+.statistics-content h1,
+.reports-content h1,
+.profile-content h1,
+.assigned-content h1,
+.mycomplaints-content h1,
+.report-content h1,
+.details-content h1 {
+  font-size: var(--reportit-font-title) !important;
+  line-height: 1.15 !important;
+  font-weight: 800 !important;
+  letter-spacing: 0 !important;
+  margin-bottom: 28px !important;
+}
+
+.dashboard-container,
+.profile-container,
+.details-container,
+.categories-container,
+.statistics-container,
+.reports-container,
+.manage-container,
+.citizen-details-container {
+  min-height: 100vh !important;
+  background: #05071d !important;
+}
+
+.main-content,
+.statistics-main-content,
+.reports-main,
+.manage-main,
+.citizen-main {
+  min-width: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+.dashboard-content,
+.manage-content,
+.categories-content,
+.statistics-content,
+.reports-content,
+.profile-content,
+.assigned-content,
+.mycomplaints-content,
+.report-content,
+.details-content {
+  width: min(var(--reportit-content-max), calc(100% - 48px)) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+button,
+.continue-btn,
+.login-btn,
+.save-btn,
+.edit-btn,
+.send-btn,
+.cancel-btn,
+.submit-btn,
+.location-btn,
+.track-btn,
+.notify-btn,
+.setting-btn,
+.delete-btn,
+.view-btn,
+.assign-btn,
+.status-btn {
+  min-height: var(--reportit-button-height) !important;
+  border-radius: 14px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0 !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  white-space: nowrap !important;
+}
+
+.input-box,
+.verify-input,
+.search-box,
+.search-bar,
+.form-input,
+.detail-card input,
+.detail-card select,
+.popup-box input,
+.time-container,
+.upload-box {
+  min-height: var(--reportit-input-height) !important;
+  border-radius: 14px !important;
+  box-sizing: border-box !important;
+}
+
+input,
+select,
+textarea {
+  font-size: 15px !important;
+  letter-spacing: 0 !important;
+}
+
+label,
+.detail-card span,
+.stat-card p,
+.dashboard-card p {
+  font-size: var(--reportit-font-label) !important;
+  line-height: 1.35 !important;
+  letter-spacing: 0 !important;
+}
+
+.profile-form-grid,
+.details-grid,
+.stats-grid,
+.dashboard-stats,
+.reports-grid,
+.form-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(280px, 1fr)) !important;
+  gap: 22px !important;
+  align-items: start !important;
+}
+
+.dashboard-stats,
+.stats-grid {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) !important;
+}
+
+.profile-card,
+.detail-card,
+.stat-card,
+.dashboard-card,
+.recent-case-card,
+.table-card,
+.crime-form,
+.admin-profile-container,
+.officers-table,
+.users-table,
+.reports-table,
+.categories-table,
+.complaint-details-card {
+  border-radius: var(--reportit-radius) !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+.officers-table-header,
+.officers-table-row,
+.users-table-header,
+.users-table-row,
+.reports-table-header,
+.reports-table-row,
+.table-header,
+.table-row,
+.complaints-table-header,
+.complaints-table-row {
+  min-height: 64px !important;
+  align-items: center !important;
+  font-size: 15px !important;
+  line-height: 1.35 !important;
+}
+
+.profile-map,
+iframe.profile-map {
+  width: 100% !important;
+  min-height: 280px !important;
+  height: 280px !important;
+  aspect-ratio: 16 / 5 !important;
+  object-fit: cover !important;
+}
+
+.profile-loading,
+.empty-state,
+.loading-state,
+.error-state {
+  color: #9ca3d2 !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+}
+
+@media (max-width: 900px) {
+  .profile-form-grid,
+  .details-grid,
+  .reports-grid,
+  .form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .dashboard-content,
+  .manage-content,
+  .categories-content,
+  .statistics-content,
+  .reports-content,
+  .profile-content,
+  .assigned-content,
+  .mycomplaints-content,
+  .report-content,
+  .details-content {
+    width: calc(100% - 32px) !important;
+  }
+
+  .dashboard-content h1,
+  .manage-content h1,
+  .categories-content h1,
+  .statistics-content h1,
+  .reports-content h1,
+  .profile-content h1,
+  .assigned-content h1,
+  .mycomplaints-content h1,
+  .report-content h1,
+  .details-content h1 {
+    font-size: 34px !important;
+  }
 }
 
 .topbar-right,

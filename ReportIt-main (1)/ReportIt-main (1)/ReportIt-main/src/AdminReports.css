@@ -105,24 +105,26 @@ body {
   min-width: 0;
   height: 100vh;
   overflow-y: auto;
-  padding: 28px 36px 40px;
+  padding: 0 0 40px;
   display: flex;
   flex-direction: column;
 }
 
-.reports-main .back-btn {
-  margin-bottom: 20px;
-  align-self: flex-start;
+.reports-topbar {
+  flex: 0 0 90px;
 }
 
 .reports-header {
-  margin-bottom: 24px;
+  width: min(1280px, calc(100% - 72px));
+  margin: 40px auto 24px;
 }
 
-.reports-header h2 {
-  font-size: 36px;
-  font-weight: 700;
+.reports-header h1 {
+  font-size: 42px;
+  line-height: 1.15;
+  font-weight: 800;
   margin: 0 0 8px;
+  letter-spacing: 0;
 }
 
 .reports-header-meta {
@@ -135,6 +137,9 @@ body {
 }
 
 .reports-message {
+  width: min(1280px, calc(100% - 72px));
+  margin-left: auto;
+  margin-right: auto;
   margin-bottom: 16px;
   padding: 12px 16px;
   border-radius: 12px;
@@ -154,7 +159,8 @@ body {
 /* ================= TABLE ================= */
 
 .reports-table {
-  width: 100%;
+  width: min(1280px, calc(100% - 72px));
+  margin: 0 auto;
   background: #0c1435;
   border-radius: 22px;
   overflow: hidden;
@@ -299,7 +305,9 @@ body {
 /* ================= PAGINATION ================= */
 
 .pagination {
-  width: 100%;
+  width: min(1280px, calc(100% - 72px));
+  margin-left: auto;
+  margin-right: auto;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -333,7 +341,14 @@ body {
 
 @media (max-width: 1100px) {
   .reports-main {
-    padding: 20px;
+    padding: 0 0 24px;
+  }
+
+  .reports-header,
+  .reports-message,
+  .reports-table,
+  .pagination {
+    width: calc(100% - 40px);
   }
 
   .reports-table {
@@ -355,7 +370,7 @@ body {
     padding: 16px;
   }
 
-  .reports-header h2 {
+  .reports-header h1 {
     font-size: 28px;
   }
 }

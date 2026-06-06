@@ -26,6 +26,7 @@ const EditOfficer = () => {
 
     name: officer?.name || "",
     email: officer?.email || "",
+    phone: officer?.phone || "",
     password: officer?.password || "",
     badge: officer?.badge || "",
     position: officer?.position || "",
@@ -54,18 +55,30 @@ const EditOfficer = () => {
 
   const handleSave = async () => {
 
-    if(!formData.email.endsWith("@reportit.com")){
+    const payload = {
+      ...formData,
+      name: formData.name.trim(),
+      email: formData.email.trim().toLowerCase(),
+      phone: formData.phone.trim(),
+      password: formData.password.trim(),
+      badge: formData.badge.trim(),
+      position: formData.position.trim(),
+      zone: formData.zone.trim(),
+      active: formData.active.trim(),
+      status: formData.status || "Active",
+    };
+
+    if(!payload.email.endsWith("@reportit.com")){
       alert("Officer email must end with @reportit.com");
       return;
     }
 
-    if(!formData.password){
-      alert("Please set a password for officer login");
-      return;
+    if(!payload.password){
+      delete payload.password;
     }
 
     try {
-      await updateOfficer(officer?.id || officer?.userId, formData);
+      await updateOfficer(officer?.id || officer?.userId, payload);
       alert("Officer details updated successfully!");
       navigate("/manage-officers");
     } catch (err) {
@@ -159,7 +172,23 @@ const EditOfficer = () => {
           <input
             type="text"
             name="password"
+            placeholder="Enter new password only if changing"
             value={formData.password}
+            onChange={handleChange}
+          />
+
+        </div>
+
+        <div className="form-group">
+
+          <label>
+            Phone Number
+          </label>
+
+          <input
+            type="tel"
+            name="phone"
+            value={formData.phone}
             onChange={handleChange}
           />
 

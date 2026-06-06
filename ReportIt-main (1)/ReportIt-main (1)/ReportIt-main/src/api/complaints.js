@@ -10,7 +10,7 @@ export const mapComplaintFromApi = (c) => ({
   locationText: c.locationText || "",
   date: c.incidentDate || c.createdAt?.slice?.(0, 10) || "",
   incidentTime: c.incidentTime || "",
-  priority: c.priority || "Medium",
+  priority: c.priority || "",
   status: c.status || "Pending",
   citizen: c.citizenName || "Citizen",
   citizenId: c.citizenId,
@@ -18,6 +18,9 @@ export const mapComplaintFromApi = (c) => ({
   assignedOfficer: c.assignedOfficerName || "",
   assignedOfficerEmail: "",
   assignedOfficerId: c.assignedOfficerId,
+  citizenDeleted: Boolean(c.citizenDeleted),
+  citizenDeletedAt: c.citizenDeletedAt || "",
+  investigationNotes: c.investigationNotes || [],
 });
 
 export const fetchAllComplaints = async () => {
@@ -36,34 +39,46 @@ export const fetchAssignedComplaints = async () => {
 };
 
 export const createComplaint = async (payload) => {
+  const body = {
+    title: payload.title,
+    category: payload.category,
+    description: payload.description,
+    locationText: payload.location || payload.locationText,
+    incidentDate: payload.date || null,
+    incidentTime: payload.incidentTime || null,
+  };
+
+  if (payload.priority) {
+    body.priority = payload.priority;
+  }
+
   const data = await apiRequest("/api/complaints", {
     method: "POST",
-    body: {
-      title: payload.title,
-      category: payload.category,
-      description: payload.description,
-      locationText: payload.location || payload.locationText,
-      incidentDate: payload.date || null,
-      incidentTime: payload.incidentTime || null,
-      priority: payload.priority || "Medium",
-    },
+    body,
   });
   return mapComplaintFromApi(data);
 };
 
 export const updateComplaintApi = async (backendId, updates) => {
+  const body = {
+    title: updates.title,
+    category: updates.category,
+    description: updates.description,
+    locationText: updates.location,
+    incidentDate: updates.date || null,
+    incidentTime: updates.incidentTime || null,
+    status: updates.status,
+    remark: updates.lastUpdate || updates.remark,
+    note: updates.note,
+  };
+
+  if (updates.priority) {
+    body.priority = updates.priority;
+  }
+
   const data = await apiRequest(`/api/complaints/${backendId}`, {
     method: "PUT",
-    body: {
-      title: updates.title,
-      category: updates.category,
-      description: updates.description,
-      locationText: updates.location,
-      priority: updates.priority,
-      status: updates.status,
-      remark: updates.lastUpdate || updates.remark,
-      note: updates.note,
-    },
+    body,
   });
   return mapComplaintFromApi(data);
 };
@@ -86,4 +101,8 @@ export const trackComplaint = async (complaintCode) => {
     complaint: mapComplaintFromApi(data.complaint),
     history: data.history || [],
   };
+};
+
+export const fetchComplaintHistory = async (complaintId) => {
+  return apiRequest(`/api/status/complaints/${complaintId}/history`);
 };
