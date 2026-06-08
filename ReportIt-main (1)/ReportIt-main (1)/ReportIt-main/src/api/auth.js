@@ -1,6 +1,7 @@
 import { AUTH_URL } from "./config";
 import { apiRequest } from "./http";
 import { saveAuth } from "../authStorage";
+import { encryptPassword } from "./crypto";
 
 const otpCooldownMs = 60_000;
 const otpRequests = new Map();
@@ -9,22 +10,27 @@ const getOtpKey = (email, purpose) =>
   `${String(email || "").trim().toLowerCase()}::${String(purpose || "").toUpperCase()}`;
 
 export const registerCitizen = async (payload) => {
+  const encryptedPassword = await encryptPassword(payload.password);
   const response = await apiRequest("/api/auth/register", {
     baseUrl: AUTH_URL,
     auth: false,
     method: "POST",
-    body: payload,
+    body: {
+      ...payload,
+      password: encryptedPassword,
+    },
   });
   saveAuth(response);
   return response;
 };
 
 export const login = async (email, password, role) => {
+  const encryptedPassword = await encryptPassword(password);
   const response = await apiRequest("/api/auth/login", {
     baseUrl: AUTH_URL,
     auth: false,
     method: "POST",
-    body: { email, password, role },
+    body: { email, password: encryptedPassword, role },
   });
   saveAuth(response);
   return response;
@@ -73,10 +79,12 @@ export const verifyOtp = (email, otp, purpose) =>
     body: { email, otp, purpose },
   });
 
-export const resetPassword = (email, otp, newPassword) =>
-  apiRequest("/api/auth/forgot-password", {
+export const resetPassword = async (email, otp, newPassword) => {
+  const encryptedPassword = await encryptPassword(newPassword);
+  return apiRequest("/api/auth/forgot-password", {
     baseUrl: AUTH_URL,
     auth: false,
     method: "POST",
-    body: { email, otp, newPassword },
+    body: { email, otp, newPassword: encryptedPassword },
   });
+};

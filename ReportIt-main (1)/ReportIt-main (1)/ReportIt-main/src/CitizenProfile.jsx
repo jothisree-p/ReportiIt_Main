@@ -30,6 +30,7 @@ import {
 import { fetchAddressFromCoords } from "./utils/location";
 import { useMapEmbed } from "./hooks/useMapEmbed";
 import { fetchMyNotifications } from "./api/notifications";
+import NotificationSeeMore from "./NotificationSeeMore";
 import { openNotifications } from "./notificationActions";
 import { fetchMyProfile, updateMyProfile } from "./api/profiles";
 import { setCurrentCitizen } from "./citizenSession";
@@ -393,6 +394,8 @@ useState(false);
           No notifications yet
         </div>
       )}
+
+      <NotificationSeeMore />
 
     </div>
 

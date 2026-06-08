@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { trackComplaint } from "./api/complaints";
 import { fetchMyNotifications } from "./api/notifications";
+import NotificationSeeMore from "./NotificationSeeMore";
 import { openNotifications } from "./notificationActions";
 
 import { useNavigate } from "react-router-dom";
@@ -316,6 +317,8 @@ const TrackStatus = () => {
                   No notifications yet
                 </div>
               )}
+
+              <NotificationSeeMore />
 
             </div>
 

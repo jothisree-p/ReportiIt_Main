@@ -18,6 +18,7 @@ import {
   getCitizenName,
 } from "./citizenSession";
 import { fetchMyNotifications } from "./api/notifications";
+import NotificationSeeMore from "./NotificationSeeMore";
 import { openNotifications } from "./notificationActions";
 import { uploadComplaintFile } from "./api/files";
 import { fetchAddressFromCoords } from "./utils/location";
@@ -388,7 +389,10 @@ const ReportDetails = () => {
                     <div className="notification-item">
                       No notifications yet
                     </div>
-                  )}
+                  )
+}
+
+                  <NotificationSeeMore />
 
                 </div>
 

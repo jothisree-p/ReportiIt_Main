@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FaBell } from "react-icons/fa";
 import { fetchMyNotifications } from "./api/notifications";
+import NotificationSeeMore from "./NotificationSeeMore";
 import { openNotifications } from "./notificationActions";
 
 const AdminNotificationBell = () => {
@@ -36,6 +37,7 @@ const AdminNotificationBell = () => {
           ) : (
             <div className="notification-item">No notifications yet</div>
           )}
+          <NotificationSeeMore />
         </div>
       )}
     </>

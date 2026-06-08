@@ -14,6 +14,7 @@ import AIChat from "./AIChat";
 import { useComplaints } from "./hooks/useComplaints";
 import { fetchMyComplaints } from "./api/complaints";
 import { fetchMyNotifications } from "./api/notifications";
+import NotificationSeeMore from "./NotificationSeeMore";
 import { openNotifications } from "./notificationActions";
 import { clearAuth } from "./authStorage";
 import { useRequireAuth } from "./hooks/useRequireAuth";
@@ -282,7 +283,10 @@ const CitizenDashboard = () => {
 
                     )
 
+
                   }
+
+                  <NotificationSeeMore />
 
                 </div>
 

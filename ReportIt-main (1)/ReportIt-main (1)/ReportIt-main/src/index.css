@@ -1213,3 +1213,19 @@ iframe.profile-map {
     font-size: 16px !important;
   }
 }
+/* Shared notification dropdown action */
+.notification-see-more {
+  width: 100%;
+  min-height: 36px;
+  margin-top: 10px;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(0, 191, 255, 0.14);
+  color: #00bfff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.notification-see-more:hover {
+  background: rgba(0, 191, 255, 0.24);
+}

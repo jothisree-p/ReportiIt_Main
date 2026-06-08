@@ -16,6 +16,7 @@ import { createNotification } from "./api/notifications";
 import { updateComplaintApi, fetchComplaintHistory } from "./api/complaints";
 import { clearAuth } from "./authStorage";
 import { fetchMyNotifications } from "./api/notifications";
+import NotificationSeeMore from "./NotificationSeeMore";
 import { openNotifications } from "./notificationActions";
 
 import {
@@ -344,7 +345,10 @@ const OfficerComplaintDetails = () => {
                     <div className="notification-item">
                       No notifications yet
                     </div>
-                  )}
+                  )
+}
+
+                  <NotificationSeeMore />
 
                 </div>
 

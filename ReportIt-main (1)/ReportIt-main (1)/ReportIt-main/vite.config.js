@@ -11,11 +11,11 @@ export default defineConfig({
     open: '/',
     proxy: {
       "/api/auth": {
-        target: "http://localhost:8081",
+        target: "http://127.0.0.1:8081",
         changeOrigin: true,
       },
       "/api": {
-        target: "http://localhost:8082",
+        target: "http://127.0.0.1:8082",
         changeOrigin: true,
       },
     },

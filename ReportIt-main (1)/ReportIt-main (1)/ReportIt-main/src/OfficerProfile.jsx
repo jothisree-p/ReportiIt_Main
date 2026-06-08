@@ -17,6 +17,7 @@ import {
 import { fetchAddressFromCoords } from "./utils/location";
 import { useMapEmbed } from "./hooks/useMapEmbed";
 import { fetchMyNotifications } from "./api/notifications";
+import NotificationSeeMore from "./NotificationSeeMore";
 import { openNotifications } from "./notificationActions";
 import { updateOfficer } from "./api/officers";
 
@@ -413,6 +414,8 @@ const OfficerProfile = () => {
                   </div>
                 </div>
               )}
+
+              <NotificationSeeMore />
 
             </div>
 

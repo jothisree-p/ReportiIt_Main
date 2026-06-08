@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaEnvelope, FaKey, FaLock, FaShieldAlt } from "react-icons/fa";
 import { resetPassword } from "./api/auth";
@@ -15,6 +15,21 @@ const VerifyOtp = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState(60);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setSecondsLeft((value) => Math.max(value - 1, 0));
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const timerText = useMemo(() => {
+    const minutes = Math.floor(secondsLeft / 60);
+    const seconds = String(secondsLeft % 60).padStart(2, "0");
+    return `${minutes}:${seconds}`;
+  }, [secondsLeft]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -22,6 +37,11 @@ const VerifyOtp = () => {
 
     if (!email.trim() || !otp.trim() || !newPassword || !confirmPassword) {
       alert("Please fill email, OTP, and new password.");
+      return;
+    }
+
+    if (secondsLeft <= 0) {
+      alert("OTP expired. Please request a new OTP.");
       return;
     }
 
@@ -62,6 +82,10 @@ const VerifyOtp = () => {
         <h1>Verify OTP</h1>
         <p>Enter the one-minute OTP sent to your registered email.</p>
 
+        <div className={`otp-timer ${secondsLeft <= 10 ? "is-ending" : ""}`}>
+          OTP expires in <strong>{timerText}</strong>
+        </div>
+
         <label>Email</label>
         <div className="verify-input">
           <FaEnvelope />
@@ -86,8 +110,8 @@ const VerifyOtp = () => {
           <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm password" />
         </div>
 
-        <button className="verify-submit" type="submit" disabled={submitting}>
-          {submitting ? "Updating..." : "Update Password"}
+        <button className="verify-submit" type="submit" disabled={submitting || secondsLeft <= 0}>
+          {secondsLeft <= 0 ? "OTP Expired" : submitting ? "Updating..." : "Update Password"}
         </button>
       </form>
     </div>

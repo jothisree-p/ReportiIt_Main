@@ -47,6 +47,32 @@
   margin-bottom: 24px;
 }
 
+.otp-timer {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 14px;
+  background: rgba(14, 165, 233, 0.12);
+  border: 1px solid rgba(14, 165, 233, 0.32);
+  color: #bfdbfe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.otp-timer strong {
+  color: #ffffff;
+  font-size: 18px;
+}
+
+.otp-timer.is-ending {
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.38);
+  color: #fecaca;
+}
+
 .verify-card label {
   display: block;
   margin: 16px 0 8px;

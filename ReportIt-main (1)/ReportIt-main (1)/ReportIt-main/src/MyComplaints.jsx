@@ -9,6 +9,7 @@ import { useRequireAuth } from "./hooks/useRequireAuth";
 import { useComplaints } from "./hooks/useComplaints";
 import { deleteComplaintApi, fetchMyComplaints, updateComplaintApi } from "./api/complaints";
 import { fetchMyNotifications } from "./api/notifications";
+import NotificationSeeMore from "./NotificationSeeMore";
 import { openNotifications } from "./notificationActions";
 
 import { useNavigate }
@@ -434,7 +435,10 @@ const MyComplaints = () => {
                       </div>
                     )
 
+
                   }
+
+                  <NotificationSeeMore />
 
                 </div>
 

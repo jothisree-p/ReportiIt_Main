@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import "./AIChat.css";
-import { sendAiMessage } from "./api/ai";
+import { fetchAiHistory, sendAiMessage } from "./api/ai";
 
 import {
   FaRobot,
@@ -9,16 +9,60 @@ import {
   FaTimes,
 } from "react-icons/fa";
 
+const cleanBotText = (text) => {
+  if (!text) {
+    return "";
+  }
+
+  if (text.includes("ReportIt database summary")) {
+    return "Hi! I checked your ReportIt records. You can ask me about complaint status, recent cases, officers, users, categories, or notifications.";
+  }
+
+  return text.replaceAll("ReportIt database", "ReportIt");
+};
+
 const AIChat = () => {
   const [open,setOpen] = useState(false);
   const [message,setMessage] = useState("");
   const [loading,setLoading] = useState(false);
+  const [historyLoaded,setHistoryLoaded] = useState(false);
   const [chat,setChat] = useState([
     {
       sender:"ai",
       text:"Hello, I am ReportIt AI Assistant. Ask me about complaints, status, users, officers, or categories.",
     },
   ]);
+
+  const handleToggle = async () => {
+    const nextOpen = !open;
+    setOpen(nextOpen);
+
+    if (!nextOpen || historyLoaded) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const history = await fetchAiHistory();
+      if (Array.isArray(history) && history.length > 0) {
+        setChat(history.map((item) => ({
+          sender:item.sender,
+          text:item.sender === "ai" ? cleanBotText(item.text) : item.text,
+        })));
+      }
+      setHistoryLoaded(true);
+    } catch (err) {
+      setChat((currentChat) => [
+        ...currentChat,
+        {
+          sender:"ai",
+          text:err.message || "Unable to load chat history from database.",
+        },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSend = async () => {
     const trimmedMessage = message.trim();
@@ -45,7 +89,7 @@ const AIChat = () => {
         ...currentChat,
         {
           sender:"ai",
-          text:reply,
+          text:cleanBotText(reply),
         },
       ]);
     } catch (err) {
@@ -65,7 +109,7 @@ const AIChat = () => {
     <>
       <button
         className="ai-float-btn"
-        onClick={() => setOpen(!open)}
+        onClick={handleToggle}
       >
         {open ? <FaTimes /> : <FaRobot />}
       </button>

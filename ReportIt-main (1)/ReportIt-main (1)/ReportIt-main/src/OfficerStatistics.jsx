@@ -36,6 +36,7 @@ import {
 import { useComplaints } from "./hooks/useComplaints";
 import { fetchAssignedComplaints } from "./api/complaints";
 import { fetchMyNotifications } from "./api/notifications";
+import NotificationSeeMore from "./NotificationSeeMore";
 import { openNotifications } from "./notificationActions";
 import { fetchOfficerAnalytics } from "./api/dashboard";
 
@@ -330,6 +331,8 @@ const OfficerStatistics = () => {
           </div>
         </div>
       )}
+
+      <NotificationSeeMore />
 
     </div>
 

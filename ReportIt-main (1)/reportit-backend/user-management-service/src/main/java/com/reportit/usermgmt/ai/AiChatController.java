@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/ai")
 @RequiredArgsConstructor
@@ -15,6 +17,11 @@ public class AiChatController {
     @PostMapping("/chat")
     public ResponseEntity<AiChatResponse> chat(@RequestBody AiChatRequest request) {
         return ResponseEntity.ok(new AiChatResponse(aiChatService.reply(request.getMessage())));
+    }
+
+    @GetMapping("/history")
+    public ResponseEntity<List<AiChatService.AiChatMessageResponse>> history() {
+        return ResponseEntity.ok(aiChatService.history());
     }
 
     @Data

@@ -97,6 +97,10 @@
   border-radius:14px;
 
   max-width:80%;
+
+  white-space:pre-line;
+
+  overflow-wrap:anywhere;
 }
 
 .ai-msg{
@@ -112,6 +116,10 @@
   border-radius:14px;
 
   max-width:80%;
+
+  white-space:pre-line;
+
+  overflow-wrap:anywhere;
 }
 
 .chat-input-section{

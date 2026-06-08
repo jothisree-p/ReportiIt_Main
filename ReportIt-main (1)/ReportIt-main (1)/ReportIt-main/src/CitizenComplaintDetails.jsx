@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useComplaints } from "./hooks/useComplaints";
 import { fetchMyComplaints, trackComplaint, fetchComplaintHistory } from "./api/complaints";
 import { fetchMyNotifications } from "./api/notifications";
+import NotificationSeeMore from "./NotificationSeeMore";
 import { openNotifications } from "./notificationActions";
 import { fetchComplaintFiles } from "./api/files";
 import { clearAuth } from "./authStorage";
@@ -315,6 +316,8 @@ const CitizenComplaintDetails = () => {
                     )
 
                   }
+
+                  <NotificationSeeMore />
 
                 </div>
 

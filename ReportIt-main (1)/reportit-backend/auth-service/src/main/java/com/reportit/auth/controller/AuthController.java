@@ -2,6 +2,7 @@ package com.reportit.auth.controller;
 
 import com.reportit.auth.dto.*;
 import com.reportit.auth.service.AuthService;
+import com.reportit.auth.service.CryptoService;
 import com.reportit.auth.service.OtpService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,15 +18,25 @@ public class AuthController {
 
     private final AuthService authService;
     private final OtpService otpService;
+    private final CryptoService cryptoService;
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
+        request.setPassword(cryptoService.decryptIfEncrypted(request.getPassword()));
         return ResponseEntity.ok(authService.register(request));
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+        request.setPassword(cryptoService.decryptIfEncrypted(request.getPassword()));
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    @GetMapping("/crypto/public-key")
+    public ResponseEntity<Map<String, String>> publicKey() {
+        return ResponseEntity.ok(Map.of(
+                "algorithm", "RSA-OAEP-256",
+                "publicKey", cryptoService.publicKey()));
     }
 
     @PostMapping("/refresh")
@@ -49,6 +60,7 @@ public class AuthController {
 
     @PostMapping("/forgot-password")
     public ResponseEntity<Map<String, String>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        request.setNewPassword(cryptoService.decryptIfEncrypted(request.getNewPassword()));
         authService.resetPassword(request);
         return ResponseEntity.ok(Map.of("message", "Password updated successfully"));
     }

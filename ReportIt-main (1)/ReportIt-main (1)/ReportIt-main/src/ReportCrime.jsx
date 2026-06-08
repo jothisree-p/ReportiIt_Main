@@ -11,6 +11,7 @@ import {
   getCitizenInitials,
 } from "./citizenSession";
 import { fetchMyNotifications } from "./api/notifications";
+import NotificationSeeMore from "./NotificationSeeMore";
 import { openNotifications } from "./notificationActions";
 import { fetchCategories } from "./api/categories";
 
@@ -295,6 +296,8 @@ const ReportCrime = () => {
                   No notifications yet
                 </div>
               )}
+
+              <NotificationSeeMore />
 
             </div>
 

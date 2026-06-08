@@ -20,6 +20,7 @@ import { useComplaints } from "./hooks/useComplaints";
 import { fetchAssignedComplaints } from "./api/complaints";
 import { clearAuth } from "./authStorage";
 import { fetchMyNotifications } from "./api/notifications";
+import NotificationSeeMore from "./NotificationSeeMore";
 import { openNotifications } from "./notificationActions";
 
 import {
@@ -362,7 +363,10 @@ const AssignedCases = () => {
                         <p>New updates will appear here when they are sent.</p>
                       </div>
                     </div>
-                  )}
+                  )
+}
+
+                  <NotificationSeeMore />
 
                 </div>
 
