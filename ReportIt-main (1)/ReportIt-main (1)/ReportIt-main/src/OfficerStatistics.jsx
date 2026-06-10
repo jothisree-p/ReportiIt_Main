@@ -39,10 +39,7 @@ import { fetchMyNotifications } from "./api/notifications";
 import NotificationSeeMore from "./NotificationSeeMore";
 import { openNotifications } from "./notificationActions";
 import { fetchOfficerAnalytics } from "./api/dashboard";
-
-import html2canvas from "html2canvas";
-
-import jsPDF from "jspdf";
+import { exportStatisticsPdf } from "./utils/statisticsPdf";
 
 const OfficerStatistics = () => {
 
@@ -84,49 +81,43 @@ const OfficerStatistics = () => {
     month: item.label,
     complaints: item.total,
     resolved: item.resolved,
+    pending: item.pending,
   }));
 
   /* ================= EXPORT PDF ================= */
 
   const handleExportPDF = async () => {
+    let latestAnalytics = analytics;
+    try {
+      latestAnalytics = await fetchOfficerAnalytics();
+      setAnalytics(latestAnalytics);
+      setAnalyticsError("");
+    } catch (err) {
+      alert(err.message || "Unable to fetch latest analytics for PDF.");
+      return;
+    }
 
-    const input =
-    document.querySelector(
-      ".statistics-content"
-    );
+    const latestStats = latestAnalytics?.stats || {};
+    const totalCases = latestStats.totalComplaints ?? latestStats.total ?? caseStats.total ?? 0;
+    const resolved = latestStats.resolved ?? caseStats.resolved ?? 0;
+    const pending = latestStats.pending ?? caseStats.pending ?? Math.max(totalCases - resolved, 0);
+    const resolutionRate = latestStats.resolutionRate ?? caseStats.resolutionRate ?? (totalCases > 0 ? Math.round((resolved * 100) / totalCases) : 0);
 
-    const canvas =
-    await html2canvas(input);
-
-    const imgData =
-    canvas.toDataURL("image/png");
-
-    const pdf =
-    new jsPDF(
-      "p",
-      "mm",
-      "a4"
-    );
-
-    const pdfWidth =
-    pdf.internal.pageSize.getWidth();
-
-    const pdfHeight =
-    (canvas.height * pdfWidth)
-    / canvas.width;
-
-    pdf.addImage(
-      imgData,
-      "PNG",
-      0,
-      0,
-      pdfWidth,
-      pdfHeight
-    );
-
-    pdf.save(
-      "Officer_Statistics_Report.pdf"
-    );
+    exportStatisticsPdf({
+      reportTitle: "Officer Statistical Report",
+      generatedFor: getOfficerWelcomeText(officer).replace("Welcome back, ", ""),
+      fileName: "Officer_Statistical_Report.pdf",
+      summary: [
+        { label: "Total Cases", value: totalCases },
+        { label: "Resolved Cases", value: resolved },
+        { label: "Pending Cases", value: pending },
+        { label: "Resolution Rate", value: `${resolutionRate}%` },
+      ],
+      weeklyData: latestAnalytics?.weeklyComplaintTrends || [],
+      monthlyData: latestAnalytics?.monthlyComplaintTrends || [],
+      categoryData: latestAnalytics?.categoryStatistics || [],
+      statusData: latestAnalytics?.complaintStatusAnalytics || [],
+    });
   };
 
   /* ================= LOGOUT ================= */

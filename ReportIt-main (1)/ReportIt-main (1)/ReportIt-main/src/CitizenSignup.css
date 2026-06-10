@@ -269,6 +269,20 @@ label{
   color:#94a3b8;
 
   cursor:pointer;
+
+  border:0;
+
+  background:transparent;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  padding:0;
+
+  font-size:16px;
 }
 
 .input-box input{
@@ -327,6 +341,166 @@ label{
   0 12px 30px rgba(37,99,235,0.35);
 }
 
+.signup-btn:disabled,
+.verify-send-btn:disabled,
+.verification-row button:disabled{
+
+  cursor:not-allowed;
+
+  opacity:0.62;
+
+  transform:none;
+
+  box-shadow:none;
+}
+
+/* ================= VERIFICATION ================= */
+
+.signup-verification{
+
+  margin-top:8px;
+
+  margin-bottom:18px;
+
+  padding:16px;
+
+  border-radius:18px;
+
+  background:#0b1438;
+
+  border:1px solid rgba(56,189,248,0.18);
+}
+
+.verification-header{
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:14px;
+
+  margin-bottom:14px;
+}
+
+.verification-header h3{
+
+  color:white;
+
+  font-size:17px;
+
+  margin:0 0 4px;
+}
+
+.verification-header p{
+
+  color:#9fb5f8;
+
+  font-size:12px;
+
+  line-height:1.4;
+
+  margin:0;
+}
+
+.verify-send-btn,
+.verification-row button{
+
+  min-width:132px;
+
+  height:42px;
+
+  border:0;
+
+  border-radius:14px;
+
+  background:linear-gradient(135deg,#2563eb,#0ea5e9);
+
+  color:white;
+
+  font-size:13px;
+
+  font-weight:700;
+
+  cursor:pointer;
+
+  white-space:nowrap;
+}
+
+.verify-status{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:9px;
+
+  color:#fbbf24;
+
+  font-size:13px;
+
+  font-weight:700;
+
+  margin:12px 0;
+}
+
+.verify-status.is-done{
+
+  color:#22c55e;
+}
+
+.verification-row{
+
+  display:grid;
+
+  grid-template-columns:minmax(0,1fr) auto;
+
+  gap:10px;
+
+  align-items:center;
+
+  margin-bottom:12px;
+}
+
+.verification-input{
+
+  height:46px;
+
+  margin-bottom:0;
+}
+
+.signup-message{
+
+  padding:12px 14px;
+
+  border-radius:14px;
+
+  font-size:13px;
+
+  line-height:1.45;
+
+  margin:0 0 14px;
+}
+
+.signup-message.is-success{
+
+  color:#bbf7d0;
+
+  background:rgba(34,197,94,0.12);
+
+  border:1px solid rgba(34,197,94,0.24);
+}
+
+.signup-message.is-error{
+
+  color:#fecaca;
+
+  background:rgba(239,68,68,0.12);
+
+  border:1px solid rgba(239,68,68,0.24);
+}
+
 /* ================= LOGIN TEXT ================= */
 
 .bottom-text{
@@ -378,6 +552,18 @@ label{
 
   .brand-section h1{
     font-size:58px;
+  }
+
+  .verification-header,
+  .verification-row{
+    grid-template-columns:1fr;
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .verify-send-btn,
+  .verification-row button{
+    width:100%;
   }
 
 }

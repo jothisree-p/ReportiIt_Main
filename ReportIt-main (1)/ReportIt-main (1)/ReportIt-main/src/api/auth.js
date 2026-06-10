@@ -79,6 +79,22 @@ export const verifyOtp = (email, otp, purpose) =>
     body: { email, otp, purpose },
   });
 
+export const sendSignupVerification = ({ email, phone }) =>
+  apiRequest("/api/auth/signup-verification/send", {
+    baseUrl: AUTH_URL,
+    auth: false,
+    method: "POST",
+    body: { email, phone },
+  });
+
+export const verifySignupPhone = (email, phone, code) =>
+  apiRequest("/api/auth/signup-verification/verify-phone", {
+    baseUrl: AUTH_URL,
+    auth: false,
+    method: "POST",
+    body: { email, phone, code },
+  });
+
 export const resetPassword = async (email, otp, newPassword) => {
   const encryptedPassword = await encryptPassword(newPassword);
   return apiRequest("/api/auth/forgot-password", {

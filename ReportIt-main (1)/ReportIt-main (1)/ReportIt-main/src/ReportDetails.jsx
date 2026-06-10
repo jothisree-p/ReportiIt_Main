@@ -37,6 +37,26 @@ import {
 
 } from "react-icons/fa";
 
+const padDatePart = (value) => String(value).padStart(2, "0");
+
+const toDateInputValue = (date) =>
+  `${date.getFullYear()}-${padDatePart(date.getMonth() + 1)}-${padDatePart(date.getDate())}`;
+
+const toTimeInputValue = (date) =>
+  `${padDatePart(date.getHours())}:${padDatePart(date.getMinutes())}`;
+
+const isFutureIncident = (dateValue, timeValue) => {
+  const now = new Date();
+  const today = toDateInputValue(now);
+  const currentTime = toTimeInputValue(now);
+
+  if (!dateValue || !timeValue) {
+    return false;
+  }
+
+  return dateValue > today || (dateValue === today && timeValue > currentTime);
+};
+
 const ReportDetails = () => {
 
   const navigate = useNavigate();
@@ -83,17 +103,50 @@ const ReportDetails = () => {
     evidence:null,
 
   });
+  const todayDate = toDateInputValue(new Date());
+  const currentTime = toTimeInputValue(new Date());
+  const maxIncidentTime = formData.date === todayDate ? currentTime : undefined;
 
   /* ================= HANDLE CHANGE ================= */
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "date") {
+      const nextDate = value > todayDate ? todayDate : value;
+      const nextData = {
+        ...formData,
+        date: nextDate,
+      };
+
+      if (value > todayDate) {
+        alert("Future incident dates are not allowed.");
+      }
+
+      if (nextDate === todayDate && nextData.incidentTime && nextData.incidentTime > currentTime) {
+        nextData.incidentTime = currentTime;
+        alert("Future incident time is not allowed.");
+      }
+
+      setFormData(nextData);
+      return;
+    }
+
+    if (name === "incidentTime" && formData.date === todayDate && value > currentTime) {
+      alert("Future incident time is not allowed.");
+      setFormData({
+        ...formData,
+        incidentTime: currentTime,
+      });
+      return;
+    }
 
     setFormData({
 
       ...formData,
 
-      [e.target.name]:
-      e.target.value,
+      [name]:
+      value,
 
     });
 
@@ -190,6 +243,16 @@ const ReportDetails = () => {
 
     if (!formData.title.trim() || !formData.description.trim() || !formData.location.trim()) {
       alert("Please fill title, description, and location.");
+      return;
+    }
+
+    if (!formData.date || !formData.incidentTime) {
+      alert("Please select the incident date and time.");
+      return;
+    }
+
+    if (isFutureIncident(formData.date, formData.incidentTime)) {
+      alert("Incident date and time cannot be in the future.");
       return;
     }
 
@@ -527,6 +590,7 @@ const ReportDetails = () => {
                 name="date"
                 value={formData.date}
                 onChange={handleChange}
+                max={todayDate}
                 required
               />
 
@@ -548,6 +612,7 @@ const ReportDetails = () => {
                 className="time-input"
                 value={formData.incidentTime}
                 onChange={handleChange}
+                max={maxIncidentTime}
                 required
               />
 

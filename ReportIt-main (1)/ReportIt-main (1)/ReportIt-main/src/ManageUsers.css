@@ -562,6 +562,25 @@ body{
   overflow-wrap:anywhere;
 }
 
+.user-file-preview-btn{
+  display:block;
+  width:100%;
+  margin-bottom:8px;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:#ffffff;
+  font:inherit;
+  text-align:left;
+  cursor:pointer;
+  overflow-wrap:anywhere;
+}
+
+.user-file-preview-btn:hover,
+.user-file-list a:hover{
+  color:#00bfff;
+}
+
 @media(max-width:760px){
   .user-modal{
     padding:26px;

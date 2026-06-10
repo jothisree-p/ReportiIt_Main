@@ -58,6 +58,25 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "OTP verified"));
     }
 
+    @PostMapping("/signup-verification/send")
+    public ResponseEntity<Map<String, String>> sendSignupVerification(@RequestBody Map<String, String> body) {
+        String email = body.getOrDefault("email", "").trim();
+        String phone = body.getOrDefault("phone", "").trim();
+        if (email.isBlank() || phone.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Email and phone are required"));
+        }
+        return ResponseEntity.ok(otpService.sendSignupVerification(email, phone));
+    }
+
+    @PostMapping("/signup-verification/verify-phone")
+    public ResponseEntity<Map<String, String>> verifySignupPhone(@RequestBody Map<String, String> body) {
+        otpService.verifyOtp(
+                body.getOrDefault("email", ""),
+                body.getOrDefault("code", ""),
+                otpService.phoneVerificationPurpose(body.getOrDefault("phone", "")));
+        return ResponseEntity.ok(Map.of("message", "Phone verified successfully"));
+    }
+
     @PostMapping("/forgot-password")
     public ResponseEntity<Map<String, String>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
         request.setNewPassword(cryptoService.decryptIfEncrypted(request.getNewPassword()));

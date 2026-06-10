@@ -18,6 +18,8 @@ import { clearAuth } from "./authStorage";
 import { fetchMyNotifications } from "./api/notifications";
 import NotificationSeeMore from "./NotificationSeeMore";
 import { openNotifications } from "./notificationActions";
+import { fetchComplaintFiles } from "./api/files";
+import EvidencePreviewModal from "./EvidencePreviewModal";
 
 import {
 
@@ -30,6 +32,7 @@ import {
   FaArrowLeft,
   FaMapMarkerAlt,
   FaPaperPlane,
+  FaFileAlt,
 
 } from "react-icons/fa";
 
@@ -45,6 +48,9 @@ const OfficerComplaintDetails = () => {
   useState(false);
   const [notifications, setNotifications] = useState([]);
   const [timeline, setTimeline] = useState([]);
+  const [evidenceFiles, setEvidenceFiles] = useState([]);
+  const [evidenceError, setEvidenceError] = useState("");
+  const [previewFile, setPreviewFile] = useState(null);
 
   const loadTimeline = () => {
     if (!selectedComplaint.backendId) return;
@@ -58,6 +64,22 @@ const OfficerComplaintDetails = () => {
       .then(setNotifications)
       .catch(() => setNotifications([]));
     loadTimeline();
+  }, [selectedComplaint.backendId]);
+
+  useEffect(() => {
+    if (!selectedComplaint.backendId) {
+      setEvidenceFiles([]);
+      setEvidenceError("");
+      return;
+    }
+
+    setEvidenceError("");
+    fetchComplaintFiles(selectedComplaint.backendId)
+      .then(setEvidenceFiles)
+      .catch((err) => {
+        setEvidenceFiles([]);
+        setEvidenceError(err.message || "Unable to load uploaded evidence.");
+      });
   }, [selectedComplaint.backendId]);
 
   const [note,
@@ -477,6 +499,38 @@ const OfficerComplaintDetails = () => {
 
               </div>
 
+              <div className="officer-evidence">
+                <h3>Uploaded Evidence</h3>
+                {evidenceError ? (
+                  <p className="officer-evidence-error">{evidenceError}</p>
+                ) : evidenceFiles.length > 0 ? (
+                  evidenceFiles.map((file) => {
+                    const isImage =
+                      file.contentType?.startsWith?.("image/") ||
+                      /\.(png|jpe?g|gif|webp)$/i.test(file.fileName || "");
+
+                    return isImage ? (
+                      <button
+                        type="button"
+                        className="officer-evidence-item officer-evidence-image"
+                        key={file.id}
+                        onClick={() => setPreviewFile(file)}
+                      >
+                        <img src={file.downloadUrl} alt={file.fileName} />
+                        <span>{file.fileName}</span>
+                      </button>
+                    ) : (
+                      <a className="officer-evidence-item" href={file.downloadUrl} key={file.id}>
+                        <FaFileAlt />
+                        <span>{file.fileName}</span>
+                      </a>
+                    );
+                  })
+                ) : (
+                  <p>No evidence uploaded.</p>
+                )}
+              </div>
+
               {/* STATUS */}
 
               <div className="status-section">
@@ -705,6 +759,8 @@ const OfficerComplaintDetails = () => {
         </div>
 
       </div>
+
+      <EvidencePreviewModal file={previewFile} onClose={() => setPreviewFile(null)} />
 
       <AIChat />
 

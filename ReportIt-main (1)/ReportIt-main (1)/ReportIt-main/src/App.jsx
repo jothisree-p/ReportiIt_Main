@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import SplashScreen from "./SplashScreen";
 import About from "./About";
 import Contact from "./Contact";
+import LegalPage from "./LegalPage";
 import UserType from "./UserType";
 import CitizenLogin from "./CitizenLogin";
 import CitizenDashboard from "./CitizenDashboard";
@@ -42,6 +43,10 @@ function App() {
       <Route path="/about" element={<About />} />
 
       <Route path="/contact" element={<Contact />} />
+
+      <Route path="/privacy-policy" element={<LegalPage type="privacy" />} />
+
+      <Route path="/terms-conditions" element={<LegalPage type="terms" />} />
 
       <Route path="/user-type" element={<UserType />} />
 

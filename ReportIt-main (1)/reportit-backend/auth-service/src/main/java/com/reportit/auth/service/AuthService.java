@@ -29,6 +29,10 @@ public class AuthService {
             throw new ApiException("Email already registered", HttpStatus.CONFLICT);
         }
 
+        if (!otpService.hasActivePhoneVerification(request.getEmail(), request.getPhone())) {
+            throw new ApiException("Please verify your phone number before creating the account", HttpStatus.BAD_REQUEST);
+        }
+
         Role citizenRole = roleRepository.findByName("CITIZEN")
                 .orElseThrow(() -> new ApiException("CITIZEN role not found", HttpStatus.INTERNAL_SERVER_ERROR));
 

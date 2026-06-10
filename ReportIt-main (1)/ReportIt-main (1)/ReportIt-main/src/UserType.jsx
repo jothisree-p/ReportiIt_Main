@@ -1,13 +1,11 @@
 import React from "react";
 import "./UserType.css";
+import PublicFooter from "./PublicFooter";
 
 import { Link, useNavigate } from "react-router-dom";
 
 import {
   FaShieldAlt,
-  FaPhoneAlt,
-  FaEnvelope,
-  FaMapMarkerAlt,
   FaCheck,
   FaArrowLeft,
 } from "react-icons/fa";
@@ -58,7 +56,7 @@ const UserType = () => {
 
     </ul>
 
-    <button className="admin-login-btn">
+    <button className="admin-login-btn" onClick={() => navigate("/admin-login")}>
 
       🔒 Admin Login
 
@@ -269,134 +267,7 @@ const UserType = () => {
 
       </section>
 
-      {/* ================= FOOTER ================= */}
-
-      <footer className="footer">
-
-        {/* LEFT */}
-
-        <div className="footer-box">
-
-          <div className="logo footer-logo">
-
-            <FaShieldAlt className="logo-icon" />
-
-            <span className="logo-text">
-
-              Report<span className="highlight">It</span>
-
-            </span>
-
-          </div>
-
-          <p>
-
-            ReportIt is a smart platform that allows citizens
-            to report crimes and suspicious activities easily,
-            helping authorities respond faster and improve
-            community safety.
-
-          </p>
-
-        </div>
-
-        {/* QUICK LINKS */}
-
-        <div className="footer-box">
-
-          <h4>
-
-            Quick Links
-
-          </h4>
-
-          <ul>
-
-            <li>
-              Home
-            </li>
-
-            <li>
-              About
-            </li>
-
-            <li>
-              Contact
-            </li>
-
-            <li>
-              Privacy Policy
-            </li>
-
-          </ul>
-
-        </div>
-
-        {/* HOTLINE */}
-
-        <div className="footer-box">
-
-          <h4>
-
-            Emergency Hotline
-
-          </h4>
-
-          <p>
-            Safety City Police HQ
-          </p>
-
-          <p>
-            +91 63695 74855
-          </p>
-
-          <p>
-            +91 63814 87829
-          </p>
-
-          <p>
-            Police Emergency: 100
-          </p>
-
-        </div>
-
-        {/* CONTACT */}
-
-        <div className="footer-box">
-
-          <h4>
-
-            Contact
-
-          </h4>
-
-          <p>
-
-            <FaPhoneAlt className="footer-icon" />
-
-            (800) 123-4567
-
-          </p>
-
-          <p>
-
-            <FaEnvelope className="footer-icon" />
-
-            support@reportitnow.com
-
-          </p>
-
-          <p>
-
-            <FaMapMarkerAlt className="footer-icon" />
-
-            123 Safety St, Anytown, USA
-
-          </p>
-
-        </div>
-
-      </footer>
+      <PublicFooter />
 
     </div>
 

@@ -1,6 +1,7 @@
 import React from "react";
 
 import "./Contact.css";
+import PublicFooter, { REPORTIT_EMAIL, REPORTIT_LOCATION, REPORTIT_PHONE } from "./PublicFooter";
 
 import {
   Link,
@@ -195,7 +196,7 @@ const Contact = () => {
                 </h3>
 
                 <p>
-                  +91 98765 43210
+                  <a href="tel:+916369574855">{REPORTIT_PHONE}</a>
                 </p>
 
               </div>
@@ -215,7 +216,7 @@ const Contact = () => {
                 </h3>
 
                 <p>
-                  reportit.noreply@gmail.com
+                  <a href={`mailto:${REPORTIT_EMAIL}`}>{REPORTIT_EMAIL}</a>
                 </p>
 
               </div>
@@ -235,7 +236,13 @@ const Contact = () => {
                 </h3>
 
                 <p>
-                  Chennai, India
+                  <a
+                    href="https://www.google.com/maps/search/?api=1&query=Coimbatore%2C%20India"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {REPORTIT_LOCATION}
+                  </a>
                 </p>
 
               </div>
@@ -248,106 +255,7 @@ const Contact = () => {
 
       </section>
 
-      {/* ================= FOOTER ================= */}
-
-      <footer className="footer">
-
-        {/* FOOTER 1 */}
-
-        <div className="footer-box">
-
-          <div className="footer-logo">
-
-            <FaShieldAlt className="logo-icon" />
-
-            <span>Report<span className="highlight">It</span></span>
-
-          </div>
-
-          <p>
-
-            ReportIt helps citizens report crimes and
-            suspicious activities quickly and securely
-            for safer communities.
-
-          </p>
-
-        </div>
-
-        {/* FOOTER 2 */}
-
-        <div className="footer-box">
-
-          <h4>
-            Quick Links
-          </h4>
-
-          <ul>
-
-            <li>Home</li>
-
-            <li>About</li>
-
-            <li>Contact</li>
-
-            <li>Privacy Policy</li>
-
-            <li>Terms & Conditions</li>
-
-          </ul>
-
-        </div>
-
-        {/* FOOTER 3 */}
-
-        <div className="footer-box">
-
-          <h4>
-            Emergency
-          </h4>
-
-          <p>Police Emergency : 100</p>
-
-          <p>Ambulance : 108</p>
-
-          <p>Women Helpline : 1091</p>
-
-          <p>Cyber Crime : 1930</p>
-
-        </div>
-
-        {/* FOOTER 4 */}
-
-        <div className="footer-box">
-
-          <h4>
-            Contact
-          </h4>
-
-          <p>
-
-            <FaPhoneAlt className="footer-icon" />
-            +91 98765 43210
-
-          </p>
-
-          <p>
-
-            <FaEnvelope className="footer-icon" />
-            reportit.noreply@gmail.com
-
-          </p>
-
-          <p>
-
-            <FaMapMarkerAlt className="footer-icon" />
-            Chennai, India
-
-          </p>
-
-        </div>
-
-      </footer>
+      <PublicFooter />
 
     </div>
 

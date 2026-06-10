@@ -22,6 +22,9 @@ import {
   FaUser,
   FaSignOutAlt,
   FaShieldAlt,
+  FaSearchMinus,
+  FaSearchPlus,
+  FaTimes,
 } from "react-icons/fa";
 
 import {
@@ -48,6 +51,8 @@ const CitizenComplaintDetails = () => {
   const [notifications, setNotifications] = useState([]);
   const [evidenceFiles, setEvidenceFiles] = useState([]);
   const [evidenceError, setEvidenceError] = useState("");
+  const [previewFile, setPreviewFile] = useState(null);
+  const [previewZoom, setPreviewZoom] = useState(1);
   const [resolvedComplaint, setResolvedComplaint] = useState(selectedComplaint);
   const [timeline, setTimeline] = useState([]);
 
@@ -121,6 +126,23 @@ const CitizenComplaintDetails = () => {
       navigate("/");
     }
 
+  };
+
+  const openEvidencePreview = (file) => {
+    setPreviewFile(file);
+    setPreviewZoom(1);
+  };
+
+  const closeEvidencePreview = () => {
+    setPreviewFile(null);
+    setPreviewZoom(1);
+  };
+
+  const zoomEvidence = (step) => {
+    setPreviewZoom((currentZoom) => {
+      const nextZoom = Math.round((currentZoom + step) * 10) / 10;
+      return Math.min(3, Math.max(0.5, nextZoom));
+    });
   };
 
   return (
@@ -454,12 +476,21 @@ const CitizenComplaintDetails = () => {
                     /\.(png|jpe?g|gif|webp)$/i.test(file.fileName || "");
 
                   return (
+                    isImage ? (
+                    <button
+                      type="button"
+                      className="citizen-evidence-item citizen-evidence-image"
+                      key={file.id}
+                      onClick={() => openEvidencePreview(file)}
+                    >
+                      <img src={file.downloadUrl} alt={file.fileName} />
+                      <span>{file.fileName}</span>
+                    </button>
+                    ) : (
                     <a
-                      className={`citizen-evidence-item ${isImage ? "citizen-evidence-image" : ""}`}
+                      className="citizen-evidence-item"
                       key={file.id}
                       href={file.downloadUrl}
-                      target="_blank"
-                      rel="noreferrer"
                     >
                       {isImage ? (
                         <img src={file.downloadUrl} alt={file.fileName} />
@@ -468,6 +499,7 @@ const CitizenComplaintDetails = () => {
                       )}
                       <span>{file.fileName}</span>
                     </a>
+                    )
                   );
                 })
               ) : (
@@ -542,6 +574,32 @@ const CitizenComplaintDetails = () => {
         </div>
 
       </div>
+
+      {previewFile && (
+        <div className="evidence-preview-overlay" role="dialog" aria-modal="true">
+          <div className="evidence-preview-toolbar">
+            <button type="button" onClick={() => zoomEvidence(-0.2)} aria-label="Zoom out">
+              <FaSearchMinus />
+            </button>
+            <span>{Math.round(previewZoom * 100)}%</span>
+            <button type="button" onClick={() => zoomEvidence(0.2)} aria-label="Zoom in">
+              <FaSearchPlus />
+            </button>
+            <button type="button" onClick={closeEvidencePreview} aria-label="Close preview">
+              <FaTimes />
+            </button>
+          </div>
+
+          <div className="evidence-preview-stage" onClick={closeEvidencePreview}>
+            <img
+              src={previewFile.downloadUrl}
+              alt={previewFile.fileName}
+              style={{ transform: `scale(${previewZoom})` }}
+              onClick={(event) => event.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
 
     </div>
 

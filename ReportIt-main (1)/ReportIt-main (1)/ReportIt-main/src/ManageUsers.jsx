@@ -12,6 +12,7 @@ import "./ManageUsers.css";
 
 import AIChat from "./AIChat";
 import AdminNotificationBell from "./AdminNotificationBell";
+import EvidencePreviewModal from "./EvidencePreviewModal";
 
 import {
 
@@ -45,6 +46,7 @@ const ManageUsers = () => {
   const [selectedUser,setSelectedUser] =
   useState(null);
   const [selectedUserFiles, setSelectedUserFiles] = useState({});
+  const [previewFile, setPreviewFile] = useState(null);
 
   /* ================= PAGINATION ================= */
 
@@ -681,11 +683,26 @@ const ManageUsers = () => {
                           </div>
                           <div className="user-file-list">
                             {(selectedUserFiles[complaint.backendId] || []).length > 0 ? (
-                              selectedUserFiles[complaint.backendId].map((file) => (
-                                <a href={file.downloadUrl} target="_blank" rel="noreferrer" key={file.id}>
-                                  {file.fileName}
-                                </a>
-                              ))
+                              selectedUserFiles[complaint.backendId].map((file) => {
+                                const isImage =
+                                  file.contentType?.startsWith?.("image/") ||
+                                  /\.(png|jpe?g|gif|webp)$/i.test(file.fileName || "");
+
+                                return isImage ? (
+                                  <button
+                                    type="button"
+                                    className="user-file-preview-btn"
+                                    key={file.id}
+                                    onClick={() => setPreviewFile(file)}
+                                  >
+                                    {file.fileName}
+                                  </button>
+                                ) : (
+                                  <a href={file.downloadUrl} key={file.id}>
+                                    {file.fileName}
+                                  </a>
+                                );
+                              })
                             ) : (
                               <span>No evidence uploaded</span>
                             )}
@@ -710,6 +727,8 @@ const ManageUsers = () => {
       </div>
 
       {/* ================= AI CHAT ================= */}
+
+      <EvidencePreviewModal file={previewFile} onClose={() => setPreviewFile(null)} />
 
       <AIChat />
 

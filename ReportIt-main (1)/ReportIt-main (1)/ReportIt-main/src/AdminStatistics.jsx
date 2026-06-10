@@ -2,7 +2,6 @@ import React,
 {
   useEffect,
   useState,
-  useRef
 }
 from "react";
 
@@ -34,21 +33,17 @@ import {
 import { useNavigate }
 from "react-router-dom";
 
-import jsPDF from "jspdf";
-
-import html2canvas from "html2canvas";
-
 import "./AdminStatistics.css";
 
 import AIChat from "./AIChat";
 import AdminNotificationBell from "./AdminNotificationBell";
 import { fetchAdminAnalytics } from "./api/dashboard";
+import { exportStatisticsPdf } from "./utils/statisticsPdf";
 
 const AdminStatistics = () => {
 
   const navigate = useNavigate();
 
-  const pdfRef = useRef();
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -79,6 +74,7 @@ const AdminStatistics = () => {
     month: item.label,
     complaints: item.total,
     resolved: item.resolved,
+    pending: item.pending,
   }));
 
   /* ================= LOGOUT ================= */
@@ -101,51 +97,38 @@ const AdminStatistics = () => {
   /* ================= EXPORT PDF ================= */
 
   const handleExportPDF = async () => {
+    let latestAnalytics = analytics;
+    try {
+      latestAnalytics = await fetchAdminAnalytics();
+      setAnalytics(latestAnalytics);
+      setError("");
+    } catch (err) {
+      alert(err.message || "Unable to fetch latest analytics for PDF.");
+      return;
+    }
 
-    const element = pdfRef.current;
+    const latestStats = latestAnalytics?.stats || {};
+    const totalComplaints = latestStats.totalComplaints ?? latestStats.total ?? 0;
+    const resolved = latestStats.resolved ?? 0;
+    const pending = latestStats.pending ?? Math.max(totalComplaints - resolved, 0);
+    const resolutionRate = latestStats.resolutionRate ?? (totalComplaints > 0 ? Math.round((resolved * 100) / totalComplaints) : 0);
 
-    const canvas =
-    await html2canvas(
-      element,
-      {
-        scale:2,
-        useCORS:true,
-      }
-    );
-
-    const imgData =
-    canvas.toDataURL(
-      "image/png"
-    );
-
-    const pdf =
-    new jsPDF(
-      "p",
-      "mm",
-      "a4"
-    );
-
-    const pdfWidth =
-    pdf.internal.pageSize.getWidth();
-
-    const pdfHeight =
-    (
-      canvas.height *
-      pdfWidth
-    ) / canvas.width;
-
-    pdf.addImage(
-      imgData,
-      "PNG",
-      0,
-      0,
-      pdfWidth,
-      pdfHeight
-    );
-
-    pdf.save(
-      "Admin_Statistics_Report.pdf"
-    );
+    exportStatisticsPdf({
+      reportTitle: "Admin Statistical Report",
+      generatedFor: "System Admin",
+      fileName: "Admin_Statistical_Report.pdf",
+      summary: [
+        { label: "Total Complaints", value: totalComplaints },
+        { label: "Resolved Cases", value: resolved },
+        { label: "Pending Cases", value: pending },
+        { label: "Resolution Rate", value: `${resolutionRate}%` },
+      ],
+      weeklyData: latestAnalytics?.weeklyComplaintTrends || [],
+      monthlyData: latestAnalytics?.monthlyComplaintTrends || [],
+      categoryData: latestAnalytics?.categoryStatistics || [],
+      statusData: latestAnalytics?.complaintStatusAnalytics || [],
+      officerPerformanceData: latestAnalytics?.officerPerformanceStatistics || [],
+    });
 
   };
 
@@ -342,7 +325,6 @@ const AdminStatistics = () => {
 
         <div
           className="statistics-content"
-          ref={pdfRef}
         >
 
           <h1>
