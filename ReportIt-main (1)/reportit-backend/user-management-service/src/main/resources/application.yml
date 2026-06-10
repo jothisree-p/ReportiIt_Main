@@ -5,11 +5,7 @@ spring:
   application:
     name: user-management-service
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE:local}
-  servlet:
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
+    active: mysql
 
 jwt:
   secret: ReportItSecretKeyForJWT2026MustBeAtLeast256BitsLong!!
@@ -23,33 +19,6 @@ file:
 auth:
   service-url: http://localhost:8081
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-  endpoint:
-    health:
-      show-details: always
-
----
-spring:
-  config:
-    activate:
-      on-profile: local
-  datasource:
-    url: jdbc:h2:file:./../data/reportit-db;AUTO_SERVER=TRUE;MODE=MySQL;DB_CLOSE_DELAY=-1
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
-
 ---
 spring:
   config:
@@ -57,13 +26,10 @@ spring:
       on-profile: mysql
   datasource:
     url: jdbc:mysql://localhost:3306/reportit_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-    username: ${MYSQL_USER:root}
-    password: ${MYSQL_PASSWORD:Root@123}
+    username: root
+    password: Jothisreerc@14
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+    show-sql: true
