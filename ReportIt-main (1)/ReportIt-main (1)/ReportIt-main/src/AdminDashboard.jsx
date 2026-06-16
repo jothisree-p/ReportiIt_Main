@@ -4,6 +4,7 @@ import { useComplaints } from "./hooks/useComplaints";
 import { fetchAllComplaints } from "./api/complaints";
 import { fetchOfficers } from "./api/officers";
 import { fetchCitizens } from "./api/users";
+import { fetchAdminStats } from "./api/dashboard";
 import { useRequireAuth } from "./hooks/useRequireAuth";
 import { useNavigate } from "react-router-dom";
 import "./AdminDashboard.css";
@@ -24,18 +25,27 @@ const AdminDashboard = () => {
 
   const navigate = useNavigate();
   useRequireAuth("ADMIN");
-  const { complaints, stats: complaintStats } = useComplaints(fetchAllComplaints);
+  const { complaints, stats: localComplaintStats } = useComplaints(fetchAllComplaints);
   const recentReports = complaints.slice(0, 4);
   const [officers, setOfficers] = useState([]);
   const [registeredUsers, setRegisteredUsers] = useState([]);
+  const [dashboardStats, setDashboardStats] = useState(null);
 
   useEffect(() => {
     fetchOfficers().then(setOfficers).catch(() => setOfficers([]));
     fetchCitizens().then(setRegisteredUsers).catch(() => setRegisteredUsers([]));
+    fetchAdminStats().then(setDashboardStats).catch(() => setDashboardStats(null));
   }, []);
 
   const activeOfficers =
     officers.filter((officer) => officer.status === "Active").length;
+
+  const statValues = {
+    total: dashboardStats?.totalComplaints ?? localComplaintStats.total,
+    activeOfficers: dashboardStats?.totalOfficers ?? activeOfficers,
+    registeredUsers: dashboardStats?.totalCitizens ?? registeredUsers.length,
+    resolutionRate: dashboardStats?.resolutionRate ?? localComplaintStats.resolutionRate,
+  };
 
   const getInitials = (name = "") =>
     name
@@ -154,7 +164,7 @@ const AdminDashboard = () => {
                 <p>TOTAL COMPLAINTS</p>
                 <FaFileAlt className="blue" />
               </div>
-              <h2>{complaintStats.total}</h2>
+              <h2>{statValues.total}</h2>
             </div>
 
             <div className="stat-card">
@@ -162,7 +172,7 @@ const AdminDashboard = () => {
                 <p>ACTIVE OFFICERS</p>
                 <FaUserShield className="cyan" />
               </div>
-              <h2>{activeOfficers}</h2>
+              <h2>{statValues.activeOfficers}</h2>
             </div>
 
             <div className="stat-card">
@@ -170,7 +180,7 @@ const AdminDashboard = () => {
                 <p>REGISTERED USERS</p>
                 <FaUsers className="green" />
               </div>
-              <h2>{registeredUsers.length}</h2>
+              <h2>{statValues.registeredUsers}</h2>
             </div>
 
             <div className="stat-card">
@@ -178,7 +188,7 @@ const AdminDashboard = () => {
                 <p>RESOLUTION RATE</p>
                 <FaChartBar className="yellow" />
               </div>
-              <h2>{complaintStats.resolutionRate}%</h2>
+              <h2>{statValues.resolutionRate}%</h2>
             </div>
 
           </div>

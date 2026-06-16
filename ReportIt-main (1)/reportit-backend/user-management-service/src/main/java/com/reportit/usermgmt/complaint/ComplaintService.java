@@ -6,6 +6,7 @@ import com.reportit.usermgmt.common.UserProvisioningService;
 import com.reportit.usermgmt.entity.Complaint;
 import com.reportit.usermgmt.entity.ComplaintNote;
 import com.reportit.usermgmt.entity.User;
+import com.reportit.usermgmt.mongo.MongoSyncService;
 import com.reportit.usermgmt.notification.NotificationService;
 import com.reportit.usermgmt.repository.*;
 import com.reportit.usermgmt.status.StatusService;
@@ -32,6 +33,7 @@ public class ComplaintService {
     private final StatusService statusService;
     private final UserProvisioningService userProvisioningService;
     private final NotificationService notificationService;
+    private final MongoSyncService mongoSyncService;
 
     @Transactional
     public ComplaintResponse create(ComplaintRequest request) {
@@ -54,6 +56,7 @@ public class ComplaintService {
 
         complaint = complaintRepository.save(complaint);
         statusService.recordStatusChange(complaint, null, "Pending", citizen, "Complaint filed");
+        mongoSyncService.mirrorComplaint(complaint);
         notify(citizen, "Complaint Submitted", "Your complaint " + complaint.getComplaintCode() + " was submitted.");
         notificationService.notifyAdmins("New Complaint Reported",
                 citizen.getFullName() + " reported " + complaint.getComplaintCode() + ": " + complaint.getTitle());
@@ -99,6 +102,7 @@ public class ComplaintService {
 
         complaint = complaintRepository.save(complaint);
         User changer = userRepository.findById(AuthHelper.currentUser().getUserId()).orElse(null);
+        mongoSyncService.mirrorComplaint(complaint);
 
         if (changer != null && "CITIZEN".equalsIgnoreCase(AuthHelper.currentUser().getRole())) {
             notificationService.notifyAdmins("Complaint Edited by Citizen",
@@ -116,13 +120,48 @@ public class ComplaintService {
         }
 
         if (request.getNote() != null && !request.getNote().isBlank()) {
+            String note = request.getNote().trim();
             User officer = userRepository.findById(AuthHelper.currentUser().getUserId()).orElse(null);
-            noteRepository.save(ComplaintNote.builder()
-                    .complaint(complaint)
-                    .officer(officer)
-                    .noteText(request.getNote())
-                    .build());
+            boolean duplicateNote = noteRepository.findByComplaint_IdOrderByCreatedAtDesc(complaint.getId()).stream()
+                    .anyMatch(existing -> note.equalsIgnoreCase(existing.getNoteText().trim()));
+            if (!duplicateNote) {
+                noteRepository.save(ComplaintNote.builder()
+                        .complaint(complaint)
+                        .officer(officer)
+                        .noteText(note)
+                        .build());
+                mongoSyncService.mirrorComplaint(complaint);
+            }
         }
+
+        return toResponse(complaint);
+    }
+
+    @Transactional
+    public ComplaintResponse addNote(Long id, ComplaintNoteRequest request) {
+        Complaint complaint = getComplaint(id);
+        String note = request.getNote() != null ? request.getNote().trim() : "";
+        if (note.isBlank()) {
+            throw new ApiException("Investigation note is required", HttpStatus.BAD_REQUEST);
+        }
+
+        boolean duplicateNote = noteRepository.findByComplaint_IdOrderByCreatedAtDesc(complaint.getId()).stream()
+                .anyMatch(existing -> note.equalsIgnoreCase(existing.getNoteText().trim()));
+        if (duplicateNote) {
+            return toResponse(complaint);
+        }
+
+        User officer = userRepository.findById(AuthHelper.currentUser().getUserId()).orElse(null);
+        noteRepository.save(ComplaintNote.builder()
+                .complaint(complaint)
+                .officer(officer)
+                .noteText(note)
+                .build());
+        mongoSyncService.mirrorComplaint(complaint);
+        statusService.recordStatusChange(complaint, complaint.getStatus(), complaint.getStatus(), officer,
+                "Investigation note added");
+        notify(complaint.getCitizen(), "Investigation Note Added",
+                "An officer added a new note for " + complaint.getComplaintCode() + ".");
 
         return toResponse(complaint);
     }
@@ -138,6 +177,7 @@ public class ComplaintService {
         complaint.setAssignedOfficer(officer);
         complaint.setStatus("Assigned");
         complaint = complaintRepository.save(complaint);
+        mongoSyncService.mirrorComplaint(complaint);
         notify(officer, "Case Assigned", "Complaint " + complaint.getComplaintCode() + " assigned to you.");
         notify(complaint.getCitizen(), "Officer Assigned", "An officer was assigned to " + complaint.getComplaintCode());
         return toResponse(complaint);
@@ -153,6 +193,7 @@ public class ComplaintService {
         complaint.setCitizenDeleted(true);
         complaint.setCitizenDeletedAt(LocalDateTime.now());
         complaintRepository.save(complaint);
+        mongoSyncService.mirrorComplaint(complaint);
         notificationService.notifyAdmins("Complaint Deleted by Citizen",
                 complaint.getComplaintCode() + " was removed from the citizen view but kept in admin records.");
     }
@@ -173,7 +214,11 @@ public class ComplaintService {
 
     private ComplaintResponse toResponse(Complaint c) {
         List<String> notes = noteRepository.findByComplaint_IdOrderByCreatedAtDesc(c.getId())
-                .stream().map(com.reportit.usermgmt.entity.ComplaintNote::getNoteText)
+                .stream()
+                .map(com.reportit.usermgmt.entity.ComplaintNote::getNoteText)
+                .map(String::trim)
+                .filter(note -> !note.isBlank())
+                .distinct()
                 .collect(Collectors.toList());
 
         return ComplaintResponse.builder()
@@ -226,6 +271,11 @@ public class ComplaintService {
         private String priority;
         private String status;
         private String remark;
+        private String note;
+    }
+
+    @Data
+    public static class ComplaintNoteRequest {
         private String note;
     }
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useComplaints } from "./hooks/useComplaints";
-import { fetchMyComplaints, trackComplaint, fetchComplaintHistory } from "./api/complaints";
+import { fetchMyComplaints, trackComplaint } from "./api/complaints";
 import { fetchMyNotifications } from "./api/notifications";
 import NotificationSeeMore from "./NotificationSeeMore";
 import { openNotifications } from "./notificationActions";
@@ -54,7 +54,6 @@ const CitizenComplaintDetails = () => {
   const [previewFile, setPreviewFile] = useState(null);
   const [previewZoom, setPreviewZoom] = useState(1);
   const [resolvedComplaint, setResolvedComplaint] = useState(selectedComplaint);
-  const [timeline, setTimeline] = useState([]);
 
   useEffect(() => {
     setResolvedComplaint(selectedComplaint);
@@ -68,26 +67,16 @@ const CitizenComplaintDetails = () => {
     }
 
     trackComplaint(complaintCode)
-      .then(({ complaint: trackedComplaint, history }) => {
+      .then(({ complaint: trackedComplaint }) => {
         setResolvedComplaint((current) => ({
           ...current,
           ...trackedComplaint,
         }));
-        if (history) {
-          setTimeline(history);
-        }
       })
       .catch(() => {});
   }, [selectedComplaint?.id, selectedComplaint?.backendId]);
 
   const complaint = resolvedComplaint;
-
-  useEffect(() => {
-    if (!complaint?.backendId) return;
-    fetchComplaintHistory(complaint.backendId)
-      .then(setTimeline)
-      .catch(() => setTimeline([]));
-  }, [complaint?.backendId]);
 
   useEffect(() => {
     fetchMyNotifications()
@@ -504,68 +493,6 @@ const CitizenComplaintDetails = () => {
                 })
               ) : (
                 <p>No evidence uploaded.</p>
-              )}
-            </div>
-
-            {/* TIMELINE */}
-
-            <div className="citizen-timeline">
-              <h3>Timeline</h3>
-
-              {timeline.length > 0 ? (
-                [...timeline].reverse().map((step, index) => (
-                  <div className="timeline-box" key={step.id || index}>
-                    <div className="timeline-dot active-dot"></div>
-                    <div>
-                      <h4>{step.newStatus}</h4>
-                      <p className="timeline-date" style={{ color: "#9ca3d2", fontSize: "0.85rem", marginBottom: "0.25rem" }}>
-                        {step.createdAt?.slice?.(0, 10) || ""} {step.createdAt?.slice?.(11, 16) || ""}
-                      </p>
-                      {step.remark && <p style={{ color: "#e2e8f0", fontSize: "0.95rem" }}>{step.remark}</p>}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <>
-                  <div className="timeline-box">
-                    <div className="timeline-dot"></div>
-                    <div>
-                      <h4>Complaint Submitted</h4>
-                      <p>Your complaint was received.</p>
-                    </div>
-                  </div>
-                  {complaint?.assignedOfficer && (
-                    <div className="timeline-box">
-                      <div className="timeline-dot active-dot"></div>
-                      <div>
-                        <h4>Officer Assigned</h4>
-                        <p>{complaint.assignedOfficer}</p>
-                      </div>
-                    </div>
-                  )}
-                  <div className="timeline-box">
-                    <div className="timeline-dot active-dot"></div>
-                    <div>
-                      <h4>{complaint?.status || "Under Review"}</h4>
-                      <p>Priority: {complaint?.priority || "Not set"}</p>
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {complaint?.investigationNotes && complaint.investigationNotes.length > 0 && (
-                <>
-                  <h3 style={{ marginTop: "1.5rem", borderTop: "1px solid #1d2b63", paddingTop: "1rem" }}>Investigation Notes</h3>
-                  {complaint.investigationNotes.map((item, index) => (
-                    <div className="timeline-box" key={`note-${index}`}>
-                      <div className="timeline-dot active-dot"></div>
-                      <div>
-                        <h4>Officer Note</h4>
-                        <p style={{ color: "#e2e8f0" }}>{item}</p>
-                      </div>
-                    </div>
-                  ))}
-                </>
               )}
             </div>
 

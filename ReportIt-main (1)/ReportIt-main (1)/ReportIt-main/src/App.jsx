@@ -34,6 +34,7 @@ import AdminProfile from "./AdminProfile";
 import AdminStatistics from "./AdminStatistics";
 import VerifyOtp from "./VerifyOtp";
 import AllNotifications from "./AllNotifications";
+import FeedbackDetails from "./FeedbackDetails";
 function App() {
   return (
     <Routes>
@@ -156,6 +157,10 @@ element={<TrackStatus />}
 <Route
   path="/notifications"
   element={<AllNotifications />}
+/>
+<Route
+  path="/feedback-details"
+  element={<FeedbackDetails />}
 />
 </Routes>
 

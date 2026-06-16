@@ -39,7 +39,7 @@ public class DashboardService {
         long rejected = complaintRepository.countByStatus("Rejected");
         return buildStats(total, pending, inProgress, resolved, rejected,
                 userRepository.findByRole_Name("CITIZEN").size(),
-                officerRepository.count());
+                userRepository.countByRole_NameAndStatusIgnoreCase("OFFICER", "Active"));
     }
 
     public DashboardStats officerStats() {

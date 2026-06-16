@@ -6,7 +6,7 @@ if (-not (Test-Path $mvn)) {
 }
 
 $root = $PSScriptRoot
-$profile = if ($env:SPRING_PROFILES_ACTIVE) { $env:SPRING_PROFILES_ACTIVE } else { "local" }
+$profile = if ($env:SPRING_PROFILES_ACTIVE) { $env:SPRING_PROFILES_ACTIVE } else { "mysql" }
 
 Write-Host "Starting auth-service (8081) with profile: $profile"
 Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$root\auth-service'; `$env:SPRING_PROFILES_ACTIVE='$profile'; & '$mvn' spring-boot:run"

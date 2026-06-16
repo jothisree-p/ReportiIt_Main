@@ -13,7 +13,7 @@ import {
   getOfficerWelcomeText,
 } from "./officerSession";
 import { createNotification } from "./api/notifications";
-import { updateComplaintApi, fetchComplaintHistory } from "./api/complaints";
+import { updateComplaintApi, fetchComplaintHistory, fetchComplaintById, addComplaintNoteApi } from "./api/complaints";
 import { clearAuth } from "./authStorage";
 import { fetchMyNotifications } from "./api/notifications";
 import NotificationSeeMore from "./NotificationSeeMore";
@@ -59,11 +59,19 @@ const OfficerComplaintDetails = () => {
       .catch(() => setTimeline([]));
   };
 
+  const loadComplaintNotes = () => {
+    if (!selectedComplaint.backendId) return;
+    fetchComplaintById(selectedComplaint.backendId)
+      .then((complaint) => setNotes(complaint.investigationNotes || []))
+      .catch(() => {});
+  };
+
   useEffect(() => {
     fetchMyNotifications()
       .then(setNotifications)
       .catch(() => setNotifications([]));
     loadTimeline();
+    loadComplaintNotes();
   }, [selectedComplaint.backendId]);
 
   useEffect(() => {
@@ -86,6 +94,10 @@ const OfficerComplaintDetails = () => {
   setNote] =
   useState("");
 
+  const [noteSaving,
+  setNoteSaving] =
+  useState(false);
+
   const [status,
   setStatus] =
   useState(selectedComplaint.status || "Pending");
@@ -104,27 +116,24 @@ const OfficerComplaintDetails = () => {
 
   const handleAddNote = async () => {
 
-    if(note.trim() === "") return;
+    if(noteSaving || note.trim() === "") return;
 
-    const updatedNotes = [
-
-      ...notes,
-      note,
-
-    ];
-
-    setNotes(updatedNotes);
+    const noteText = note.trim();
+    setNoteSaving(true);
 
     try {
       if (selectedComplaint.backendId) {
-        await updateComplaintApi(selectedComplaint.backendId, {
-          note,
-          lastUpdate: `Officer added a new note: ${note}`,
-        });
+        const updatedComplaint = await addComplaintNoteApi(selectedComplaint.backendId, noteText);
+        setNotes(updatedComplaint.investigationNotes || [...notes, noteText]);
         loadTimeline();
+      } else {
+        setNotes([...notes, noteText]);
       }
     } catch (err) {
       alert(err.message || "Failed to save note");
+      return;
+    } finally {
+      setNoteSaving(false);
     }
 
     setNote("");
@@ -722,7 +731,9 @@ const OfficerComplaintDetails = () => {
                   />
 
                   <button
+                    type="button"
                     onClick={handleAddNote}
+                    disabled={noteSaving}
                   >
 
                     <FaPaperPlane />
@@ -740,7 +751,7 @@ const OfficerComplaintDetails = () => {
 
                       <p key={index}>
 
-                        • {item}
+                        - {item}
 
                       </p>
 

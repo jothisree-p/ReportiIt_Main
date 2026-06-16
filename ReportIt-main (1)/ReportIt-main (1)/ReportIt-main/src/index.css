@@ -1229,3 +1229,102 @@ iframe.profile-map {
 .notification-see-more:hover {
   background: rgba(0, 191, 255, 0.24);
 }
+
+/* Fixed panel sidebars: keep navigation locked while only the page content scrolls. */
+.dashboard-container,
+.profile-container,
+.categories-container,
+.statistics-container,
+.reports-container,
+.manage-container,
+.citizen-details-container,
+.report-details-container {
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
+}
+
+.notifications-page {
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
+}
+
+.dashboard-container > .sidebar,
+.profile-container > .sidebar,
+.categories-container > .sidebar,
+.reports-container > .sidebar,
+.manage-container > .sidebar,
+.citizen-details-container > .citizen-sidebar,
+.report-details-container > .sidebar,
+.statistics-container > .statistics-sidebar,
+.notifications-page > .notifications-sidebar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  bottom: 0 !important;
+  align-self: flex-start !important;
+  width: 280px !important;
+  min-width: 280px !important;
+  max-width: 280px !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
+  z-index: 50 !important;
+}
+
+.dashboard-container > .main-content,
+.profile-container > .main-content,
+.categories-container > .main-content,
+.reports-container > .reports-main,
+.manage-container > .manage-main,
+.manage-container > .main-content,
+.citizen-details-container > .citizen-main,
+.report-details-container > .report-details-main,
+.statistics-container > .statistics-main-content,
+.notifications-page > .notifications-main {
+  margin-left: 280px !important;
+  width: calc(100vw - 280px) !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  flex: 1 1 auto !important;
+}
+
+@media (max-width: 860px) {
+  .dashboard-container,
+  .profile-container,
+  .categories-container,
+  .statistics-container,
+  .reports-container,
+  .manage-container,
+  .citizen-details-container,
+  .report-details-container,
+  .notifications-page {
+    height: auto !important;
+    max-height: none !important;
+    min-height: 100vh !important;
+    overflow: visible !important;
+  }
+
+  .dashboard-container > .main-content,
+  .profile-container > .main-content,
+  .categories-container > .main-content,
+  .reports-container > .reports-main,
+  .manage-container > .manage-main,
+  .manage-container > .main-content,
+  .citizen-details-container > .citizen-main,
+  .report-details-container > .report-details-main,
+  .statistics-container > .statistics-main-content,
+  .notifications-page > .notifications-main {
+    margin-left: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+}

@@ -2,6 +2,7 @@ package com.reportit.usermgmt.location;
 
 import com.reportit.usermgmt.common.ApiException;
 import com.reportit.usermgmt.entity.Complaint;
+import com.reportit.usermgmt.mongo.MongoSyncService;
 import com.reportit.usermgmt.repository.ComplaintRepository;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +20,7 @@ import java.util.Map;
 public class LocationService {
 
     private final ComplaintRepository complaintRepository;
+    private final MongoSyncService mongoSyncService;
     private final RestTemplate restTemplate = new RestTemplate();
 
     public ReverseGeocodeResponse reverseGeocode(BigDecimal lat, BigDecimal lon) {
@@ -71,7 +73,9 @@ public class LocationService {
         complaint.setLocationText(request.getLocationText());
         complaint.setLatitude(request.getLatitude());
         complaint.setLongitude(request.getLongitude());
-        return toLocationResponse(complaintRepository.save(complaint));
+        Complaint saved = complaintRepository.save(complaint);
+        mongoSyncService.mirrorComplaint(saved);
+        return toLocationResponse(saved);
     }
 
     private Complaint getComplaint(Long id) {

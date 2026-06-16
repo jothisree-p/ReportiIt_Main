@@ -5,6 +5,7 @@ import com.reportit.usermgmt.common.AuthHelper;
 import com.reportit.usermgmt.entity.Complaint;
 import com.reportit.usermgmt.entity.UploadedFile;
 import com.reportit.usermgmt.entity.User;
+import com.reportit.usermgmt.mongo.MongoSyncService;
 import com.reportit.usermgmt.repository.ComplaintRepository;
 import com.reportit.usermgmt.repository.UploadedFileRepository;
 import com.reportit.usermgmt.repository.UserRepository;
@@ -34,6 +35,7 @@ public class FileUploadService {
     private final UploadedFileRepository fileRepository;
     private final ComplaintRepository complaintRepository;
     private final UserRepository userRepository;
+    private final MongoSyncService mongoSyncService;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -59,7 +61,10 @@ public class FileUploadService {
                 .contentType(file.getContentType())
                 .sizeBytes(file.getSize())
                 .build();
-        return toResponse(fileRepository.save(uploaded));
+        UploadedFile saved = fileRepository.save(uploaded);
+        mongoSyncService.mirrorFile(saved);
+        mongoSyncService.mirrorComplaint(complaint);
+        return toResponse(saved);
     }
 
     public FileResponse findById(Long id) {

@@ -4,6 +4,7 @@ import com.reportit.usermgmt.common.ApiException;
 import com.reportit.usermgmt.common.AuthHelper;
 import com.reportit.usermgmt.entity.Notification;
 import com.reportit.usermgmt.entity.User;
+import com.reportit.usermgmt.mongo.MongoSyncService;
 import com.reportit.usermgmt.repository.NotificationRepository;
 import com.reportit.usermgmt.repository.UserRepository;
 import lombok.Builder;
@@ -22,6 +23,7 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
+    private final MongoSyncService mongoSyncService;
 
     @Transactional
     public NotificationResponse create(NotificationRequest request) {
@@ -50,7 +52,9 @@ public class NotificationService {
                 .message(message)
                 .isRead(false)
                 .build();
-        return notificationRepository.save(notification);
+        Notification saved = notificationRepository.save(notification);
+        mongoSyncService.mirrorNotification(saved);
+        return saved;
     }
 
     public List<NotificationResponse> findMine() {
@@ -71,7 +75,9 @@ public class NotificationService {
     public NotificationResponse markRead(Long id) {
         Notification notification = getNotification(id);
         notification.setIsRead(true);
-        return toResponse(notificationRepository.save(notification));
+        Notification saved = notificationRepository.save(notification);
+        mongoSyncService.mirrorNotification(saved);
+        return toResponse(saved);
     }
 
     @Transactional

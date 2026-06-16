@@ -77,7 +77,7 @@ $env:REPORTIT_MAIL_PORT = $port
 $env:REPORTIT_MAIL_USERNAME = $username
 $env:REPORTIT_MAIL_PASSWORD = $password
 $env:REPORTIT_MAIL_FROM = $from
-$env:SPRING_PROFILES_ACTIVE = if ($env:SPRING_PROFILES_ACTIVE) { $env:SPRING_PROFILES_ACTIVE } else { "local" }
+$env:SPRING_PROFILES_ACTIVE = if ($env:SPRING_PROFILES_ACTIVE) { $env:SPRING_PROFILES_ACTIVE } else { "mysql" }
 
 Write-Host ""
 Write-Host "Starting auth-service with ReportIt SMTP..."

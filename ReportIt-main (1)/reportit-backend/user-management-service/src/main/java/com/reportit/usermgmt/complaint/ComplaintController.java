@@ -45,6 +45,11 @@ public class ComplaintController {
         return ResponseEntity.ok(complaintService.update(id, request));
     }
 
+    @PostMapping("/{id}/notes")
+    public ResponseEntity<ComplaintResponse> addNote(@PathVariable Long id, @RequestBody ComplaintNoteRequest request) {
+        return ResponseEntity.ok(complaintService.addNote(id, request));
+    }
+
     @PatchMapping("/{id}/assign")
     public ResponseEntity<ComplaintResponse> assign(@PathVariable Long id, @RequestBody Map<String, Long> body) {
         return ResponseEntity.ok(complaintService.assignOfficer(id, body.get("officerUserId")));

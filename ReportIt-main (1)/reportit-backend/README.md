@@ -14,6 +14,18 @@ Spring Boot microservices for the ReportIt crime reporting frontend.
 - Java 17+
 - Maven 3.9+
 - MySQL 8 (or Docker)
+- MongoDB 7+ (or Docker)
+
+## Database split
+
+CivicSafe/ReportIt now uses both databases:
+
+| Database | Used for |
+|----------|----------|
+| **MySQL** (`reportit_db`) | Authentication, users, roles, permissions, officers, profiles, categories, relational IDs |
+| **MongoDB** (`reportit_mongo`) | Complaint documents, status timeline logs, investigation notes snapshot, notifications, evidence metadata, AI chat messages |
+
+The current REST APIs stay the same. MySQL remains the relational source for user and assignment references, while `user-management-service` mirrors complaint/log/message data into MongoDB on each write and backfills existing rows on startup.
 
 ## Quick start (no MySQL required)
 
@@ -37,15 +49,16 @@ cd user-management-service
 mvn spring-boot:run
 ```
 
-### Using MySQL instead
+### Using MySQL + MongoDB
 
 ```powershell
 $env:SPRING_PROFILES_ACTIVE="mysql"
 $env:MYSQL_PASSWORD="YourMySqlRootPassword"
+$env:MONGODB_URI="mongodb://localhost:27017/reportit_mongo"
 .\start-backend.ps1
 ```
 
-Or Docker: `docker compose up -d` then set `MYSQL_PASSWORD` to match your MySQL root password (default in compose is `root`; many local installs use `Root@123`).
+Or Docker: `docker compose up -d` starts both MySQL and MongoDB. Then set `MYSQL_PASSWORD` to match your MySQL root password (default in compose is `root`; many local installs use `Root@123`). If you use MongoDB Atlas, set `MONGODB_URI` to your Atlas connection string.
 
 ## Default admin login
 
@@ -151,9 +164,21 @@ reportit-backend/
 │       ├── role/             Role & Permission Service
 │       ├── status/           Status Tracking Service
 │       └── otp/              OTP Service
-├── database/schema.sql
+├── database/schema.sql       MySQL relational schema
 └── docker-compose.yml
 ```
+
+## MongoDB collections
+
+When `user-management-service` starts and MongoDB is reachable, these collections are created automatically:
+
+| Collection | Data |
+|------------|------|
+| `complaints` | Full complaint documents mirrored from relational complaint rows |
+| `status_events` | Complaint status timeline entries |
+| `notifications` | User/admin/officer notification records |
+| `evidence_files` | Uploaded evidence metadata |
+| `ai_chat_messages` | Saved AI assistant chat history |
 
 ## Connect frontend
 

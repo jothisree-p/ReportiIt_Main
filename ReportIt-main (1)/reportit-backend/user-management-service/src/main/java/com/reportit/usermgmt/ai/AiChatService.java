@@ -5,6 +5,7 @@ import com.reportit.usermgmt.common.ApiException;
 import com.reportit.usermgmt.entity.AiChatMessage;
 import com.reportit.usermgmt.entity.Complaint;
 import com.reportit.usermgmt.entity.User;
+import com.reportit.usermgmt.mongo.MongoSyncService;
 import com.reportit.usermgmt.repository.AiChatMessageRepository;
 import com.reportit.usermgmt.repository.CategoryRepository;
 import com.reportit.usermgmt.repository.ComplaintRepository;
@@ -32,6 +33,7 @@ public class AiChatService {
     private final OfficerRepository officerRepository;
     private final CategoryRepository categoryRepository;
     private final AiChatMessageRepository aiChatMessageRepository;
+    private final MongoSyncService mongoSyncService;
 
     @Transactional
     public String reply(String message) {
@@ -183,11 +185,12 @@ public class AiChatService {
     }
 
     private void saveMessage(User user, String sender, String message) {
-        aiChatMessageRepository.save(AiChatMessage.builder()
+        AiChatMessage saved = aiChatMessageRepository.save(AiChatMessage.builder()
                 .user(user)
                 .sender(sender)
                 .message(message)
                 .build());
+        mongoSyncService.mirrorAiChatMessage(saved);
     }
 
     private AiChatMessageResponse toResponse(AiChatMessage message) {

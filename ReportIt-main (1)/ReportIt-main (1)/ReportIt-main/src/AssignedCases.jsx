@@ -18,6 +18,7 @@ import {
 } from "./officerSession";
 import { useComplaints } from "./hooks/useComplaints";
 import { fetchAssignedComplaints } from "./api/complaints";
+import { feedbackListByComplaintId, fetchOfficerFeedback } from "./api/feedback";
 import { clearAuth } from "./authStorage";
 import { fetchMyNotifications } from "./api/notifications";
 import NotificationSeeMore from "./NotificationSeeMore";
@@ -45,6 +46,7 @@ const AssignedCases = () => {
   setShowNotifications] =
   useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [feedbackByComplaint, setFeedbackByComplaint] = useState({});
 
   const [searchTerm,
   setSearchTerm] =
@@ -70,6 +72,12 @@ const AssignedCases = () => {
     fetchMyNotifications()
       .then(setNotifications)
       .catch(() => setNotifications([]));
+  }, []);
+
+  useEffect(() => {
+    fetchOfficerFeedback()
+      .then((items) => setFeedbackByComplaint(feedbackListByComplaintId(items)))
+      .catch(() => setFeedbackByComplaint({}));
   }, []);
 
   /* ================= FILTER ================= */
@@ -488,6 +496,7 @@ const AssignedCases = () => {
               <p>Citizen</p>
               <p>Priority</p>
               <p>Status</p>
+              <p>Feedback</p>
 
             </div>
 
@@ -555,6 +564,28 @@ const AssignedCases = () => {
                     {item.status}
 
                   </span>
+
+                  <div className="assigned-feedback-cell">
+                    {feedbackByComplaint[String(item.backendId)] ? (
+                      <button
+                        type="button"
+                        className="assigned-feedback-btn"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          navigate("/feedback-details", {
+                            state: {
+                              panel: "officer",
+                              feedback: feedbackByComplaint[String(item.backendId)],
+                            },
+                          });
+                        }}
+                      >
+                        View Feedback
+                      </button>
+                    ) : (
+                      <span className="assigned-no-feedback">No feedback</span>
+                    )}
+                  </div>
 
                 </div>
 

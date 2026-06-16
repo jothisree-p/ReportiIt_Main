@@ -8,6 +8,7 @@ import { clearAuth } from "./authStorage";
 import { useRequireAuth } from "./hooks/useRequireAuth";
 import { useComplaints } from "./hooks/useComplaints";
 import { deleteComplaintApi, fetchMyComplaints, updateComplaintApi } from "./api/complaints";
+import { submitComplaintFeedback } from "./api/feedback";
 import { fetchMyNotifications } from "./api/notifications";
 import NotificationSeeMore from "./NotificationSeeMore";
 import { openNotifications } from "./notificationActions";
@@ -36,6 +37,8 @@ import {
   FaArrowLeft,
   FaEdit,
   FaTrash,
+  FaStar,
+  FaRegStar,
 
 } from "react-icons/fa";
 
@@ -61,6 +64,10 @@ const MyComplaints = () => {
 
   const [editingComplaint,setEditingComplaint] =
   useState(null);
+  const [feedbackComplaint, setFeedbackComplaint] = useState(null);
+  const [feedbackRating, setFeedbackRating] = useState(5);
+  const [feedbackComment, setFeedbackComment] = useState("");
+  const [savingFeedback, setSavingFeedback] = useState(false);
 
   const [editForm,setEditForm] =
   useState({
@@ -166,6 +173,36 @@ const MyComplaints = () => {
       alert("Complaint updated successfully.");
     } catch (err) {
       alert(err.message || "Failed to update complaint");
+    }
+  };
+
+  const openFeedback = (event, complaint) => {
+    event.stopPropagation();
+    setFeedbackComplaint(complaint);
+    setFeedbackRating(0);
+    setFeedbackComment("");
+  };
+
+  const saveFeedback = async () => {
+    if (!feedbackComplaint?.backendId || savingFeedback) return;
+    if (feedbackRating < 1) {
+      alert("Please select a star rating before sending feedback.");
+      return;
+    }
+
+    try {
+      setSavingFeedback(true);
+      await submitComplaintFeedback(feedbackComplaint.backendId, {
+        rating: feedbackRating,
+        comment: feedbackComment,
+      });
+      setFeedbackComplaint(null);
+      setFeedbackComment("");
+      alert("Feedback sent successfully.");
+    } catch (err) {
+      alert(err.message || "Failed to send feedback");
+    } finally {
+      setSavingFeedback(false);
     }
   };
 
@@ -564,6 +601,7 @@ const MyComplaints = () => {
               <p>Priority</p>
               <p>Status</p>
               <p>Date</p>
+              <p>Feedback</p>
               <p>Actions</p>
 
             </div>
@@ -693,6 +731,17 @@ const MyComplaints = () => {
 
                     </p>
 
+                    <div className="mycomplaints-feedback-cell" data-label="Feedback">
+                      <button
+                        className="mycomplaints-feedback-btn"
+                        onClick={(event) => openFeedback(event, item)}
+                        title="Send feedback"
+                      >
+                        <FaRegStar />
+                        Feedback
+                      </button>
+                    </div>
+
                     <div className="mycomplaints-action-group" data-label="Actions">
                       <button
                         className="mycomplaints-edit-btn"
@@ -700,7 +749,6 @@ const MyComplaints = () => {
                         title="Edit complaint"
                       >
                         <FaEdit />
-                        Edit
                       </button>
 
                       <button
@@ -709,7 +757,6 @@ const MyComplaints = () => {
                         title="Delete complaint"
                       >
                         <FaTrash />
-                        Delete
                       </button>
                     </div>
 
@@ -845,6 +892,49 @@ const MyComplaints = () => {
               </button>
               <button className="mycomplaints-save-btn" onClick={saveComplaintEdit}>
                 Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {feedbackComplaint && (
+        <div className="mycomplaints-edit-overlay" onClick={() => setFeedbackComplaint(null)}>
+          <div className="mycomplaints-edit-modal mycomplaints-feedback-modal" onClick={(event) => event.stopPropagation()}>
+            <h2>Send Feedback</h2>
+            <p className="mycomplaints-feedback-case">
+              {feedbackComplaint.id} · {feedbackComplaint.title}
+            </p>
+
+            <div className="mycomplaints-star-picker" aria-label="Feedback rating">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  type="button"
+                  key={star}
+                  className={star <= feedbackRating ? "active" : ""}
+                  onClick={() => setFeedbackRating(star)}
+                  title={`${star} star${star > 1 ? "s" : ""}`}
+                >
+                  <FaStar />
+                </button>
+              ))}
+            </div>
+
+            <label>
+              Comments
+              <textarea
+                value={feedbackComment}
+                onChange={(event) => setFeedbackComment(event.target.value)}
+                placeholder="Share your experience with the assigned officer..."
+              />
+            </label>
+
+            <div className="mycomplaints-edit-actions">
+              <button className="mycomplaints-cancel-btn" onClick={() => setFeedbackComplaint(null)}>
+                Cancel
+              </button>
+              <button className="mycomplaints-save-btn" onClick={saveFeedback} disabled={savingFeedback}>
+                {savingFeedback ? "Sending..." : "Send Feedback"}
               </button>
             </div>
           </div>

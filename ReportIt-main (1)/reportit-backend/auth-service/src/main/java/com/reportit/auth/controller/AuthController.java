@@ -65,15 +65,22 @@ public class AuthController {
         if (email.isBlank() || phone.isBlank()) {
             return ResponseEntity.badRequest().body(Map.of("message", "Email and phone are required"));
         }
+        if (!phone.matches("\\d{10}")) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Phone number must be exactly 10 digits"));
+        }
         return ResponseEntity.ok(otpService.sendSignupVerification(email, phone));
     }
 
     @PostMapping("/signup-verification/verify-phone")
     public ResponseEntity<Map<String, String>> verifySignupPhone(@RequestBody Map<String, String> body) {
+        String phone = body.getOrDefault("phone", "").trim();
+        if (!phone.matches("\\d{10}")) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Phone number must be exactly 10 digits"));
+        }
         otpService.verifyOtp(
                 body.getOrDefault("email", ""),
                 body.getOrDefault("code", ""),
-                otpService.phoneVerificationPurpose(body.getOrDefault("phone", "")));
+                otpService.phoneVerificationPurpose(phone));
         return ResponseEntity.ok(Map.of("message", "Phone verified successfully"));
     }
 

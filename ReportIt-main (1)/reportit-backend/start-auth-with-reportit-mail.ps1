@@ -36,5 +36,5 @@ if ([string]::IsNullOrWhiteSpace($env:REPORTIT_MAIL_USERNAME) -or [string]::IsNu
 
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location "$root\auth-service"
-$env:SPRING_PROFILES_ACTIVE = if ($env:SPRING_PROFILES_ACTIVE) { $env:SPRING_PROFILES_ACTIVE } else { "local" }
+$env:SPRING_PROFILES_ACTIVE = if ($env:SPRING_PROFILES_ACTIVE) { $env:SPRING_PROFILES_ACTIVE } else { "mysql" }
 & $mvn spring-boot:run

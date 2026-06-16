@@ -61,7 +61,8 @@ const AdminLogin = () => {
 
   /* ================= LOGIN ================= */
 
-  const handleLogin = async () => {
+  const handleLogin = async (event) => {
+    event?.preventDefault();
 
     const {
       email,
@@ -176,7 +177,7 @@ Report Crimes & Suspicious Activities
 
         {/* LOGIN CARD */}
 
-        <div className="login-card">
+        <form className="login-card" onSubmit={handleLogin}>
 
           <h1>
 
@@ -268,15 +269,15 @@ Report Crimes & Suspicious Activities
           {/* LOGIN BUTTON */}
 
           <button
+            type="submit"
             className="continue-btn"
-            onClick={handleLogin}
           >
 
             Login
 
           </button>
 
-        </div>
+        </form>
 
       </div>
 

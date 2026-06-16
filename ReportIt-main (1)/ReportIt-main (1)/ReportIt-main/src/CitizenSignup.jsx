@@ -58,8 +58,8 @@ const CitizenSignup = () => {
       return "Enter a valid email address.";
     }
 
-    if (!/^[0-9+\-\s]{10,15}$/.test(phone.trim())) {
-      return "Enter a valid phone number.";
+    if (!/^\d{10}$/.test(phone.trim())) {
+      return "Phone number must be exactly 10 digits.";
     }
 
     if (password !== confirmPassword) {
@@ -81,9 +81,11 @@ const CitizenSignup = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    const nextValue = name === "phone" ? value.replace(/\D/g, "").slice(0, 10) : value;
+
     setFormData((current) => ({
       ...current,
-      [name]: value,
+      [name]: nextValue,
     }));
 
     if (name === "phone" || name === "email") {
@@ -143,7 +145,8 @@ const CitizenSignup = () => {
     }
   };
 
-  const handleSignup = async () => {
+  const handleSignup = async (event) => {
+    event?.preventDefault();
     const validationError = validateSignupFields();
     if (validationError) {
       setError(validationError);
@@ -204,7 +207,7 @@ const CitizenSignup = () => {
           <FaArrowLeft />
         </button>
 
-        <div className="signup-card">
+        <form className="signup-card" onSubmit={handleSignup}>
           <h2>Citizen Signup</h2>
           <p className="signup-subtitle">Create your citizen account after phone verification</p>
 
@@ -236,11 +239,14 @@ const CitizenSignup = () => {
           <div className="input-box">
             <FaPhoneAlt className="input-icon" />
             <input
-              type="text"
+              type="tel"
               name="phone"
               placeholder="Enter phone number"
               value={formData.phone}
               onChange={handleChange}
+              inputMode="numeric"
+              pattern="[0-9]{10}"
+              maxLength={10}
             />
           </div>
 
@@ -330,7 +336,7 @@ const CitizenSignup = () => {
 
           <button
             className="signup-btn"
-            onClick={handleSignup}
+            type="submit"
             disabled={creatingAccount || !canCreateAccount}
           >
             {creatingAccount ? "Creating..." : "Create Account"}
@@ -342,7 +348,7 @@ const CitizenSignup = () => {
               <span> Login</span>
             </Link>
           </p>
-        </div>
+        </form>
       </div>
     </div>
   );

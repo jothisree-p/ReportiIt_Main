@@ -543,6 +543,24 @@ body{
   line-height:1.6;
 }
 
+.track-notes-section{
+  margin-top:30px;
+  padding-top:22px;
+  border-top:1px solid rgba(255,255,255,0.08);
+}
+
+.track-notes-section h3{
+  color:white;
+  font-size:20px;
+  margin-bottom:14px;
+}
+
+.track-notes-section p{
+  color:#cbd5ff;
+  line-height:1.65;
+  margin:0 0 10px;
+}
+
 /* ================= NO DATA ================= */
 
 .no-data{

@@ -5,7 +5,17 @@ spring:
   application:
     name: user-management-service
   profiles:
-    active: mysql
+    active: ${SPRING_PROFILES_ACTIVE:mysql}
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/reportit_mongo}
+      database: ${MONGODB_DATABASE:reportit_mongo}
 
 jwt:
   secret: ReportItSecretKeyForJWT2026MustBeAtLeast256BitsLong!!
@@ -19,17 +29,32 @@ file:
 auth:
   service-url: http://localhost:8081
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
 ---
 spring:
   config:
     activate:
       on-profile: mysql
+
   datasource:
     url: jdbc:mysql://localhost:3306/reportit_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-    username: root
-    password: Jothisreerc@14
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:Jothisreerc@14}
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect

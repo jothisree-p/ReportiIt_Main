@@ -414,7 +414,8 @@ body{
   minmax(105px,0.8fr)
   minmax(130px,0.9fr)
   minmax(115px,0.8fr)
-  minmax(110px,0.7fr);
+  minmax(135px,0.85fr)
+  minmax(120px,0.8fr);
 
   align-items:center;
 
@@ -446,7 +447,8 @@ body{
   minmax(105px,0.8fr)
   minmax(130px,0.9fr)
   minmax(115px,0.8fr)
-  minmax(110px,0.7fr);
+  minmax(135px,0.85fr)
+  minmax(120px,0.8fr);
 
   align-items:center;
 
@@ -477,15 +479,49 @@ body{
 .mycomplaints-action-group{
   display:flex;
   align-items:center;
-  gap:10px;
-  flex-wrap:wrap;
+  justify-content:flex-start;
+  gap:8px;
+  flex-wrap:nowrap;
+}
+
+.mycomplaints-feedback-cell{
+  display:flex;
+  align-items:center;
+  min-width:0;
+}
+
+.mycomplaints-feedback-btn{
+  min-height:38px;
+  padding:0 13px;
+  border:0;
+  border-radius:10px;
+  background:rgba(0,191,255,0.14);
+  color:#ffffff;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-size:13px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.mycomplaints-feedback-btn svg{
+  color:#ffc107;
+}
+
+.mycomplaints-feedback-btn:hover{
+  background:#00bfff;
+  color:#05071d;
 }
 
 .mycomplaints-edit-btn,
 .mycomplaints-delete-btn{
-  width:fit-content;
-  min-height:38px;
-  padding:0 14px;
+  width:42px;
+  height:42px;
+  min-width:42px;
+  min-height:42px;
+  padding:0;
   border:0;
   border-radius:10px;
   background:rgba(255,77,77,0.15);
@@ -493,8 +529,7 @@ body{
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  gap:8px;
-  font-size:13px;
+  font-size:15px;
   font-weight:700;
   cursor:pointer;
 }
@@ -687,6 +722,7 @@ body{
 
   .mycomplaints-table-row p,
   .mycomplaints-table-row span,
+  .mycomplaints-feedback-cell,
   .mycomplaints-action-group{
     display:flex;
     flex-direction:column;
@@ -696,6 +732,7 @@ body{
 
   .mycomplaints-table-row p::before,
   .mycomplaints-table-row span::before,
+  .mycomplaints-feedback-cell::before,
   .mycomplaints-action-group::before{
     content:attr(data-label);
     color:#8b92bb;
@@ -706,6 +743,13 @@ body{
   .mycomplaints-status-badge{
     width:fit-content;
   }
+
+  .mycomplaints-action-group{
+    flex-direction:row;
+    align-items:center;
+    flex-wrap:nowrap;
+  }
+
 }
 
 @media(max-width:768px){
@@ -765,6 +809,38 @@ body{
 .mycomplaints-edit-modal h2{
   margin:0 0 22px;
   font-size:28px;
+}
+
+.mycomplaints-feedback-case{
+  margin:-10px 0 20px;
+  color:#aeb8f4;
+  line-height:1.5;
+}
+
+.mycomplaints-star-picker{
+  display:flex;
+  gap:8px;
+  margin:0 0 20px;
+}
+
+.mycomplaints-star-picker button{
+  width:42px;
+  height:42px;
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px;
+  background:#111c4f;
+  color:#56639f;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  font-size:18px;
+}
+
+.mycomplaints-star-picker button.active,
+.mycomplaints-star-picker button:hover{
+  color:#ffc107;
+  border-color:rgba(255,193,7,0.45);
 }
 
 .mycomplaints-edit-modal label{

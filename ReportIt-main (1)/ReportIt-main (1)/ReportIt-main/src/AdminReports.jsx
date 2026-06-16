@@ -18,6 +18,7 @@ import { assignComplaint } from "./complaintsData";
 import { useComplaints } from "./hooks/useComplaints";
 import { useRequireAuth } from "./hooks/useRequireAuth";
 import { fetchAllComplaints } from "./api/complaints";
+import { feedbackListByComplaintId, fetchAdminFeedback } from "./api/feedback";
 import { fetchOfficers } from "./api/officers";
 import { clearAuth, getAccessToken } from "./authStorage";
 
@@ -36,6 +37,7 @@ const AdminReports = () => {
   const [officers, setOfficers] = useState([]);
   const [officersError, setOfficersError] = useState(null);
   const [assigningId, setAssigningId] = useState(null);
+  const [feedbackByComplaint, setFeedbackByComplaint] = useState({});
   const { complaints, loading, error, refresh } = useComplaints(fetchAllComplaints);
 
   useEffect(() => {
@@ -48,6 +50,12 @@ const AdminReports = () => {
         setOfficers([]);
         setOfficersError(err.message || "Could not load officers");
       });
+  }, []);
+
+  useEffect(() => {
+    fetchAdminFeedback()
+      .then((items) => setFeedbackByComplaint(feedbackListByComplaintId(items)))
+      .catch(() => setFeedbackByComplaint({}));
   }, []);
 
   const indexOfLast = currentPage * reportsPerPage;
@@ -191,6 +199,7 @@ const AdminReports = () => {
             <p>Priority</p>
             <p>Status</p>
             <p>Assign Officer</p>
+            <p>Feedback</p>
           </div>
 
           {!loading && currentReports.length === 0 && (
@@ -245,6 +254,26 @@ const AdminReports = () => {
                     </option>
                   ))}
                 </select>
+              </div>
+              <div className="table-cell">
+                {feedbackByComplaint[String(report.backendId)] ? (
+                  <button
+                    type="button"
+                    className="reports-feedback-btn"
+                    onClick={() =>
+                      navigate("/feedback-details", {
+                        state: {
+                          panel: "admin",
+                          feedback: feedbackByComplaint[String(report.backendId)],
+                        },
+                      })
+                    }
+                  >
+                    View Feedback
+                  </button>
+                ) : (
+                  <span className="reports-no-feedback">No feedback</span>
+                )}
               </div>
             </div>
           ))}

@@ -5,6 +5,8 @@ import com.reportit.usermgmt.complaint.ComplaintService.ComplaintResponse;
 import com.reportit.usermgmt.entity.Complaint;
 import com.reportit.usermgmt.entity.StatusHistory;
 import com.reportit.usermgmt.entity.User;
+import com.reportit.usermgmt.mongo.MongoSyncService;
+import com.reportit.usermgmt.repository.ComplaintNoteRepository;
 import com.reportit.usermgmt.repository.ComplaintRepository;
 import com.reportit.usermgmt.repository.StatusHistoryRepository;
 import lombok.Builder;
@@ -23,16 +25,19 @@ public class StatusService {
 
     private final StatusHistoryRepository statusHistoryRepository;
     private final ComplaintRepository complaintRepository;
+    private final ComplaintNoteRepository noteRepository;
+    private final MongoSyncService mongoSyncService;
 
     @Transactional
     public void recordStatusChange(Complaint complaint, String oldStatus, String newStatus, User changedBy, String remark) {
-        statusHistoryRepository.save(StatusHistory.builder()
+        StatusHistory history = statusHistoryRepository.save(StatusHistory.builder()
                 .complaint(complaint)
                 .oldStatus(oldStatus)
                 .newStatus(newStatus)
                 .changedBy(changedBy)
                 .remark(remark)
                 .build());
+        mongoSyncService.mirrorStatusEvent(history);
     }
 
     @Transactional
@@ -48,6 +53,8 @@ public class StatusService {
                 .newStatus(request.getNewStatus())
                 .remark(request.getRemark())
                 .build());
+        mongoSyncService.mirrorComplaint(complaint);
+        mongoSyncService.mirrorStatusEvent(history);
         return toResponse(history);
     }
 
@@ -67,6 +74,14 @@ public class StatusService {
     }
 
     private ComplaintResponse toComplaintResponse(Complaint c) {
+        List<String> notes = noteRepository.findByComplaint_IdOrderByCreatedAtDesc(c.getId())
+                .stream()
+                .map(com.reportit.usermgmt.entity.ComplaintNote::getNoteText)
+                .map(String::trim)
+                .filter(note -> !note.isBlank())
+                .distinct()
+                .collect(Collectors.toList());
+
         return ComplaintResponse.builder()
                 .id(c.getId())
                 .complaintCode(c.getComplaintCode())
@@ -85,6 +100,7 @@ public class StatusService {
                 .assignedOfficerId(c.getAssignedOfficer() != null ? c.getAssignedOfficer().getId() : null)
                 .assignedOfficerName(c.getAssignedOfficer() != null ? c.getAssignedOfficer().getFullName() : null)
                 .createdAt(c.getCreatedAt())
+                .investigationNotes(notes)
                 .build();
     }
 

@@ -10,12 +10,12 @@ if (-not (Test-Path $mvn)) {
 }
 
 $root = $PSScriptRoot
-$env:SPRING_PROFILES_ACTIVE = "local"
+$env:SPRING_PROFILES_ACTIVE = "mysql"
 
 Write-Host "=== Step 1: Starting auth-service on port 8081 ===" -ForegroundColor Cyan
 Start-Process powershell -ArgumentList @(
     "-NoExit", "-Command",
-    "cd '$root\auth-service'; `$env:SPRING_PROFILES_ACTIVE='local'; Write-Host 'AUTH SERVICE - wait for Tomcat started on port 8081'; & '$mvn' spring-boot:run"
+    "cd '$root\auth-service'; `$env:SPRING_PROFILES_ACTIVE='mysql'; Write-Host 'AUTH SERVICE - wait for Tomcat started on port 8081'; & '$mvn' spring-boot:run"
 )
 
 Write-Host "Waiting 20 seconds for auth-service..."
@@ -24,7 +24,7 @@ Start-Sleep -Seconds 20
 Write-Host "=== Step 2: Starting user-management on port 8082 ===" -ForegroundColor Cyan
 Start-Process powershell -ArgumentList @(
     "-NoExit", "-Command",
-    "cd '$root\user-management-service'; `$env:SPRING_PROFILES_ACTIVE='local'; Write-Host 'USER MANAGEMENT - wait for Tomcat started on port 8082'; & '$mvn' spring-boot:run"
+    "cd '$root\user-management-service'; `$env:SPRING_PROFILES_ACTIVE='mysql'; Write-Host 'USER MANAGEMENT - wait for Tomcat started on port 8082'; & '$mvn' spring-boot:run"
 )
 
 Write-Host ""

@@ -2,11 +2,14 @@ package com.reportit.usermgmt.config;
 
 import com.reportit.usermgmt.entity.Permission;
 import com.reportit.usermgmt.entity.Role;
+import com.reportit.usermgmt.entity.User;
 import com.reportit.usermgmt.repository.PermissionRepository;
 import com.reportit.usermgmt.repository.RoleRepository;
+import com.reportit.usermgmt.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,6 +20,8 @@ public class DataInitializer implements CommandLineRunner {
 
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     private final JdbcTemplate jdbcTemplate;
 
     @Override
@@ -24,7 +29,9 @@ public class DataInitializer implements CommandLineRunner {
         ensureComplaintSoftDeleteColumns();
         ensureProfileColumns();
         ensureOfficerColumns();
-        List.of("CITIZEN", "OFFICER", "ADMIN").forEach(this::ensureRole);
+        List.of("CITIZEN", "OFFICER").forEach(this::ensureRole);
+        Role adminRole = ensureRole("ADMIN");
+        ensureDefaultAdmin(adminRole);
         List.of(
                 "COMPLAINT_CREATE", "COMPLAINT_READ", "COMPLAINT_UPDATE", "COMPLAINT_DELETE",
                 "USER_MANAGE", "OFFICER_MANAGE"
@@ -35,9 +42,22 @@ public class DataInitializer implements CommandLineRunner {
                         .build())));
     }
 
-    private void ensureRole(String name) {
-        roleRepository.findByName(name)
+    private Role ensureRole(String name) {
+        return roleRepository.findByName(name)
                 .orElseGet(() -> roleRepository.save(Role.builder().name(name).build()));
+    }
+
+    private void ensureDefaultAdmin(Role adminRole) {
+        String adminEmail = "admin@reportit.com";
+        userRepository.findByEmailIgnoreCase(adminEmail)
+                .orElseGet(() -> userRepository.save(User.builder()
+                        .email(adminEmail)
+                        .passwordHash(passwordEncoder.encode("admin123"))
+                        .fullName("System Admin")
+                        .phone("6369574855")
+                        .role(adminRole)
+                        .status("Active")
+                        .build()));
     }
 
     private void ensureComplaintSoftDeleteColumns() {

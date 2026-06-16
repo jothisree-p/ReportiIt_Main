@@ -1,5 +1,14 @@
 import { apiRequest } from "./http";
 
+const uniqueNotes = (notes = []) =>
+  Array.from(
+    new Set(
+      notes
+        .map((note) => String(note || "").trim())
+        .filter(Boolean)
+    )
+  );
+
 export const mapComplaintFromApi = (c) => ({
   id: c.complaintCode || `CMP-${c.id}`,
   backendId: c.id,
@@ -20,7 +29,7 @@ export const mapComplaintFromApi = (c) => ({
   assignedOfficerId: c.assignedOfficerId,
   citizenDeleted: Boolean(c.citizenDeleted),
   citizenDeletedAt: c.citizenDeletedAt || "",
-  investigationNotes: c.investigationNotes || [],
+  investigationNotes: uniqueNotes(c.investigationNotes || []),
 });
 
 export const fetchAllComplaints = async () => {
@@ -31,6 +40,11 @@ export const fetchAllComplaints = async () => {
 export const fetchMyComplaints = async () => {
   const data = await apiRequest("/api/complaints/citizen/me");
   return data.map(mapComplaintFromApi);
+};
+
+export const fetchComplaintById = async (backendId) => {
+  const data = await apiRequest(`/api/complaints/${backendId}`);
+  return mapComplaintFromApi(data);
 };
 
 export const fetchAssignedComplaints = async () => {
@@ -79,6 +93,14 @@ export const updateComplaintApi = async (backendId, updates) => {
   const data = await apiRequest(`/api/complaints/${backendId}`, {
     method: "PUT",
     body,
+  });
+  return mapComplaintFromApi(data);
+};
+
+export const addComplaintNoteApi = async (backendId, note) => {
+  const data = await apiRequest(`/api/complaints/${backendId}/notes`, {
+    method: "POST",
+    body: { note },
   });
   return mapComplaintFromApi(data);
 };

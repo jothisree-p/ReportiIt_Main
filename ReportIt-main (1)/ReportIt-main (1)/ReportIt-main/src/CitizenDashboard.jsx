@@ -13,6 +13,7 @@ import "./CitizenDashboard.css";
 import AIChat from "./AIChat";
 import { useComplaints } from "./hooks/useComplaints";
 import { fetchMyComplaints } from "./api/complaints";
+import { fetchCitizenStats } from "./api/dashboard";
 import { fetchMyNotifications } from "./api/notifications";
 import NotificationSeeMore from "./NotificationSeeMore";
 import { openNotifications } from "./notificationActions";
@@ -52,14 +53,25 @@ const CitizenDashboard = () => {
   /* ================= NOTIFICATIONS ================= */
 
   const [notifications, setNotifications] = useState([]);
-  const { complaints, stats: complaintStats } = useComplaints(fetchMyComplaints);
+  const { complaints, stats: localComplaintStats } = useComplaints(fetchMyComplaints);
+  const [dashboardStats, setDashboardStats] = useState(null);
   const recentComplaints = complaints.slice(0,3);
 
   useEffect(() => {
     fetchMyNotifications()
       .then(setNotifications)
       .catch(() => setNotifications([]));
+    fetchCitizenStats()
+      .then(setDashboardStats)
+      .catch(() => setDashboardStats(null));
   }, []);
+
+  const statValues = {
+    total: dashboardStats?.totalComplaints ?? localComplaintStats.total,
+    pending: dashboardStats?.pending ?? localComplaintStats.pending,
+    inProgress: dashboardStats?.inProgress ?? localComplaintStats.inProgress,
+    resolved: dashboardStats?.resolved ?? localComplaintStats.resolved,
+  };
 
   /* ================= LOGOUT ================= */
 
@@ -341,7 +353,7 @@ const CitizenDashboard = () => {
 
               <h2>
 
-                {complaintStats.total}
+                {statValues.total}
 
               </h2>
 
@@ -359,7 +371,7 @@ const CitizenDashboard = () => {
 
               <h2>
 
-                {complaintStats.pending}
+                {statValues.pending}
 
               </h2>
 
@@ -377,7 +389,7 @@ const CitizenDashboard = () => {
 
               <h2>
 
-                {complaintStats.inProgress}
+                {statValues.inProgress}
 
               </h2>
 
@@ -395,7 +407,7 @@ const CitizenDashboard = () => {
 
               <h2>
 
-                {complaintStats.resolved}
+                {statValues.resolved}
 
               </h2>
 

@@ -13,6 +13,7 @@ import {
 } from "./officerSession";
 import { useComplaints } from "./hooks/useComplaints";
 import { fetchAssignedComplaints } from "./api/complaints";
+import { fetchOfficerStats } from "./api/dashboard";
 import { fetchMyNotifications } from "./api/notifications";
 import NotificationSeeMore from "./NotificationSeeMore";
 import { openNotifications } from "./notificationActions";
@@ -42,14 +43,25 @@ const OfficerDashboard = () => {
   useState(false);
   const [notifications, setNotifications] = useState([]);
 
-  const { complaints: cases, stats: caseStats } = useComplaints(fetchAssignedComplaints);
+  const { complaints: cases, stats: localCaseStats } = useComplaints(fetchAssignedComplaints);
+  const [dashboardStats, setDashboardStats] = useState(null);
   const recentCases = cases.slice(0,3);
 
   useEffect(() => {
     fetchMyNotifications()
       .then(setNotifications)
       .catch(() => setNotifications([]));
+    fetchOfficerStats()
+      .then(setDashboardStats)
+      .catch(() => setDashboardStats(null));
   }, []);
+
+  const statValues = {
+    assigned: dashboardStats?.totalComplaints ?? localCaseStats.total,
+    pending: dashboardStats?.pending ?? localCaseStats.pending,
+    inProgress: dashboardStats?.inProgress ?? localCaseStats.inProgress,
+    resolved: dashboardStats?.resolved ?? localCaseStats.resolved,
+  };
 
   /* ================= LOGOUT ================= */
 
@@ -319,7 +331,7 @@ const OfficerDashboard = () => {
 
               <h2>
 
-                {caseStats.total}
+                {statValues.assigned}
 
               </h2>
 
@@ -343,7 +355,7 @@ const OfficerDashboard = () => {
 
               <h2>
 
-                {caseStats.pending}
+                {statValues.pending}
 
               </h2>
 
@@ -367,7 +379,7 @@ const OfficerDashboard = () => {
 
               <h2>
 
-                {caseStats.inProgress}
+                {statValues.inProgress}
 
               </h2>
 
@@ -391,7 +403,7 @@ const OfficerDashboard = () => {
 
               <h2>
 
-                {caseStats.resolved}
+                {statValues.resolved}
 
               </h2>
 

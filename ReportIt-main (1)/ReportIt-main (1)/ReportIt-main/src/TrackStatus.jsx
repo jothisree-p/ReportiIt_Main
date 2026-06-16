@@ -106,7 +106,8 @@ const TrackStatus = () => {
           date: item.createdAt?.slice?.(0, 10) || "",
           note: item.remark || "",
         })),
-        officer: result.complaint.assignedOfficerName || "Not assigned",
+        officer: result.complaint.assignedOfficer || "Not assigned",
+        investigationNotes: result.complaint.investigationNotes || [],
       };
       setFilteredComplaints([complaint]);
       setSearched(true);
@@ -517,6 +518,17 @@ const TrackStatus = () => {
                           )
 
                         }
+
+                        <div className="track-notes-section">
+                          <h3>Investigation Notes</h3>
+                          {item.investigationNotes.length > 0 ? (
+                            item.investigationNotes.map((note, noteIndex) => (
+                              <p key={noteIndex}>• {note}</p>
+                            ))
+                          ) : (
+                            <p>No investigation notes added yet.</p>
+                          )}
+                        </div>
 
                       </div>
 

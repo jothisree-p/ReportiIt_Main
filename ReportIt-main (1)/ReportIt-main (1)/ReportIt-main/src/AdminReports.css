@@ -169,7 +169,7 @@ body {
 
 .reports-table-header {
   display: grid;
-  grid-template-columns: 1.1fr 1.4fr 1.1fr 1.1fr 0.9fr 1fr 1.4fr;
+  grid-template-columns: 1fr 1.35fr 1fr 1fr 0.8fr 0.9fr 1.25fr 1fr;
   align-items: center;
   gap: 12px;
   padding: 20px 24px;
@@ -186,7 +186,7 @@ body {
 
 .reports-table-row {
   display: grid;
-  grid-template-columns: 1.1fr 1.4fr 1.1fr 1.1fr 0.9fr 1fr 1.4fr;
+  grid-template-columns: 1fr 1.35fr 1fr 1fr 0.8fr 0.9fr 1.25fr 1fr;
   align-items: center;
   gap: 12px;
   padding: 20px 24px;
@@ -244,6 +244,28 @@ body {
 .priority-text {
   color: #e2e8f0;
   font-size: 14px;
+}
+
+.reports-feedback-btn {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(0, 191, 255, 0.14);
+  color: #00bfff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.reports-feedback-btn:hover {
+  background: #00bfff;
+  color: #05071d;
+}
+
+.reports-no-feedback {
+  color: #8f9bbd;
+  font-size: 13px;
 }
 
 .pending-badge,
@@ -357,7 +379,7 @@ body {
 
   .reports-table-header,
   .reports-table-row {
-    min-width: 900px;
+    min-width: 1120px;
   }
 }
 

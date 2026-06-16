@@ -62,7 +62,8 @@ const CitizenLogin = () => {
 
   /* ================= LOGIN ================= */
 
-  const handleLogin = async () => {
+  const handleLogin = async (event) => {
+    event?.preventDefault();
 
     const {
       email,
@@ -185,7 +186,7 @@ const CitizenLogin = () => {
 
         {/* LOGIN CARD */}
 
-        <div className="login-card">
+        <form className="login-card" onSubmit={handleLogin}>
 
           <h2>
 
@@ -277,8 +278,8 @@ const CitizenLogin = () => {
           {/* LOGIN BUTTON */}
 
           <button
+            type="submit"
             className="continue-btn"
-            onClick={handleLogin}
           >
 
             Login
@@ -299,7 +300,7 @@ const CitizenLogin = () => {
 
           </p>
 
-        </div>
+        </form>
 
       </div>
 
