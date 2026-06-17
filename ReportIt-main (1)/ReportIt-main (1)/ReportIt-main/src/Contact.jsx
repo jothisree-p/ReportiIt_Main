@@ -23,6 +23,10 @@ import {
 const Contact = () => {
 
   const navigate = useNavigate();
+  const googleSearch = (query) =>
+    `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+  const gmailCompose = (email) =>
+    `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}`;
 
   return (
 
@@ -196,7 +200,9 @@ const Contact = () => {
                 </h3>
 
                 <p>
-                  <a href="tel:+916369574855">{REPORTIT_PHONE}</a>
+                  <a href={googleSearch(REPORTIT_PHONE)} target="_blank" rel="noreferrer">
+                    {REPORTIT_PHONE}
+                  </a>
                 </p>
 
               </div>
@@ -216,7 +222,9 @@ const Contact = () => {
                 </h3>
 
                 <p>
-                  <a href={`mailto:${REPORTIT_EMAIL}`}>{REPORTIT_EMAIL}</a>
+                  <a href={gmailCompose(REPORTIT_EMAIL)} target="_blank" rel="noreferrer">
+                    {REPORTIT_EMAIL}
+                  </a>
                 </p>
 
               </div>

@@ -7,6 +7,12 @@ export const REPORTIT_EMAIL = "reportit.noreply@gmail.com";
 export const REPORTIT_PHONE = "+91 63695 74855";
 export const REPORTIT_LOCATION = "Coimbatore, India";
 
+const googleSearch = (query) =>
+  `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+
+const gmailCompose = (email) =>
+  `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}`;
+
 const PublicFooter = () => (
   <footer className="footer public-footer">
     <div className="footer-box">
@@ -35,21 +41,25 @@ const PublicFooter = () => (
 
     <div className="footer-box">
       <h4>Emergency Hotline</h4>
-      <p><a href="tel:100">Police Emergency : 100</a></p>
-      <p><a href="tel:108">Ambulance : 108</a></p>
-      <p><a href="tel:1091">Women Helpline : 1091</a></p>
-      <p><a href="tel:1930">Cyber Crime : 1930</a></p>
+      <p><a href={googleSearch("Police Emergency 100 India")} target="_blank" rel="noreferrer">Police Emergency : 100</a></p>
+      <p><a href={googleSearch("Ambulance 108 India")} target="_blank" rel="noreferrer">Ambulance : 108</a></p>
+      <p><a href={googleSearch("Women Helpline 1091 India")} target="_blank" rel="noreferrer">Women Helpline : 1091</a></p>
+      <p><a href={googleSearch("Cyber Crime Helpline 1930 India")} target="_blank" rel="noreferrer">Cyber Crime : 1930</a></p>
     </div>
 
     <div className="footer-box">
       <h4>Contact</h4>
       <p>
         <FaPhoneAlt className="footer-icon" />
-        <a href="tel:+916369574855">{REPORTIT_PHONE}</a>
+        <a href={googleSearch(REPORTIT_PHONE)} target="_blank" rel="noreferrer">
+          {REPORTIT_PHONE}
+        </a>
       </p>
       <p>
         <FaEnvelope className="footer-icon" />
-        <a href={`mailto:${REPORTIT_EMAIL}`}>{REPORTIT_EMAIL}</a>
+        <a href={gmailCompose(REPORTIT_EMAIL)} target="_blank" rel="noreferrer">
+          {REPORTIT_EMAIL}
+        </a>
       </p>
       <p>
         <FaMapMarkerAlt className="footer-icon" />

@@ -1233,6 +1233,8 @@ iframe.profile-map {
 /* Fixed panel sidebars: keep navigation locked while only the page content scrolls. */
 .dashboard-container,
 .profile-container,
+.report-container,
+.complaints-container,
 .categories-container,
 .statistics-container,
 .reports-container,
@@ -1252,6 +1254,8 @@ iframe.profile-map {
 
 .dashboard-container > .sidebar,
 .profile-container > .sidebar,
+.report-container > .sidebar,
+.complaints-container > .sidebar,
 .categories-container > .sidebar,
 .reports-container > .sidebar,
 .manage-container > .sidebar,
@@ -1277,6 +1281,8 @@ iframe.profile-map {
 
 .dashboard-container > .main-content,
 .profile-container > .main-content,
+.report-container > .main-content,
+.complaints-container > .main-content,
 .categories-container > .main-content,
 .reports-container > .reports-main,
 .manage-container > .manage-main,
@@ -1298,6 +1304,8 @@ iframe.profile-map {
 @media (max-width: 860px) {
   .dashboard-container,
   .profile-container,
+  .report-container,
+  .complaints-container,
   .categories-container,
   .statistics-container,
   .reports-container,
@@ -1313,6 +1321,8 @@ iframe.profile-map {
 
   .dashboard-container > .main-content,
   .profile-container > .main-content,
+  .report-container > .main-content,
+  .complaints-container > .main-content,
   .categories-container > .main-content,
   .reports-container > .reports-main,
   .manage-container > .manage-main,

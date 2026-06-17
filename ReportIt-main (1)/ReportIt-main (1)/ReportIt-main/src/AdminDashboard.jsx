@@ -55,11 +55,6 @@ const AdminDashboard = () => {
       .map((part) => part[0]?.toUpperCase())
       .join("") || "OF";
 
-  const officerSummary = (officer) =>
-    [officer.zone, officer.active ? `${officer.active} active` : ""]
-      .filter(Boolean)
-      .join(" · ");
-
   const handleLogout = async () => {
     if(await window.__reportItShowConfirm("Are you sure you want to logout?")){
       clearAuth();
@@ -198,7 +193,7 @@ const AdminDashboard = () => {
           <div className="bottom-grid">
 
             {/* RECENT COMPLAINTS */}
-            <div className="dashboard-box">
+            <div className="dashboard-box officers-box">
 
               <div className="box-header">
                 <h3>Recent Complaints</h3>
@@ -258,8 +253,14 @@ const AdminDashboard = () => {
                   <div className="officer-left">
                     <div className="officer-avatar">{o.initials || getInitials(o.name)}</div>
                     <div className="officer-info">
-                      <h4>{[o.position, o.name].filter(Boolean).join(" ")}</h4>
-                      <p>{officerSummary(o) || "No zone assigned"}</p>
+                      <div className="officer-name-line">
+                        <h4>{o.name || "Officer"}</h4>
+                        <span>{o.position || "Officer"}</span>
+                      </div>
+                      <div className="officer-meta">
+                        <span>{o.zone || "Zone not assigned"}</span>
+                        {o.badge && <span>{o.badge}</span>}
+                      </div>
                     </div>
                   </div>
                   <span className={o.status === "Active" ? "active-text" : "inactive-text"}>

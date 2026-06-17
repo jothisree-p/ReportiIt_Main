@@ -430,33 +430,42 @@ body{
 
 /* ================= OFFICERS ================= */
 
+.officers-box{
+  min-width:0;
+  padding:26px 28px;
+}
+
 .officer-item{
   width:100%;
 
   display:flex;
-  justify-content:flex-start;
+  justify-content:space-between;
 
   align-items:center;
 
-  gap:380px;
+  gap:16px;
 
-  padding:30px 8px;
+  padding:16px;
 
-  border-bottom:1px solid rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:16px;
+  margin-bottom:14px;
 
-  background:transparent !important;
+  background:#101a48 !important;
 
   background-image:none !important;
 }
 .officer-item:last-child{
-  border-bottom:none;
+  margin-bottom:0;
 }
 
 .officer-left{
   display:flex;
   align-items:center;
 
-  gap:18px;
+  gap:14px;
+  min-width:0;
+  flex:1;
 
   background:none !important;
 
@@ -465,8 +474,8 @@ body{
 /* AVATAR */
 
 .officer-avatar{
-  width:58px;
-  height:58px;
+  width:52px;
+  height:52px;
 
   border-radius:50%;
 
@@ -489,41 +498,91 @@ body{
 .officer-info{
   background:none !important;
   background-image:none !important;
+  min-width:0;
+  flex:1;
 }
 .dashboard-box{
   background:#0c1435 !important;
   background-image:none !important;
 }
 
-.officer-info h4{
-  font-size:18px;
-  font-weight:600;
-  color:white;
+.officer-name-line{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+  margin-bottom:8px;
 }
 
-.officer-info p{
-  font-size:14px;
-  color:#8d96c7;
+.officer-name-line h4{
+  font-size:17px;
+  font-weight:700;
+  color:white;
+  line-height:1.35;
+  margin:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.officer-name-line span{
+  min-height:26px;
+  padding:0 10px;
+  border-radius:999px;
+  background:rgba(0,191,255,0.12);
+  color:#c8d0ff;
+  display:inline-flex;
+  align-items:center;
+  font-size:12px;
+  font-weight:700;
+  flex-shrink:0;
+}
+
+.officer-meta{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.officer-meta span{
+  min-height:28px;
+  padding:0 10px;
+  border-radius:8px;
+  background:#0b1336;
+  color:#9ca8e8;
+  display:inline-flex;
+  align-items:center;
+  font-size:12px;
+  font-weight:700;
 }
 
 /* STATUS */
 
 .active-text,
 .inactive-text{
-  min-width:90px;
+  min-width:84px;
+  min-height:34px;
 
-  text-align:right;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:10px;
+  padding:0 12px;
 
-  font-size:16px;
-  font-weight:600;
+  font-size:13px;
+  font-weight:800;
+  flex-shrink:0;
 }
 
 .active-text{
+  background:rgba(0,208,132,0.12);
   color:#00d084;
 }
 
 .inactive-text{
-  color:#9ca3d2;
+  background:rgba(156,163,210,0.12);
+  color:#b7c0ec;
 }
 
 /* ================= RESPONSIVE ================= */
