@@ -140,6 +140,19 @@ CREATE TABLE IF NOT EXISTS complaint_feedback (
   CONSTRAINT chk_feedback_rating CHECK (rating BETWEEN 1 AND 5)
 );
 
+CREATE TABLE IF NOT EXISTS contact_messages (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(150) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  subject VARCHAR(200) NOT NULL,
+  message TEXT NOT NULL,
+  mail_sent TINYINT(1) NOT NULL DEFAULT 0,
+  mail_error TEXT,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT pk_contact_messages PRIMARY KEY (id),
+  CONSTRAINT chk_contact_email CHECK (email REGEXP '^[^@[:space:]]+@[^@[:space:]]+\\.[^@[:space:]]+$')
+);
+
 CREATE INDEX idx_complaint_citizen ON complaint(citizen_id);
 CREATE INDEX idx_complaint_officer ON complaint(assigned_officer_id);
 CREATE INDEX idx_complaint_category ON complaint(category_id);
@@ -151,3 +164,4 @@ CREATE INDEX idx_notification_complaint ON notification(complaint_id);
 CREATE INDEX idx_notification_citizen ON notification(citizen_id);
 CREATE INDEX idx_complaint_feedback_complaint ON complaint_feedback(complaint_id);
 CREATE INDEX idx_complaint_feedback_officer ON complaint_feedback(officer_id);
+CREATE INDEX idx_contact_messages_created_at ON contact_messages(created_at);

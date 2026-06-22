@@ -17,6 +17,27 @@ spring:
       uri: ${MONGODB_URI:mongodb://localhost:27017/reportit_mongo}
       database: ${MONGODB_DATABASE:reportit_mongo}
 
+  mail:
+    host: ${REPORTIT_MAIL_HOST:smtp.gmail.com}
+    port: ${REPORTIT_MAIL_PORT:587}
+    username: ${REPORTIT_MAIL_USERNAME:reportit.noreply@gmail.com}
+    password: ${REPORTIT_MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            trust: smtp.gmail.com
+
+reportit:
+  mail:
+    from: ${REPORTIT_MAIL_FROM:reportit.noreply@gmail.com}
+  contact:
+    to: ${REPORTIT_CONTACT_TO:reportit.noreply@gmail.com}
+
 jwt:
   secret: ReportItSecretKeyForJWT2026MustBeAtLeast256BitsLong!!
 

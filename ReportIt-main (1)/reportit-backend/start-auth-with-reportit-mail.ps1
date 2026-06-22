@@ -18,7 +18,15 @@ if (-not (Test-Path $mvn)) {
 $env:REPORTIT_MAIL_HOST = if ($env:REPORTIT_MAIL_HOST) { $env:REPORTIT_MAIL_HOST } else { "smtp.gmail.com" }
 $env:REPORTIT_MAIL_PORT = if ($env:REPORTIT_MAIL_PORT) { $env:REPORTIT_MAIL_PORT } else { "587" }
 $env:REPORTIT_MAIL_USERNAME = if ($env:REPORTIT_MAIL_USERNAME) { $env:REPORTIT_MAIL_USERNAME } else { "reportit.noreply@gmail.com" }
-$env:REPORTIT_MAIL_PASSWORD = if ($env:REPORTIT_MAIL_PASSWORD) { $env:REPORTIT_MAIL_PASSWORD } else { "" }
+if ([string]::IsNullOrWhiteSpace($env:REPORTIT_MAIL_PASSWORD)) {
+    $securePassword = Read-Host "Enter Gmail App Password for $env:REPORTIT_MAIL_USERNAME" -AsSecureString
+    $passwordPtr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($securePassword)
+    try {
+        $env:REPORTIT_MAIL_PASSWORD = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($passwordPtr)
+    } finally {
+        [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($passwordPtr)
+    }
+}
 $env:REPORTIT_MAIL_PASSWORD = $env:REPORTIT_MAIL_PASSWORD -replace "\s", ""
 $env:REPORTIT_MAIL_FROM = if ($env:REPORTIT_MAIL_FROM) { $env:REPORTIT_MAIL_FROM } else { $env:REPORTIT_MAIL_USERNAME }
 

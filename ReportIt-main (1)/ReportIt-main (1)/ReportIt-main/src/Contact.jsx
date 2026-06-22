@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 
 import "./Contact.css";
 import PublicFooter, { REPORTIT_EMAIL, REPORTIT_LOCATION, REPORTIT_PHONE } from "./PublicFooter";
+import { showAppPopup } from "./appPopups";
+import { sendContactMessage } from "./api/contact";
 
 import {
   Link,
@@ -23,10 +25,50 @@ import {
 const Contact = () => {
 
   const navigate = useNavigate();
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const [sending, setSending] = useState(false);
   const googleSearch = (query) =>
     `https://www.google.com/search?q=${encodeURIComponent(query)}`;
   const gmailCompose = (email) =>
     `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}`;
+
+  const updateField = (field) => (event) => {
+    setForm((current) => ({ ...current, [field]: event.target.value }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (sending) return;
+
+    const payload = {
+      name: form.name.trim(),
+      email: form.email.trim(),
+      subject: form.subject.trim(),
+      message: form.message.trim(),
+    };
+
+    if (!payload.name || !payload.email || !payload.subject || !payload.message) {
+      showAppPopup("Please fill all contact fields.");
+      return;
+    }
+
+    setSending(true);
+    try {
+      await sendContactMessage(payload);
+      showAppPopup("Message sent successfully.");
+      setForm({ name: "", email: "", subject: "", message: "" });
+    } catch (error) {
+      showAppPopup(error.message || "Unable to send contact message.");
+    } finally {
+      setSending(false);
+    }
+  };
 
   return (
 
@@ -110,7 +152,7 @@ const Contact = () => {
 
           {/* ================= FORM ================= */}
 
-          <form className="contact-form">
+          <form className="contact-form" onSubmit={handleSubmit}>
 
             {/* NAME */}
 
@@ -121,6 +163,8 @@ const Contact = () => {
               <input
                 type="text"
                 placeholder="Your Name"
+                value={form.name}
+                onChange={updateField("name")}
               />
 
             </div>
@@ -134,6 +178,8 @@ const Contact = () => {
               <input
                 type="email"
                 placeholder="Your Email"
+                value={form.email}
+                onChange={updateField("email")}
               />
 
             </div>
@@ -147,6 +193,8 @@ const Contact = () => {
               <input
                 type="text"
                 placeholder="Subject"
+                value={form.subject}
+                onChange={updateField("subject")}
               />
 
             </div>
@@ -156,6 +204,8 @@ const Contact = () => {
             <textarea
               placeholder="Your Message"
               rows="6"
+              value={form.message}
+              onChange={updateField("message")}
             ></textarea>
 
             {/* BUTTON */}
@@ -163,9 +213,10 @@ const Contact = () => {
             <button
               type="submit"
               className="send-btn"
+              disabled={sending}
             >
 
-              Send Message
+              {sending ? "Sending..." : "Send Message"}
 
             </button>
 

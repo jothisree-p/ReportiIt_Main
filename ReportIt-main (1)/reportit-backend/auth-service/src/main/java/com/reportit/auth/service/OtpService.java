@@ -4,6 +4,8 @@ import com.reportit.auth.entity.OtpToken;
 import com.reportit.auth.exception.ApiException;
 import com.reportit.auth.repository.OtpTokenRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -19,6 +21,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class OtpService {
+
+    private static final Logger log = LoggerFactory.getLogger(OtpService.class);
 
     private final OtpTokenRepository otpTokenRepository;
     private final Optional<JavaMailSender> mailSender;
@@ -101,7 +105,9 @@ public class OtpService {
         try {
             sender.send(message);
         } catch (Exception ex) {
-            throw new ApiException("Unable to send OTP email. Check ReportIt SMTP username/password.", HttpStatus.SERVICE_UNAVAILABLE);
+            log.error("ReportIt OTP email failed. SMTP user={}, from={}, to={}, error={}",
+                    mailUsername, message.getFrom(), email, ex.getMessage(), ex);
+            throw new ApiException("Unable to send OTP email. SMTP error: " + cleanMailError(ex), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 
@@ -125,8 +131,18 @@ public class OtpService {
         try {
             sender.send(message);
         } catch (Exception ex) {
-            throw new ApiException("Unable to send phone verification email. Check ReportIt SMTP username/password.", HttpStatus.SERVICE_UNAVAILABLE);
+            log.error("ReportIt phone verification email failed. SMTP user={}, from={}, to={}, error={}",
+                    mailUsername, message.getFrom(), email, ex.getMessage(), ex);
+            throw new ApiException("Unable to send phone verification email. SMTP error: " + cleanMailError(ex), HttpStatus.SERVICE_UNAVAILABLE);
         }
+    }
+
+    private String cleanMailError(Exception ex) {
+        String message = ex.getMessage();
+        if (message == null || message.isBlank()) {
+            return "Gmail rejected the SMTP request. Check the app password and restart auth-service.";
+        }
+        return message.replaceAll("[\\r\\n]+", " ").trim();
     }
 
     private String subjectForPurpose(String purpose) {
